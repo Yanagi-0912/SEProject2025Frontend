@@ -1,8 +1,16 @@
+import { useState } from 'react'
 import LiquidEther from './components/backgrounds/LiquidEther/LiquidEther'
 import './components/backgrounds/LiquidEther/LiquidEther.css'
 import Login from './pages/Login'
+import Main from './pages/Main'
 
 function App() {
+  const [isGuest, setIsGuest] = useState(false)
+
+  if (isGuest) {
+    return <Main onBack={() => setIsGuest(false)} />
+  }
+
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative', background: 'black' }}>
       {/* 背景特效元件 */}
@@ -55,7 +63,7 @@ function App() {
         }}
       >
         <div>
-          <Login />
+          <Login onGuestLogin={() => setIsGuest(true)} />
         </div>
       </div>
     </div>

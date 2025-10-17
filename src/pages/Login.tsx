@@ -1,6 +1,10 @@
 import { useState, type FormEvent } from 'react'
 
-function Login() {
+interface LoginProps {
+  onGuestLogin?: () => void
+}
+
+function Login({ onGuestLogin }: LoginProps) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -31,6 +35,7 @@ function Login() {
         </div>
         <button type="submit">登入</button>
       </form>
+      <button onClick={onGuestLogin} style={{ marginTop: 12 }}>訪客登入</button>
     </div>
   )
 }
