@@ -1,5 +1,5 @@
 
-interface DirectProps {
+interface AuctionProps {
     productName?: string;
     productDescription?: string;
     productPrice?: number;
@@ -7,18 +7,22 @@ interface DirectProps {
     productStock?: number;
     productStatus?: ProductStatuses | string;
     averageRating?: number;
+    auctionEndTime?: string;
+    nowHighestBid?: number;
+    highestBidderID?: string;
     onBack?: () => void;
 }
+
 type ProductStatuses = 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'BANNED';
 
 
-function DirectProduct(props: DirectProps) {
+function AuctionProduct(props: AuctionProps) {
     return (
       <div>
-        直購商品頁面
+        拍賣商品頁面
         <div>{props.productName} - ${props.productPrice}</div>
       </div>
     );
 }
 
-export default DirectProduct;
+export default AuctionProduct;
