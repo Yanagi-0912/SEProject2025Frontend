@@ -2,7 +2,7 @@ import { useState } from 'react'
 import LiquidEther from './components/backgrounds/LiquidEther/LiquidEther'
 import './components/backgrounds/LiquidEther/LiquidEther.css'
 import Login from './pages/Login'
-import Main from './pages/ProductPage'
+import Main from './pages/Main'
 
 function App() {
   const [isGuest, setIsGuest] = useState(false)
