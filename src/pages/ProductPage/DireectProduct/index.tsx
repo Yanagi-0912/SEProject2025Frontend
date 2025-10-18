@@ -17,13 +17,20 @@ function DirectProduct(props: DirectProps) {
     return (
       <div className="product-card">
         <div><img src={props.productImage} alt={props.productName} /></div>
-        <div className="product-title">產品名稱: {props.productName}</div>
-        <div>產品描述: {props.productDescription}</div>
+        <div className="product-title">{props.productName}</div>
         <div>產品價格: ${props.productPrice}</div>
         <div>庫存數量: {props.productStock}</div>
-        <div>目前狀態: {props.productStatus}</div>
-        <div>平均評分: {props.averageRating}</div>
-      </div>
+        <div>目前狀態: {props.productStatus === 'ACTIVE' ? '上架中' : props.productStatus === 'INACTIVE' ? '下架中' : props.productStatus === 'SOLD' ? '已售出' : '已禁用'}</div>
+        <div className="product-rating">平均評分: {props.averageRating}</div>
+        {props.productStatus === 'ACTIVE' ? (
+            <div className='button-card'>
+                <button className="cart-button">加入購物車</button>
+                <button className="buy-button">立即購買</button>
+            </div>
+        ) : (
+            <div className='warning-word'>*商品不可購買</div>
+        )}
+      </div>    
     );
 }
 

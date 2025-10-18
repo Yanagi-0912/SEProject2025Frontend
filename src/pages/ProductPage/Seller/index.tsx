@@ -14,7 +14,7 @@ interface SellerInfo {
 function Seller(props: SellerProps) {
     // API
     const info : SellerInfo = {
-        userId: '000000',
+        userId: props.sellerID || '000000',
         userNickname: '000000',
         averageRating: 0,
         ratingCount: 0
@@ -24,7 +24,6 @@ function Seller(props: SellerProps) {
         <div>
             <div className="seller-card">
                 <h3>賣家資訊</h3>
-                <div>賣家ID: {props.sellerID}</div>
                 {info && (
                     <div>
                         <div className="seller-nickname">暱稱: {info.userNickname}</div>
