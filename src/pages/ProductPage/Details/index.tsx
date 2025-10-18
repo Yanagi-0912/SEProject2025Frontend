@@ -15,7 +15,7 @@ type ProductStatuses = 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'BANNED';
 
 function Details(props: DetailsProps) {
     return (
-      <div>
+      <div className="details-card">
         <h3>產品詳細資訊</h3>
         <p>產品名稱: {props.productName}</p>
         <p>詳細描述: {props.productDescription}</p>

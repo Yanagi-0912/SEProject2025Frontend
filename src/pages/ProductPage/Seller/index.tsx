@@ -27,7 +27,7 @@ function Seller(props: SellerProps) {
                 <div>賣家ID: {props.sellerID}</div>
                 {info && (
                     <div>
-                        <div>暱稱: {info.userNickname}</div>
+                        <div className="seller-nickname">暱稱: {info.userNickname}</div>
                         <div>平均評分: {info.averageRating}</div>
                         <div>評分次數: {info.ratingCount}</div>
                     </div>
