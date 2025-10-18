@@ -1,4 +1,6 @@
 
+import './AuctionProduct.css';
+
 interface AuctionProps {
     productName?: string;
     productDescription?: string;

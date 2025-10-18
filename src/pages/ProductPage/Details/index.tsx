@@ -1,3 +1,5 @@
+import './Details.css';
+
 interface DetailsProps {
     productName?: string;
     productDescription?: string;

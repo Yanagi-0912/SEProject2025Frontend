@@ -1,3 +1,5 @@
+import './DireectProduct.css';
+
 interface DirectProps {
     productName?: string;
     productDescription?: string;

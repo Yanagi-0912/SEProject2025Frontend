@@ -1,0 +1,25 @@
+/* Simple card layout for direct product */
+.product-card {
+  max-width: 900px;
+  margin: 16px auto;
+  padding: 16px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+.product-card img {
+  max-width: 320px;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+.product-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.product-info { flex: 1; }
+.product-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 8px; }
+.product-price { color: #c94444; font-weight: 700; font-size: 1.25rem; }
+.muted { color: #666; font-size: 0.95rem; }

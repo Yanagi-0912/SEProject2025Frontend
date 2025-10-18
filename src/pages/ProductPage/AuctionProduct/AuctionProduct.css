@@ -1,0 +1,14 @@
+/* Auction product styles (reuse card) */
+.auction-card {
+  max-width: 900px;
+  margin: 16px auto;
+  padding: 16px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+.auction-image { max-width: 320px; border-radius: 6px; }
+.auction-row { display:flex; gap:16px; }
+.auction-title { font-size: 1.5rem; font-weight: 600; }
+.auction-bid { color: #0a66ff; font-weight:700; }
