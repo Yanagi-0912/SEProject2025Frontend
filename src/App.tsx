@@ -23,10 +23,9 @@ function App() {
       </div>
       {/* 登入表單 (置中顯示) */}
       <div className="login-container">
-        <div>
-          <Login onGuestLogin={() => setIsGuest(true)} />
-        </div>
+        <Login onGuestLogin={() => setIsGuest(true)} />
       </div>
+
     </div>
   )
 }

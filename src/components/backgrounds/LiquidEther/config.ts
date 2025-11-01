@@ -1,4 +1,4 @@
-import { LiquidEtherProps } from './LiquidEther';
+import type { LiquidEtherProps } from './LiquidEther';
 
 // LiquidEther 背景特效的配置
 export const liquidEtherConfig: LiquidEtherProps = {
