@@ -19,8 +19,8 @@ function Main({ onBack }: MainProps) {
     }
 
   return (
-    <div style={{ backgroundColor: 'gray', color: 'white', height: '100vh' }}>
-      <Header page={page} onBack={onBack} onCartClick={() => setShowCart(true)} />
+    <div style={{ border: '2px solid yellowgreen', backgroundColor: 'gray', color: 'white'}}>
+      <Header page={page} onBack={onBack} />
       
       <div style={{ display: 'flex' ,alignItems: 'stretch' }}>
 
@@ -33,8 +33,10 @@ function Main({ onBack }: MainProps) {
         </div>
 
       </div>
-
-      <Pagination page={page} total={total} setPage={setPage} />
+      
+      <div style={{ position:'fixed' , bottom: 0, width: '100%'  }}>
+        <Pagination page={page} total={total} setPage={setPage} />
+      </div>
     </div>
   );
 }

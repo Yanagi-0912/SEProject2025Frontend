@@ -1,3 +1,5 @@
+import './Products.css'
+
 interface ProductsProps {
   page: number;
 }
@@ -10,31 +12,24 @@ function Products({ page }: ProductsProps) {
     products.push({
       id,
       name: `商品 ${id}`,
-      price: id // 第一個商品就是一塊，第二個2塊，以此類推
+      price: id, // 第一個商品就是一塊，第二個2塊，以此類推
+      image: `https://picsum.photos/300/300?random=${id}` // 使用 Lorem Picsum 提供隨機圖片
     });
   }
 
   return (
-    <div style={{ border: '2px solid orange' }}>
-      <div
-      style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '16px',
-      }}
-    >
+    <div className="products-container">
+      <div className="products-grid">
         {products.map(product => (
-          <div key={product.id}
-          style={{
-            flex: '1 0 calc(25% - 16px)', // 每排4個
-            border: '1px solid white',
-            borderRadius: '8px',
-            padding: '10px',
-            textAlign: 'center',
-          }}>
+          <div key={product.id} className="product-card">
+            <img 
+              src={product.image} 
+              alt={product.name} 
+              className="product-image"
+            />
             <h4>{product.name}</h4>
             <p>價格: ${product.price}</p>
-            <button>加入購物車</button>
+            <button className="add-to-cart-button">加入購物車</button>
           </div>
         ))}
       </div>
