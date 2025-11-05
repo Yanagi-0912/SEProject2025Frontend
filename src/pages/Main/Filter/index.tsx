@@ -1,7 +1,6 @@
 function Filter() {
   return (
     <div>
-      <h3>調參數</h3>
       <div>
         <label>價格範圍</label>
         <input type="number" placeholder="最低價" />
