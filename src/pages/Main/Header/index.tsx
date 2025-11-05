@@ -1,11 +1,18 @@
 import './Header.css'
 
+import React from 'react';
 interface HeaderProps {
   page: number;
   onBack?: () => void;
+  onCartClick?: () => void;
 }
 
-function Header({ page, onBack }: HeaderProps) {
+function Header({ page, onBack, onCartClick}: HeaderProps) {
+    const handleCart = () => {
+        if (onCartClick) {
+            onCartClick();
+        }
+    };
   return (
     <div className="header-container">
       <button onClick={onBack} className="back-button">
@@ -21,6 +28,9 @@ function Header({ page, onBack }: HeaderProps) {
         <button className="action-button">我的帳號</button>
         <button className="action-button">購物車</button>
         <button className="action-button">訊息</button>
+      <div style={{ flex: 1 }}>
+        <button type="button" onClick={handleCart} style={{ borderRadius: '10px' }}>購物車</button>
+        <button style={{ borderRadius: '10px' }}>訊息</button>
       </div>
     </div>
   );
