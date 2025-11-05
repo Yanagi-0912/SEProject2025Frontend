@@ -39,8 +39,8 @@ const ProductPage: React.FC = () => {
 		productDescription: '商品描述',
 		productPrice: 100,
 		productImage: '商品圖片URL',
-		productType: 'DIRECT',
-		productStock: 50,
+		productType: 'AUCTION',
+		productStock: 1,
 		productCategory: '商品類別',
 		productStatus: 'ACTIVE',
 		createdTime: '2023-01-01',
@@ -59,7 +59,7 @@ const ProductPage: React.FC = () => {
         <div>
             <Header page={0} onBack={product.onBack} />
             {product.productType === 'DIRECT' ? (
-                <DirectProduct 
+				<DirectProduct 
 					productName={product.productName}
 					productDescription={product.productDescription}
 					productPrice={product.productPrice}
@@ -69,13 +69,14 @@ const ProductPage: React.FC = () => {
 					averageRating={product.averageRating}
 				/>
             ) : (
-                <AuctionProduct 
+				<AuctionProduct 
 					productName={product.productName}
 					productDescription={product.productDescription}
 					productPrice={product.productPrice}
 					productImage={product.productImage}
 					productStock={product.productStock}
-					productStatus={product.productStatus}
+				productStatus={product.productStatus}
+				productID={product.productID}
 					averageRating={product.averageRating}
 					auctionEndTime={product.auctionEndTime}
 					nowHighestBid={product.nowHighestBid}
