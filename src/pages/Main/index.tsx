@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Filter from './Filter';
 import Header from './Header';
 import Products from './Products';
@@ -14,13 +14,27 @@ function Main({ onBack }: MainProps) {
   const [showCart, setShowCart] = useState(false);
   const total = 10;
 
-   if (showCart) {
-      return <CartPage onBack={() => setShowCart(false)} />;
-    }
+  // 初始化時若 URL hash 為 #cart，則顯示購物車
+  useEffect(() => {
+    const checkHash = () => {
+      setShowCart(window.location.hash === '#cart');
+    };
+
+    // 初始檢查
+    checkHash();
+
+    // 監聽 hash 變化
+    window.addEventListener('hashchange', checkHash);
+    return () => window.removeEventListener('hashchange', checkHash);
+  }, []);
+
+  if (showCart) {
+    return <CartPage onBack={() => { setShowCart(false); window.location.hash = ''; }} />;
+  }
 
   return (
-    <div style={{ border: '2px solid yellowgreen', backgroundColor: 'gray', color: 'white'}}>
-      <Header page={page} onBack={onBack} />
+    <div style={{ backgroundColor: 'gray', color: 'white', height: '100vh' }}>
+      <Header page={page} onBack={onBack} onCartClick={() => setShowCart(true)} />
       
       <div style={{ display: 'flex' ,alignItems: 'stretch' }}>
 
@@ -33,10 +47,8 @@ function Main({ onBack }: MainProps) {
         </div>
 
       </div>
-      
-      <div style={{ position:'fixed' , bottom: 0, width: '100%'  }}>
-        <Pagination page={page} total={total} setPage={setPage} />
-      </div>
+
+      <Pagination page={page} total={total} setPage={setPage} />
     </div>
   );
 }
