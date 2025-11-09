@@ -36,7 +36,7 @@ function Login({ onGuestLogin, loginSuccess }: LoginProps) {
       localStorage.setItem('token', data.token)
       localStorage.setItem('username', data.username)
       
-      // 呼叫 loginSuccess 回調函數
+      // 呼叫 loginSuccess 回調函數 跟app.tsx講說可以切換頁面了
       loginSuccess?.(data.token, data.username)
     } catch (err) {
       console.error('登入錯誤:', err)
