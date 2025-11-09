@@ -41,11 +41,9 @@ function DirectProduct(props: DirectProps) {
                 </div>
                 <div className='actionButtons'>
                     <button className="cart-button">加入購物車</button>
-                    {/* 使用 hash 導覽到購物車，Main 會偵測 hash 並顯示 CartPage */}
                     <button
                         className="buy-button"
                         onClick={() => {
-                            // 設定 hash 為 #cart，讓 Main 元件顯示購物車
                             window.location.hash = '#cart';
                         }}
                     >
