@@ -1,6 +1,5 @@
 import './Header.css'
 
-import React from 'react';
 interface HeaderProps {
   page: number;
   onBack?: () => void;
