@@ -4,7 +4,7 @@ import { liquidEtherConfig } from './components/backgrounds/LiquidEther/config'
 import './components/backgrounds/LiquidEther/LiquidEther.css'
 import './App.css'
 import Login from './pages/Login'
-import Main from './pages/ProductPage'
+import Main from './pages/Main'
 
 function App() {
   const [isGuest, setIsGuest] = useState(false)
