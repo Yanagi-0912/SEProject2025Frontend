@@ -2,9 +2,10 @@ import './Products.css'
 
 interface ProductsProps {
   page: number;
+  onProductClick?: () => void;
 }
 
-function Products({ page }: ProductsProps) {
+function Products({ page, onProductClick }: ProductsProps) {
   // 根據頁碼顯示不同商品
   const products = [];
   for (let i = 0; i < 12; i++) {
@@ -21,11 +22,12 @@ function Products({ page }: ProductsProps) {
     <div className="products-container">
       <div className="products-grid">
         {products.map(product => (
-          <div key={product.id} className="product-card">
+          <div key={product.id} className="products-card">
             <img 
               src={product.image} 
               alt={product.name} 
-              className="product-image"
+              className="products-card-image"
+              onClick={onProductClick}
             />
             <h4>{product.name}</h4>
             <p>價格: ${product.price}</p>

@@ -30,7 +30,7 @@ interface ProductProps {
 
 type ProductStatuses = 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'BANNED';
 
-const ProductPage: React.FC = () => {
+const ProductPage: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
     // API
     const product: ProductProps = {
 		productID: '12345',
@@ -52,12 +52,11 @@ const ProductPage: React.FC = () => {
 		averageRating: 4.5,
 		reviewCount: 100,
 		totalSales: 100,
-		onBack: () => { console.log("返回主頁"); }
     };
 
     return (
         <div>
-            <Header page={0} onBack={product.onBack} />
+            <Header page={0} onBack={onBack} />
             {product.productType === 'DIRECT' ? (
 				<DirectProduct 
 					productName={product.productName}
