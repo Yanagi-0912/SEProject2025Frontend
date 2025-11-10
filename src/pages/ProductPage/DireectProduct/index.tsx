@@ -1,5 +1,6 @@
 import './DireectProduct.css';
 import { useState } from 'react';
+import CartPage from '../../CartPage';
 
 interface DirectProps {
     productName?: string;
@@ -16,6 +17,10 @@ type ProductStatuses = 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'BANNED';
 
 function DirectProduct(props: DirectProps) {
     const [quantity, setQuantity] = useState<number>(1);
+    const [showCart, setShowCart] = useState(false);
+    if (showCart) {
+        return <CartPage onBack={() => setShowCart(false)} />;
+    }
     return (
         <div className="product-card">
         <div><img src={props.productImage} alt={props.productName} /></div>
@@ -44,7 +49,7 @@ function DirectProduct(props: DirectProps) {
                     <button
                         className="buy-button"
                         onClick={() => {
-                            window.location.hash = '#cart';
+                            setShowCart(true);
                         }}
                     >
                         立即購買

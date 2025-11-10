@@ -5,6 +5,7 @@ import AuctionProduct from './AuctionProduct';
 import Seller from './Seller';
 import Details from './Details';
 
+
 interface ProductProps {
     productID?: string;               // 產品ID
     sellerID?: string;                // 賣家ID
@@ -30,9 +31,8 @@ interface ProductProps {
 
 type ProductStatuses = 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'BANNED';
 
-const ProductPage: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
-    // API
-    const product: ProductProps = {
+const ProductPage: React.FC<{ onBack?: () => void }> = () => {
+    const sampleProduct: ProductProps = {
 		productID: '12345',
 		sellerID: '67890',
 		productName: '商品名稱',
