@@ -40,8 +40,15 @@ function DirectProduct(props: DirectProps) {
                     > + </button>
                 </div>
                 <div className='actionButtons'>
-                    <button  className="cart-button">加入購物車</button>
-                    <a href='../CartPage'><button className="buy-button">立即購買</button></a>
+                    <button className="cart-button">加入購物車</button>
+                    <button
+                        className="buy-button"
+                        onClick={() => {
+                            window.location.hash = '#cart';
+                        }}
+                    >
+                        立即購買
+                    </button>
                 </div>
             </div>
         ) : (

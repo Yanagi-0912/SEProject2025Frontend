@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Filter from './Filter';
 import Header from './Header';
 import Products from './Products';
@@ -42,10 +42,8 @@ function Main({ onBack }: MainProps) {
         </div>
 
       </div>
-      
-      <div style={{ position:'fixed' , bottom: 0, width: '100%'  }}>
-        <Pagination page={page} total={total} setPage={setPage} />
-      </div>
+
+      <Pagination page={page} total={total} setPage={setPage} />
     </div>
   );
 }
