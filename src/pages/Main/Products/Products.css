@@ -11,10 +11,11 @@
 }
 
 /* 商品卡片 */
-.product-card {
+.products-card {
   flex: 1 0 calc(25% - 16px); /* 每排4個 */
   border: 1px solid white;
   border-radius: 8px;
+  color: black;
   padding: 10px;
   text-align: center;
   display: flex;
@@ -24,20 +25,22 @@
 
 
 /* 商品圖片 */
-.product-image {
+.products-card-image {
   width: 100%;
+  border: 1px solid rgb(147, 50, 50);
   height: 150px;
   object-fit: cover;
   border-radius: 4px;
+  cursor: pointer;
 }
 
 /* 商品卡片標題 */
-.product-card h4 {
+.products-card h4 {
   margin: 0 0 8px 0;
 }
 
 /* 商品卡片價格 */
-.product-card p {
+.products-card p {
   margin: 8px 0;
 }
 

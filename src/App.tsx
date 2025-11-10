@@ -7,10 +7,10 @@ import Login from './pages/Login'
 import Main from './pages/Main'
 
 function App() {
-  const [isGuest, setIsGuest] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
-  if (isGuest) {
-    return <Main onBack={() => setIsGuest(false)} />
+  if (isLoggedIn) {
+    return <Main onBack={() => setIsLoggedIn(false)} />
   }
 
   return (
@@ -23,7 +23,10 @@ function App() {
       </div>
       {/* 登入表單 (置中顯示) */}
       <div className="login-container">
-        <Login onGuestLogin={() => setIsGuest(true)} />
+        <Login 
+          onGuestLogin={() => setIsLoggedIn(true)} 
+          loginSuccess={() => setIsLoggedIn(true)}
+        />
       </div>
 
     </div>

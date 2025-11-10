@@ -24,7 +24,7 @@ function Header({ page, onBack, onCartClick}: HeaderProps) {
       </div>
       <div className="actions-section">
         <button className="action-button">我的帳號</button>
-        <button className="action-button">購物車</button>
+        <button type="button" onClick={handleCart} className="action-button">購物車</button>
         <button className="action-button">訊息</button>
       </div>
       <div style={{ flex: 1 }}>

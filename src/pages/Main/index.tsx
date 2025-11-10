@@ -4,6 +4,7 @@ import Header from './Header';
 import Products from './Products';
 import Pagination from './Pagination';
 import CartPage from '../CartPage';
+import ProductPage from '../ProductPage';
 
 interface MainProps {
   onBack?: () => void;
@@ -12,28 +13,21 @@ interface MainProps {
 function Main({ onBack }: MainProps) {
   const [page, setPage] = useState(1);
   const [showCart, setShowCart] = useState(false);
+  const [showProduct, setShowProduct] = useState(false);
   const total = 10;
 
-  // 初始化時若 URL hash 為 #cart，則顯示購物車
-  useEffect(() => {
-    const checkHash = () => {
-      setShowCart(window.location.hash === '#cart');
-    };
-
-    // 初始檢查
-    checkHash();
-
-    // 監聽 hash 變化
-    window.addEventListener('hashchange', checkHash);
-    return () => window.removeEventListener('hashchange', checkHash);
-  }, []);
-
+  // 顯示購物車頁面
   if (showCart) {
-    return <CartPage onBack={() => { setShowCart(false); window.location.hash = ''; }} />;
+    return <CartPage onBack={() => setShowCart(false)} />;
+  }
+
+  // 顯示商品詳情頁面
+  if (showProduct) {
+    return <ProductPage onBack={() => setShowProduct(false)} />;
   }
 
   return (
-    <div style={{ backgroundColor: 'gray', color: 'white', height: '100vh' }}>
+    <div style={{ border: '2px solid yellowgreen', backgroundColor: 'gray', color: 'white'}}>
       <Header page={page} onBack={onBack} onCartClick={() => setShowCart(true)} />
       
       <div style={{ display: 'flex' ,alignItems: 'stretch' }}>
@@ -43,7 +37,8 @@ function Main({ onBack }: MainProps) {
         </div>
 
         <div style={{ flex: 5 }}>
-          <Products page={page} />
+          <Products page={page} onProductClick={() => setShowProduct(true)} />//沒有這一行不會跳轉到商品詳情 需要把這個函數傳到products頁面才能跳轉
+
         </div>
 
       </div>
