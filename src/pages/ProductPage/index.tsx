@@ -31,7 +31,7 @@ interface ProductProps {
 
 type ProductStatuses = 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'BANNED';
 
-const ProductPage: React.FC<{ onBack?: () => void }> = () => {
+const ProductPage: React.FC<{ productID?: string; onBack?: () => void }> = ({ productID, onBack }) => {
     const sampleProduct: ProductProps = {
 		productID: '12345',
 		sellerID: '67890',
@@ -60,13 +60,13 @@ const ProductPage: React.FC<{ onBack?: () => void }> = () => {
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
-		// 先嘗試從 URL query 取得 id，若無則不呼叫 API
-		const params = new URLSearchParams(window.location.search);
-		const id = params.get('id');
+			// 優先使用傳入的 productID，若沒有再從 URL query 取得
+			const params = new URLSearchParams(window.location.search);
+			const id = productID ?? params.get('id');
 
-		if (!id) {
-			return;
-		}
+			if (!id) {
+				return;
+			}
 
 		const controller = new AbortController();
 		const fetchProduct = async () => {
@@ -128,11 +128,11 @@ const ProductPage: React.FC<{ onBack?: () => void }> = () => {
 			} finally {
 				setLoading(false);
 			}
-		};
+			};
 
-		fetchProduct();
-		return () => controller.abort();
-	}, []);
+			fetchProduct();
+			return () => controller.abort();
+		}, [productID]);
 
 	if (loading) {
 		return <div>載入中...</div>;
@@ -144,7 +144,7 @@ const ProductPage: React.FC<{ onBack?: () => void }> = () => {
 
 	return (
 		<div>
-			<Header page={0} onBack={product.onBack} />
+			<Header page={0} onBack={onBack ?? product.onBack} />
 			{product.productType === 'DIRECT' ? (
 
 				<DirectProduct 
