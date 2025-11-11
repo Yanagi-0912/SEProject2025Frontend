@@ -14,7 +14,7 @@ function Header({ page, onBack, onCartClick}: HeaderProps) {
   return (
     <div className="header-container">
       <button onClick={onBack} className="back-button">
-        icon 回首頁 <br></br>
+        <img src="/home-icon.png" alt="回首頁" className="home-icon-img" />
       </button>
       <div className="page-title-section">
         <h1>第 {page} 主頁</h1>

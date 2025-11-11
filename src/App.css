@@ -6,21 +6,6 @@
   background: black;
 }
 
-/* 標題樣式 */
-.app-title {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  padding: 40px 0 0 0;
-  text-align: center;
-  z-index: 10;
-  color: white;
-  font-size: 2rem;
-  font-weight: bold;
-  letter-spacing: 2px;
-}
-
 /* 登入表單容器樣式 */
 .login-container {
   position: absolute;

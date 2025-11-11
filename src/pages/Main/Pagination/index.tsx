@@ -33,7 +33,6 @@ function Pagination({ page, total, setPage }: PaginationProps) {
 
   return (
     <div style={{ 
-      border: '2px solid blue', 
       display: 'flex', 
       justifyContent: 'center', 
       alignItems: 'center'

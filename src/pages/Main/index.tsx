@@ -36,12 +36,12 @@ function Main({ onBack }: MainProps) {
   }
 
   return (
-    <div style={{ border: '2px solid yellowgreen', backgroundColor: 'gray', color: 'white'}}>
+    <div style={{ border: '2px solid yellowgreen', backgroundColor: 'rgb(62, 64, 68)', color: 'white'}}>
       <Header page={page} onBack={onBack} onCartClick={() => setShowCart(true)} />
       
       <div style={{ display: 'flex' ,alignItems: 'stretch' }}>
 
-        <div style={{ flex: 1  ,border: '6px solid purple'}}>
+        <div style={{ flex: 1  , backgroundColor: 'white'}}>
           <Filter />
         </div>
 
@@ -55,7 +55,6 @@ function Main({ onBack }: MainProps) {
               setShowProduct(true);
             }}
           />
-
         </div>
 
       </div>

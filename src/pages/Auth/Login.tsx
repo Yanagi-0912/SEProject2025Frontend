@@ -1,19 +1,19 @@
 import { useState, type FormEvent } from 'react'
+import './Login.css'
 
 interface LoginProps {
   onGuestLogin?: () => void
   loginSuccess?: (token: string, username: string) => void
+  onGoToRegister?: () => void
 }
 
-function Login({ onGuestLogin, loginSuccess }: LoginProps) {
+function Login({ onGuestLogin, loginSuccess, onGoToRegister }: LoginProps) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setError('') //可以清出之前錯誤
     setLoading(true) //避免重複點擊
 
     try {
@@ -40,42 +40,75 @@ function Login({ onGuestLogin, loginSuccess }: LoginProps) {
       loginSuccess?.(data.token, data.username)
     } catch (err) {
       console.error('登入錯誤:', err)
-      setError('登入失敗，請檢查您的帳號密碼')
+      alert('帳號或密碼錯誤')
+      // 清空密碼欄位
+      setPassword('')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div style={{ color: 'white', fontSize: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="username">帳號<br></br></label>
+    <div className="login-page-container">
+      <h1 className="login-main-title">海大拍賣系統</h1>
+      
+      <form onSubmit={handleSubmit} className="login-form-wrapper">
+        <div className="login-input-group">
+          <label htmlFor="username" className="login-input-label">帳號/Account</label>
           <input
             id="username"
+            className="login-input-field"
             value={username}
             onChange={e => setUsername(e.target.value)}
             disabled={loading}
+            placeholder="請輸入帳號"
+            required
           />
         </div>
-        <div>
-          <label htmlFor="password">密碼<br></br></label>
+        
+        <div className="login-input-group">
+          <label htmlFor="password" className="login-input-label">密碼/Password</label>
           <input
             id="password"
             type="password"
+            className="login-input-field"
             value={password}
             onChange={e => setPassword(e.target.value)}
             disabled={loading}
+            placeholder="請輸入密碼"
+            required
           />
         </div>
-        {error && <div style={{ color: 'red', marginTop: '10px' }}>{error}</div>}
-        <button type="submit" disabled={loading}>
-          {loading ? '登入中...' : '登入'}
+        
+        <button type="submit" className="login-main-button" disabled={loading}>
+          {loading ? '登入中...' : '登入/Login'}
         </button>
+        
+        <div className="login-links-container">
+          <div>
+            <button 
+              type="button"
+              onClick={onGoToRegister} 
+              className="login-small-link" 
+              disabled={loading}
+            >
+              註冊新帳號
+            </button>
+            <span className="login-divider">|</span>
+            <button 
+              type="button"
+              onClick={onGuestLogin} 
+              className="login-small-link" 
+              disabled={loading}
+            >
+              訪客登入
+            </button>
+          </div>
+        </div>
       </form>
-      <button onClick={onGuestLogin} style={{ marginTop: 12 }} disabled={loading}>訪客登入</button>
     </div>
   )
 }
 
 export default Login
+
