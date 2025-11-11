@@ -10,4 +10,17 @@ export default defineConfig({
       },
     }),
   ],
+  // 開發時代理後端，避免瀏覽器 CORS 限制
+  server: {
+    proxy: {
+      // 把 /products 的請求代理到本地後端
+      '/products': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+        ws: false,
+      },
+      // 如需代理其他 API 路徑，可在此加入
+    },
+  },
 })
