@@ -14,6 +14,7 @@ function Main({ onBack }: MainProps) {
   const [page, setPage] = useState(1);
   const [showCart, setShowCart] = useState(false);
   const [showProduct, setShowProduct] = useState(false);
+  const [selectedProductID, setSelectedProductID] = useState<string | null>(null);
   const total = 10;
 
   // 顯示購物車頁面
@@ -23,7 +24,15 @@ function Main({ onBack }: MainProps) {
 
   // 顯示商品詳情頁面
   if (showProduct) {
-    return <ProductPage onBack={() => setShowProduct(false)} />;
+    return (
+      <ProductPage
+        productID={selectedProductID ?? undefined}
+        onBack={() => {
+          setShowProduct(false);
+          setSelectedProductID(null);
+        }}
+      />
+    );
   }
 
   return (
@@ -37,7 +46,15 @@ function Main({ onBack }: MainProps) {
         </div>
 
         <div style={{ flex: 5 }}>
-          <Products page={page} onProductClick={() => setShowProduct(true)} />//沒有這一行不會跳轉到商品詳情 需要把這個函數傳到products頁面才能跳轉
+          <Products
+            page={page}
+            onProductClick={(p: { id?: string | number; productID?: string | number }) => {
+              // p 來自後端或 mock 的 product 資訊，優先使用 product.id 或 product.productID
+              const id = p.id ?? p.productID ?? null;
+              if (id) setSelectedProductID(String(id));
+              setShowProduct(true);
+            }}
+          />
 
         </div>
 
