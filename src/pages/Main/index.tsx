@@ -27,17 +27,17 @@ function Main({ onBack }: MainProps) {
   }
 
   return (
-    <div style={{ border: '2px solid yellowgreen', backgroundColor: 'gray', color: 'white'}}>
+    <div style={{ border: '2px solid yellowgreen', backgroundColor: 'rgb(62, 64, 68)', color: 'white'}}>
       <Header page={page} onBack={onBack} onCartClick={() => setShowCart(true)} />
       
       <div style={{ display: 'flex' ,alignItems: 'stretch' }}>
 
-        <div style={{ flex: 1  ,border: '6px solid purple'}}>
+        <div style={{ flex: 1  , backgroundColor: 'white'}}>
           <Filter />
         </div>
 
         <div style={{ flex: 5 }}>
-          <Products page={page} onProductClick={() => setShowProduct(true)} />//沒有這一行不會跳轉到商品詳情 需要把這個函數傳到products頁面才能跳轉
+          <Products page={page} onProductClick={() => setShowProduct(true)} /> {/* 沒有這一行不會跳轉到商品詳情 需要把這個函數傳到products頁面才能跳轉 */}
 
         </div>
 

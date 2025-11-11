@@ -1,13 +1,14 @@
 /* Products 容器 */
 .products-container {
   border: 2px solid orange;
+  background-color: rgb(209, 204, 204);
 }
 
 /* 商品網格 */
 .products-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 15px;
 }
 
 /* 商品卡片 */
@@ -15,12 +16,13 @@
   flex: 1 0 calc(25% - 16px); /* 每排4個 */
   border: 1px solid white;
   border-radius: 8px;
-  color: black;
+  color: rgb(228, 222, 222);
+  background-color: rgb(72, 82, 97);
   padding: 10px;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 2px;
 }
 
 
@@ -49,7 +51,7 @@
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
-  background-color: #6e746f;
+  background-color: #577fce;
   color: white;
   border: none;
   transition: background-color 0.3s;
