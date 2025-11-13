@@ -6,6 +6,7 @@ import './App.css'
 import Login from './pages/Auth/Login'
 import Register from './pages/Auth/Register'
 import Main from './pages/Main'
+import Shopping from "./pages/Shopping";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)

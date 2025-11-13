@@ -5,6 +5,7 @@ import Products from './Products';
 import Pagination from './Pagination';
 import CartPage from '../CartPage';
 import ProductPage from '../ProductPage';
+import Shopping from '../Shopping';
 
 interface MainProps {
   onBack?: () => void;
@@ -19,7 +20,7 @@ function Main({ onBack }: MainProps) {
 
   // 顯示購物車頁面
   if (showCart) {
-    return <CartPage onBack={() => setShowCart(false)} />;
+    return <Shopping onBackToMain={() => setShowCart(false)} />;
   }
 
   // 顯示商品詳情頁面
