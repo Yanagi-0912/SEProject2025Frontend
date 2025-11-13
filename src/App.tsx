@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { Routes, Route, useNavigate } from 'react-router-dom'
 import LiquidEther from './components/backgrounds/LiquidEther/LiquidEther'
 import { liquidEtherConfig } from './components/backgrounds/LiquidEther/config'
 import './components/backgrounds/LiquidEther/LiquidEther.css'
@@ -6,36 +6,50 @@ import './App.css'
 import Login from './pages/Auth/Login'
 import Register from './pages/Auth/Register'
 import Main from './pages/Main'
+import CartPage from './pages/CartPage'
+import ProductPage from './pages/ProductPage'
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [showRegister, setShowRegister] = useState(false)
-
-  if (isLoggedIn) {
-    return <Main onBack={() => setIsLoggedIn(false)} />
-  }
+  const navigate = useNavigate()
 
   return (
-    <div className="app-container">
-      {/* 背景特效元件 */}
-      <LiquidEther {...liquidEtherConfig} />
-      {/* 登入/註冊表單 (置中顯示) */}
-      <div className="login-container">
-        {showRegister ? (
-          <Register 
-            onBackToLogin={() => setShowRegister(false)}
-            registerSuccess={() => setShowRegister(false)}
-          />
-        ) : (
-          <Login 
-            onGuestLogin={() => setIsLoggedIn(true)} 
-            loginSuccess={() => setIsLoggedIn(true)}
-            onGoToRegister={() => setShowRegister(true)}
-          />
-        )}
-      </div>
+        <Routes>
+          {/* 主頁 */}
+          <Route path="/main" element={<Main />} />
+          
+          {/* 購物車 */}
+          <Route path="/cart" element={<CartPage onBack={() => navigate('/main')} />} />
+          
+          {/* 商品詳情 */}
+          <Route path="/product/:id" element={<ProductPage onBack={() => navigate('/main')} />} />
+          
+          {/* 登入 */}
+          <Route path="/" element={
+            <div className="app-container">
+              <LiquidEther {...liquidEtherConfig} />
+              <div className="login-container">
+                <Login
+                  onGuestLogin={() => navigate('/main')}
+                  loginSuccess={() => navigate('/main')}
+                  onGoToRegister={() => navigate('/register')}
+                />
+              </div>
+            </div>
+          } />
 
-    </div>
+          {/* 註冊 */}
+          <Route path="/register" element={
+            <div className="app-container">
+              <LiquidEther {...liquidEtherConfig} />
+              <div className="login-container">
+                <Register
+                  onBackToLogin={() => navigate('/')}
+                  registerSuccess={() => navigate('/')}
+                />
+              </div>
+            </div>
+          } />
+        </Routes>
   )
 }
 

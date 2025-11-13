@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import Header from './Header';
 import DirectProduct from './DireectProduct';
 import AuctionProduct from './AuctionProduct';
@@ -32,6 +33,7 @@ interface ProductProps {
 type ProductStatuses = 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'BANNED';
 
 const ProductPage: React.FC<{ productID?: string; onBack?: () => void }> = ({ productID, onBack }) => {
+    const params = useParams<{ id: string }>();
     const sampleProduct: ProductProps = {
 		productID: '12345',
 		sellerID: '67890',
@@ -60,9 +62,9 @@ const ProductPage: React.FC<{ productID?: string; onBack?: () => void }> = ({ pr
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
-			// 優先使用傳入的 productID，若沒有再從 URL query 取得
-			const params = new URLSearchParams(window.location.search);
-			const id = productID ?? params.get('id');
+			// 優先使用傳入的 productID，若沒有再從路由參數或 URL query 取得
+			const urlParams = new URLSearchParams(window.location.search);
+			const id = productID ?? params.id ?? urlParams.get('id');
 
 			if (!id) {
 				return;
@@ -130,11 +132,9 @@ const ProductPage: React.FC<{ productID?: string; onBack?: () => void }> = ({ pr
 			}
 			};
 
-			fetchProduct();
-			return () => controller.abort();
-		}, [productID]);
-
-	if (loading) {
+		fetchProduct();
+		return () => controller.abort();
+	}, [productID, params.id]);	if (loading) {
 		return <div>載入中...</div>;
 	}
 
