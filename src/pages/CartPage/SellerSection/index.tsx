@@ -1,70 +1,23 @@
-// 功能：顯示單個賣家的商品區塊
-// 主要內容：
-// - 賣家名稱和全選 checkbox
-// - 商品列表表格（表頭 + 商品項目）
-// - 整合多個 CartItem 組件
-// 接收 props：
-// - sellerCart: 賣家購物車資料（包含賣家資訊和商品列表）
-// - onToggleSellerSelect: 切換賣家全選的函數
-// - onToggleItemSelect: 切換單個商品選取的函數
-// - onUpdateQty: 更新商品數量的函數
-// 需要 import：
-// import React from "react";
-// import CartItemComponent from "../CartItem";
-
 import React from "react";
-import CartItemComponent from "../CartItem";
-
-// 產品類型定義（與 CartItem 相同）
-interface Product {
-  ProductID: string;
-  SellerID: string;
-  ProductName: string;
-  ProductDescription: string;
-  ProductPrice: number;
-  ProductImage: string;
-  ProductType: string;
-  ProductStock: number;
-  ProductCategory: string;
-  ProductStatus: string;
-  CreatedTime: string;
-  UpdatedTime: string;
-  AuctionEndTime?: string;
-  NowHighestBid?: number;
-  HighestBidderID?: string;
-  ViewCount: number;
-  AverageRating: number;
-  ReviewCount: number;
-  TotalSales: number;
-}
-
-interface CartItem {
-  product: Product;
-  quantity: number;
-  selected: boolean;
-}
-
-interface SellerCart {
-  sellerID: string;
-  sellerName: string;
-  items: CartItem[];
-}
+import CartItem from "../CartItem";
 
 interface SellerSectionProps {
-  sellerCart: SellerCart;
-  onToggleSellerSelect: (sellerID: string) => void;
-  onToggleItemSelect: (sellerID: string, productID: string) => void;
-  onUpdateQty: (sellerID: string, productID: string, delta: number) => void;
+  seller: any;
+  onToggleSellerSelect: (sellerId: string) => void;
+  onToggleItemSelect: (sellerId: string, itemId: string) => void;
+  onUpdateQuantity: (sellerId: string, itemId: string, delta: number) => void;
+  onDeleteItem: (sellerId: string, itemId: string) => void;
 }
 
 const SellerSection: React.FC<SellerSectionProps> = ({
-  sellerCart,
+  seller,
   onToggleSellerSelect,
   onToggleItemSelect,
-  onUpdateQty
+  onUpdateQuantity,
+  onDeleteItem
 }) => {
-  const allSelected = sellerCart.items.every(item => item.selected);
-  const someSelected = sellerCart.items.some(item => item.selected);
+  const allSelected = seller.items.every((item: any) => item.selected);
+  const someSelected = seller.items.some((item: any) => item.selected);
 
   return (
     <div style={{
@@ -74,7 +27,6 @@ const SellerSection: React.FC<SellerSectionProps> = ({
       borderRadius: "8px",
       backgroundColor: "#333"
     }}>
-      {/* 賣家標題 */}
       <div style={{
         display: "flex",
         alignItems: "center",
@@ -90,15 +42,14 @@ const SellerSection: React.FC<SellerSectionProps> = ({
               input.indeterminate = someSelected && !allSelected;
             }
           }}
-          onChange={() => onToggleSellerSelect(sellerCart.sellerID)}
+          onChange={() => onToggleSellerSelect(seller.sellerId)}
           style={{ marginRight: "10px", width: "18px", height: "18px" }}
         />
         <span style={{ color: "white", fontSize: "18px", fontWeight: "bold" }}>
-          {sellerCart.sellerName}
+          {seller.sellerName}
         </span>
       </div>
 
-      {/* 商品表格 */}
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr style={{ borderBottom: "2px solid #555" }}>
@@ -107,15 +58,17 @@ const SellerSection: React.FC<SellerSectionProps> = ({
             <th style={{ width: "120px", padding: "10px", textAlign: "center", color: "#aaa" }}>單價</th>
             <th style={{ width: "150px", padding: "10px", textAlign: "center", color: "#aaa" }}>數量</th>
             <th style={{ width: "120px", padding: "10px", textAlign: "center", color: "#aaa" }}>小計</th>
+            <th style={{ width: "80px", padding: "10px", textAlign: "center", color: "#aaa" }}>操作</th>
           </tr>
         </thead>
         <tbody>
-          {sellerCart.items.map((item) => (
-            <CartItemComponent
-              key={item.product.ProductID}
+          {seller.items.map((item: any) => (
+            <CartItem
+              key={item.id}
               item={item}
-              onToggleSelect={(productID) => onToggleItemSelect(sellerCart.sellerID, productID)}
-              onUpdateQty={(productID, delta) => onUpdateQty(sellerCart.sellerID, productID, delta)}
+              onToggleSelect={() => onToggleItemSelect(seller.sellerId, item.id)}
+              onUpdateQuantity={(delta) => onUpdateQuantity(seller.sellerId, item.id, delta)}
+              onDelete={() => onDeleteItem(seller.sellerId, item.id)}
             />
           ))}
         </tbody>

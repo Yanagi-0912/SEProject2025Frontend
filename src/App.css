@@ -1,0 +1,21 @@
+/* 主容器樣式 */
+.app-container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  background: black;
+}
+
+/* 登入表單容器樣式 */
+.login-container {
+  position: absolute;
+  z-index: 11;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50vw;
+  height: 50vh;
+  display: grid;
+  place-items: center;
+}
+

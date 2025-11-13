@@ -1,4 +1,6 @@
 import './DireectProduct.css';
+import { useState } from 'react';
+import CartPage from '../../CartPage';
 
 interface DirectProps {
     productName?: string;
@@ -14,8 +16,13 @@ type ProductStatuses = 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'BANNED';
 
 
 function DirectProduct(props: DirectProps) {
+    const [quantity, setQuantity] = useState<number>(1);
+    const [showCart, setShowCart] = useState(false);
+    if (showCart) {
+        return <CartPage onBack={() => setShowCart(false)} />;
+    }
     return (
-      <div className="product-card">
+        <div className="product-card">
         <div><img src={props.productImage} alt={props.productName} /></div>
         <div className="product-title">{props.productName}</div>
         <div>產品價格: ${props.productPrice}</div>
@@ -24,8 +31,30 @@ function DirectProduct(props: DirectProps) {
         <div className="product-rating">平均評分: {props.averageRating}</div>
         {props.productStatus === 'ACTIVE' ? (
             <div className='button-card'>
-                <button className="cart-button">加入購物車</button>
-                <button className="buy-button">立即購買</button>
+                <div className='setQuantity'>
+                    <button
+                        className="quantityBtn"
+                        onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+                        disabled={quantity <= 1}
+                    > - </button>
+                    <div>{quantity}</div>
+                    <button
+                        className='quantityBtn'
+                        onClick={() => setQuantity(prev => Math.min((props.productStock ?? Infinity), prev + 1))}
+                        disabled={typeof props.productStock === 'number' ? quantity >= props.productStock : false}
+                    > + </button>
+                </div>
+                <div className='actionButtons'>
+                    <button className="cart-button">加入購物車</button>
+                    <button
+                        className="buy-button"
+                        onClick={() => {
+                            setShowCart(true);
+                        }}
+                    >
+                        立即購買
+                    </button>
+                </div>
             </div>
         ) : (
             <div className='warning-word'>*商品不可購買</div>

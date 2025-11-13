@@ -1,14 +1,13 @@
 import React from "react";
 
-interface CartHeaderProps {
+interface CheckoutHeaderProps {
   onBack?: () => void;
 }
 
-const CartHeader: React.FC<CartHeaderProps> = ({ onBack }) => {
+const CheckoutHeader: React.FC<CheckoutHeaderProps> = ({ onBack }) => {
   return (
     <div style={{
       display: "flex",
-      justifyContent: "space-between",
       alignItems: "center",
       marginBottom: "20px",
       padding: "10px",
@@ -23,15 +22,15 @@ const CartHeader: React.FC<CartHeaderProps> = ({ onBack }) => {
           color: "white",
           border: "none",
           borderRadius: "5px",
-          cursor: "pointer"
+          cursor: "pointer",
+          marginRight: "20px"
         }}
       >
-        ← 返回主頁
+        ← 返回
       </button>
-      <h2 style={{ color: "white", margin: 0 }}>購物車</h2>
-      <div style={{ width: "100px" }}></div>
+      <h2 style={{ color: "white", margin: 0 }}>結帳</h2>
     </div>
   );
 };
 
-export default CartHeader;
+export default CheckoutHeader;
