@@ -1,17 +1,3 @@
-// 功能：顯示購物車底部操作區
-// 主要內容：
-// - 全選 checkbox
-// - 已選商品數量和總金額顯示
-// - 結帳按鈕
-// 接收 props：
-// - allSelected: 是否全選
-// - totalPrice: 總金額
-// - selectedCount: 已選商品數量
-// - onToggleSelectAll: 切換全選的函數
-// - onCheckout: 結帳按鈕點擊事件
-// 需要 import：
-// import React from "react";
-
 import React from "react";
 
 interface CartFooterProps {
