@@ -18,7 +18,7 @@ function Login({ onGuestLogin, loginSuccess, onGoToRegister }: LoginProps) {
 
     try {
       //呼叫api 登入
-      const response = await fetch('http://localhost:8080/api/auth/login', {
+      const response = await fetch('https://seproject2025backend-production.up.railway.app/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
