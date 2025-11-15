@@ -1,5 +1,6 @@
+import { useNavigate } from 'react-router-dom'
 import './DireectProduct.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CartPage from '../../CartPage';
 
 interface DirectProps {
@@ -16,7 +17,21 @@ type ProductStatuses = 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'BANNED';
 
 
 function DirectProduct(props: DirectProps) {
-    const [quantity, setQuantity] = useState<number>(1);
+    const navigate = useNavigate()
+    const [quantity, setQuantity] = useState<number>(() => {
+        const stock = props.productStock;
+        return (typeof stock === 'number') ? Math.min(1, Math.max(0, stock)) : 1;
+    });
+    // 當 props.productStock 改變時調整 quantity（不超過庫存，若庫存為 0 設為 0）
+    useEffect(() => {
+        const stock = props.productStock;
+        if (typeof stock === 'number') {
+            setQuantity(prev => {
+                if (stock <= 0) return 0;
+                return Math.min(prev, stock);
+            });
+        }
+    }, [props.productStock]);
     const [showCart, setShowCart] = useState(false);
     if (showCart) {
         return <CartPage onBack={() => setShowCart(false)} />;
@@ -33,24 +48,26 @@ function DirectProduct(props: DirectProps) {
             <div className='button-card'>
                 <div className='setQuantity'>
                     <button
+                        type="button"
                         className="quantityBtn"
-                        onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+                        onClick={(e) => { e.preventDefault(); setQuantity(prev => Math.max(1, prev - 1)); }}
                         disabled={quantity <= 1}
                     > - </button>
                     <div>{quantity}</div>
                     <button
+                        type="button"
                         className='quantityBtn'
-                        onClick={() => setQuantity(prev => Math.min((props.productStock ?? Infinity), prev + 1))}
+                        onClick={(e) => { e.preventDefault(); setQuantity(prev => Math.min((props.productStock ?? Infinity), prev + 1)); }}
                         disabled={typeof props.productStock === 'number' ? quantity >= props.productStock : false}
                     > + </button>
                 </div>
                 <div className='actionButtons'>
-                    <button className="cart-button">加入購物車</button>
+                    <button type="button" className="cart-button" disabled={quantity <= 0}>加入購物車</button>
                     <button
+                        type="button"
                         className="buy-button"
-                        onClick={() => {
-                            setShowCart(true);
-                        }}
+                        onClick={() => navigate('/cart')}
+                        disabled={quantity <= 0}
                     >
                         立即購買
                     </button>

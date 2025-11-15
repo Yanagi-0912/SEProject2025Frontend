@@ -32,32 +32,33 @@ interface ProductProps {
 
 type ProductStatuses = 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'BANNED';
 
-const ProductPage: React.FC<{ productID?: string; onBack?: () => void }> = ({ productID, onBack }) => {
-    const params = useParams<{ id: string }>();
-    const sampleProduct: ProductProps = {
-		productID: '12345',
-		sellerID: '67890',
-		productName: '商品名稱',
-		productDescription: '商品描述',
-		productPrice: 100,
-		productImage: '商品圖片URL',
-		productType: 'DIRECT',
-		productStock: 1,
-		productCategory: '商品類別',
-		productStatus: 'ACTIVE',
-		createdTime: '2023-01-01',
-		updatedTime: '2023-01-02',
-		auctionEndTime: '2023-12-31',
-		nowHighestBid: 150,
-		highestBidderID: '54321',
-		viewCount: 1000,
-		averageRating: 4.5,
-		reviewCount: 100,
-		totalSales: 100,
-		onBack: () => { console.log('返回主頁'); }
-	};
+const SAMPLE_PRODUCT: ProductProps = {
+	productID: '12345',
+	sellerID: '67890',
+	productName: '商品名稱',
+	productDescription: '商品描述',
+	productPrice: 100,
+	productImage: '商品圖片URL',
+	productType: 'DIRECT',
+	productStock: 1,
+	productCategory: '商品類別',
+	productStatus: 'ACTIVE',
+	createdTime: '2023-01-01',
+	updatedTime: '2023-01-02',
+	auctionEndTime: '2023-12-31',
+	nowHighestBid: 150,
+	highestBidderID: '54321',
+	viewCount: 1000,
+	averageRating: 4.5,
+	reviewCount: 100,
+	totalSales: 100,
+	onBack: () => { console.log('返回主頁'); }
+};
 
-	const [product, setProduct] = useState<ProductProps>(sampleProduct);
+const ProductPage: React.FC<{ productID?: string; onBack?: () => void }> = ({ productID, onBack }) => {
+	const params = useParams<{ id: string }>();
+
+	const [product, setProduct] = useState<ProductProps>(SAMPLE_PRODUCT);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -126,7 +127,10 @@ const ProductPage: React.FC<{ productID?: string; onBack?: () => void }> = ({ pr
 				// 若是由於取消 (Abort) 導致的錯誤，不處理
 				if (controller.signal.aborted) return;
 				const msg = err instanceof Error ? err.message : '取得商品失敗';
+				console.error('fetch product error', err);
+				// 顯示錯誤訊息，但使用 sampleProduct 作為回退顯示
 				setError(msg);
+				setProduct(SAMPLE_PRODUCT);
 			} finally {
 				setLoading(false);
 			}
@@ -134,17 +138,20 @@ const ProductPage: React.FC<{ productID?: string; onBack?: () => void }> = ({ pr
 
 		fetchProduct();
 		return () => controller.abort();
-	}, [productID, params.id]);	if (loading) {
-		return <div>載入中...</div>;
-	}
+	}, [productID, params.id]);
 
-	if (error) {
-		return <div>錯誤：{error}</div>;
+	if (loading) {
+		return <div>載入中...</div>;
 	}
 
 	return (
 		<div>
 			<Header page={0} onBack={onBack ?? product.onBack} />
+			{error && (
+				<div style={{ color: 'orange', padding: '8px' }}>
+					錯誤：{error} — 使用範例商品顯示
+				</div>
+			)}
 			{product.productType === 'DIRECT' ? (
 
 				<DirectProduct 

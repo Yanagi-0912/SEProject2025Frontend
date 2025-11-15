@@ -16,7 +16,7 @@
     "@mui/material": "^7.3.4",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-router-dom": "^7.9.5",
+    "react-router-dom": "^7.9.6",
     "three": "^0.167.1"
   },
   "devDependencies": {
