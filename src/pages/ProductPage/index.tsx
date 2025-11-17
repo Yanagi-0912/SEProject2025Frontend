@@ -39,7 +39,7 @@ const SAMPLE_PRODUCT: ProductProps = {
 	productDescription: '商品描述',
 	productPrice: 100,
 	productImage: '商品圖片URL',
-	productType: 'DIRECT',
+	productType: 'AUCTION',
 	productStock: 1,
 	productCategory: '商品類別',
 	productStatus: 'ACTIVE',
