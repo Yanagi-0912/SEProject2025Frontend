@@ -36,7 +36,7 @@ function Register({ onBackToLogin, registerSuccess }: RegisterProps) {
 
     try {
       // 呼叫 API 註冊
-      const response = await fetch('http://localhost:8080/api/auth/register', {
+      const response = await fetch('https://seproject2025backend-production.up.railway.app/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -45,14 +45,16 @@ function Register({ onBackToLogin, registerSuccess }: RegisterProps) {
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || '註冊失敗')
+        // 🔧 修正：使用 text() 而不是 json()
+        const errorMessage = await response.text()
+        throw new Error(errorMessage || '註冊失敗')
       }
 
       // 註冊成功
       alert('註冊成功！請使用您的帳號密碼登入')
       registerSuccess?.()
       onBackToLogin?.()
+      
     } catch (err) {
       console.error('註冊錯誤:', err)
       const errorMessage = err instanceof Error ? err.message : '註冊失敗，請稍後再試'
@@ -82,6 +84,7 @@ function Register({ onBackToLogin, registerSuccess }: RegisterProps) {
             placeholder="至少 3 個字元"
           />
         </div>
+
         <div>
           <label htmlFor="email">電子郵件<br /></label>
           <input
@@ -94,6 +97,7 @@ function Register({ onBackToLogin, registerSuccess }: RegisterProps) {
             placeholder="example@email.com"
           />
         </div>
+
         <div>
           <label htmlFor="password">密碼<br /></label>
           <input
@@ -107,6 +111,7 @@ function Register({ onBackToLogin, registerSuccess }: RegisterProps) {
             placeholder="至少 6 個字元"
           />
         </div>
+
         <div>
           <label htmlFor="confirmPassword">確認密碼<br /></label>
           <input
@@ -119,11 +124,14 @@ function Register({ onBackToLogin, registerSuccess }: RegisterProps) {
             placeholder="再次輸入密碼"
           />
         </div>
+
         {error && <div className="register-error">{error}</div>}
+
         <button type="submit" disabled={loading}>
-          
+          {loading ? '註冊中...' : '註冊'}
         </button>
       </form>
+
       <button onClick={onBackToLogin} className="register-back-button" disabled={loading}>
         返回登入
       </button>
@@ -132,4 +140,3 @@ function Register({ onBackToLogin, registerSuccess }: RegisterProps) {
 }
 
 export default Register
-
