@@ -1,27 +1,21 @@
 import { useState } from 'react'
+import './Terms.css'
 
 function Terms() {
   const [showTerms, setShowTerms] = useState(false)
 
   return (
-    <div>
+    <div className="terms-container">
       <button 
         onClick={() => setShowTerms(!showTerms)}
-        style={{ 
-          backgroundColor: 'none',
-          border: 'none',
-          padding: '10px 20px', 
-          fontSize: '1rem',
-          marginBottom: '10px',
-          cursor: 'pointer'
-        }}
+        className="terms-toggle-button"
       >
-        {showTerms ? '收起優惠條款' : '優惠條款'}
+        {showTerms ? '收起使用條款' : '使用條款'}
       </button>
 
       {showTerms && (
-        <div style={{ padding: '10px', marginTop: '10px' }}>
-          <h3>條款</h3>
+        <div className="terms-content">
+          <h3>使用條款</h3>
           <ul>
             <li>元旦、情人節、國慶、聖誕節等重大節日自動發放優惠券</li>
             <li>消費達 $1,000 自動獲得滿千折百優惠券</li>
