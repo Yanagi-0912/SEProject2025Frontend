@@ -154,10 +154,14 @@ function MyAccount() {
   }
 
   return (
-    <div style={{ border: '1px solid red', height: '100vh', padding: '20px', overflowY: 'auto' }}>
-      <button onClick={() => navigate('/main')}>
-        <img src="/home-icon.png" alt="回首頁" className="home-icon-img" />
-      </button>
+    <div style={{ border: '1px solid red', minHeight: '100vh', padding: '20px', overflowY: 'auto', paddingBottom: '60px' }}>
+      {/* 頂部導航區 */}
+      <div style={{ marginBottom: '20px' }}>
+        <button onClick={() => navigate('/main')}>
+          <img src="/home-icon.png" alt="回首頁" className="home-icon-img" />
+        </button>
+      </div>
+
       <h1>{username} - 消費：${totalSpent.toLocaleString()}</h1>
      
       {/* 買家基本資訊 */}
@@ -171,12 +175,12 @@ function MyAccount() {
       </div>
 
       {/* 拉霸機 */}
-      <div style={{ marginTop: '20px', marginBottom: '80px', border: '1px solid orange' }}>
+      <div style={{ marginTop: '20px', marginBottom: '40px', border: '1px solid orange' }}>
         <SpinWheel onWin={handleWin} />
       </div>
 
-      {/* 優惠條款 - 固定在底部 */}
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'center', position: 'fixed', left: 0, bottom: 0, zIndex: 10 }}>
+      {/* 使用條款 - 頁面底部 */}
+      <div style={{ textAlign: 'center', marginTop: '40px', paddingTop: '20px', borderTop: '1px solid #e0e0e0' }}>
         <Terms />
       </div>
     </div>
