@@ -3,14 +3,22 @@ interface HeaderProps {
   page: number;
   onBack?: () => void;
   onCartClick?: () => void;
+  onAccountClick?: () => void;
 }
 
-function Header({ page, onBack, onCartClick}: HeaderProps) {
+function Header({ page, onBack, onCartClick, onAccountClick}: HeaderProps) {
     const handleCart = () => {
         if (onCartClick) {
             onCartClick();
         }
     };
+    
+    const handleAccount = () => {
+        if (onAccountClick) {
+            onAccountClick();
+        }
+    };
+    
   return (
     <div className="header-container">
       <button onClick={onBack} className="back-button">
@@ -23,7 +31,7 @@ function Header({ page, onBack, onCartClick}: HeaderProps) {
         <input  type="text" placeholder="搜尋" className="search-input" />
       </div>
       <div className="actions-section">
-        <button className="action-button">我的帳號</button>
+        <button type="button" onClick={handleAccount} className="action-button">我的帳號</button>
         <button type="button" onClick={handleCart} className="action-button">購物車</button>
         <button className="action-button">訊息</button>
       </div>

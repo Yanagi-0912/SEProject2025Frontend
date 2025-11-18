@@ -8,6 +8,7 @@ import Register from './pages/Auth/Register'
 import Main from './pages/Main'
 import CartPage from './pages/CartPage'
 import ProductPage from './pages/ProductPage'
+import MyAccount from './pages/MyAccount'
 
 function App() {
   const navigate = useNavigate()
@@ -15,13 +16,16 @@ function App() {
   return (
         <Routes>
           {/* 主頁 */}
-          <Route path="/main" element={<Main />} />
+          <Route path="/main" element={<Main onBack={() => navigate('/')} />} />
           
           {/* 購物車 */}
           <Route path="/cart" element={<CartPage onBack={() => navigate('/main')} />} />
           
           {/* 商品詳情 */}
           <Route path="/product/:id" element={<ProductPage onBack={() => navigate('/main')} />} />
+          
+          {/* 我的帳號 */}
+          <Route path="/myaccount" element={<MyAccount />} />
           
           {/* 登入 */}
           <Route path="/" element={

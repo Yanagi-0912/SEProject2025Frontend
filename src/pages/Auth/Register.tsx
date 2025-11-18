@@ -50,7 +50,8 @@ function Register({ onBackToLogin, registerSuccess }: RegisterProps) {
         throw new Error(errorMessage || '註冊失敗')
       }
 
-      // 註冊成功
+      // 註冊成功，儲存 email 到 localStorage（供買家資訊使用）
+      localStorage.setItem('email', email)
       alert('註冊成功！請使用您的帳號密碼登入')
       registerSuccess?.()
       onBackToLogin?.()

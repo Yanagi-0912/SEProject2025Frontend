@@ -16,7 +16,12 @@ function Main({ onBack }: MainProps) {
 
   return (
     <div style={{ border: '2px solid yellowgreen', backgroundColor: 'rgb(62, 64, 68)', color: 'white'}}>
-      <Header page={page} onBack={onBack} onCartClick={() => navigate('/cart')} />
+      <Header 
+        page={page} 
+        onBack={onBack} 
+        onCartClick={() => navigate('/cart')}
+        onAccountClick={() => navigate('/myaccount')}
+      />
 
       <div style={{ display: 'flex', alignItems: 'stretch' }}>
         <div style={{ flex: 1, backgroundColor: 'white'}}>

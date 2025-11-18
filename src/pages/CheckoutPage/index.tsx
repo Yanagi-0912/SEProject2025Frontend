@@ -6,8 +6,21 @@ import OrderSummary from "./OrderSummary";
 import ShippingForm from "./ShippingForm";
 import PaymentForm from "./PaymentForm";
 
+interface CartItem {
+  id: string;
+  name?: string;
+  price: number;
+  quantity: number;
+}
+
+interface SellerGroup {
+  sellerId: string;
+  sellerName?: string;
+  items: CartItem[];
+}
+
 interface CheckoutPageProps {
-  orderItems?: any[];  // 從購物車傳來的選中商品
+  orderItems?: SellerGroup[];  // 從購物車傳來的選中商品
   onBack?: () => void;
   onSuccess?: (orderId: string) => void;
 }
@@ -31,7 +44,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
   // ========== 前端計算 - 總金額 ==========
   const totalAmount = orderItems.reduce((total, seller) => {
-    return total + seller.items.reduce((sum: number, item: any) =>
+    return total + seller.items.reduce((sum: number, item: CartItem) =>
       sum + item.price * item.quantity, 0
     );
   }, 0);
@@ -70,7 +83,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
       // 2. 整理要送給後端的資料
       const orderPayload = {
         items: orderItems.flatMap(seller =>
-          seller.items.map(item => ({
+          seller.items.map((item: CartItem) => ({
             productId: item.id,
             quantity: item.quantity,
             price: item.price
