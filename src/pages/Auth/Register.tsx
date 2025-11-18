@@ -36,7 +36,7 @@ function Register({ onBackToLogin, registerSuccess }: RegisterProps) {
 
     try {
       // 呼叫 API 註冊
-      const response = await fetch('https://seproject2025backend-production.up.railway.app/api/auth/register', {
+      const response = await fetch('http://localhost:8080/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
