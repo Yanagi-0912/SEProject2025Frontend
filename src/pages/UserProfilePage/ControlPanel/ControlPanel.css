@@ -1,0 +1,157 @@
+/* 控制面板容器 */
+.control-panel {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-top: 20px;
+}
+
+.control-panel-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 25px 0;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #667eea;
+}
+
+/* 按鈕網格佈局 */
+.control-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* 控制面板按鈕 */
+.control-panel-button {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  font-family: inherit;
+}
+
+.control-panel-button:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-color: transparent;
+}
+
+/* 優惠券按鈕 */
+.control-panel-button.coupons:hover {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+}
+
+/* 修改密碼按鈕 */
+.control-panel-button.password:hover {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+}
+
+/* 賣家後台按鈕 */
+.control-panel-button.seller:hover {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  color: white;
+}
+
+/* 歷史紀錄按鈕 */
+.control-panel-button.history:hover {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  color: white;
+}
+
+/* 按鈕圖示 */
+.button-icon {
+  font-size: 36px;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.control-panel-button:hover .button-icon {
+  transform: scale(1.2) rotate(5deg);
+}
+
+/* 按鈕文字 */
+.button-text {
+  flex: 1;
+}
+
+.button-text h3 {
+  margin: 0 0 5px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: inherit;
+}
+
+.button-text p {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+  transition: color 0.3s ease;
+}
+
+.control-panel-button:hover .button-text p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .control-panel {
+    padding: 20px;
+    margin-top: 15px;
+  }
+
+  .control-panel-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .control-panel-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .control-panel-button {
+    padding: 18px;
+  }
+
+  .button-icon {
+    font-size: 32px;
+  }
+
+  .button-text h3 {
+    font-size: 16px;
+  }
+
+  .button-text p {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .control-panel {
+    padding: 15px;
+    border-radius: 12px;
+  }
+
+  .control-panel-button {
+    padding: 15px;
+    gap: 12px;
+  }
+
+  .button-icon {
+    font-size: 28px;
+  }
+
+  .button-text h3 {
+    font-size: 15px;
+  }
+}

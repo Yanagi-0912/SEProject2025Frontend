@@ -8,7 +8,8 @@ import Register from './pages/Auth/Register'
 import Main from './pages/Main'
 import CartPage from './pages/CartPage'
 import ProductPage from './pages/ProductPage'
-import MyAccount from './pages/MyAccount'
+import UserProfilePage from './pages/UserProfilePage'
+import Coupons from './pages/UserProfilePage/Coupons'
 
 function App() {
   const navigate = useNavigate()
@@ -16,25 +17,28 @@ function App() {
   return (
         <Routes>
           {/* 主頁 */}
-          <Route path="/main" element={<Main onBack={() => navigate('/')} />} />
+          <Route path="/" element={<Main onBack={() => navigate('/')} />} />
           
           {/* 購物車 */}
-          <Route path="/cart" element={<CartPage onBack={() => navigate('/main')} />} />
+          <Route path="/cart" element={<CartPage onBack={() => navigate('/')} />} />
           
           {/* 商品詳情 */}
-          <Route path="/product/:id" element={<ProductPage onBack={() => navigate('/main')} />} />
+          <Route path="/product/:id" element={<ProductPage onBack={() => navigate('/')} />} />
+
+          {/* 使用者頁 */}
+          <Route path="/user/me" element={<UserProfilePage onBack={() => navigate('/')} />} />
           
-          {/* 我的帳號 */}
-          <Route path="/myaccount" element={<MyAccount />} />
+          {/* 優惠券 */}
+          <Route path="/profile/coupons" element={<Coupons />} />
           
           {/* 登入 */}
-          <Route path="/" element={
+          <Route path="/login" element={
             <div className="app-container">
               <LiquidEther {...liquidEtherConfig} />
               <div className="login-container">
                 <Login
-                  onGuestLogin={() => navigate('/main')}
-                  loginSuccess={() => navigate('/main')}
+                  onGuestLogin={() => navigate('/')}
+                  loginSuccess={() => navigate('/')}
                   onGoToRegister={() => navigate('/register')}
                 />
               </div>
@@ -47,8 +51,8 @@ function App() {
               <LiquidEther {...liquidEtherConfig} />
               <div className="login-container">
                 <Register
-                  onBackToLogin={() => navigate('/')}
-                  registerSuccess={() => navigate('/')}
+                  onBackToLogin={() => navigate('/login')}
+                  registerSuccess={() => navigate('/login')}
                 />
               </div>
             </div>
