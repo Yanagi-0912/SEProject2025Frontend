@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import './DireectProduct.css';
 import { useState, useEffect } from 'react';
-import CartPage from '../../CartPage';
 
 interface DirectProps {
     productName?: string;
@@ -32,10 +31,6 @@ function DirectProduct(props: DirectProps) {
             });
         }
     }, [props.productStock]);
-    const [showCart, setShowCart] = useState(false);
-    if (showCart) {
-        return <CartPage onBack={() => setShowCart(false)} />;
-    }
     return (
         <div className="product-card">
         <div><img src={props.productImage} alt={props.productName} /></div>
