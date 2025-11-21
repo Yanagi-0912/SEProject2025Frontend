@@ -1,4 +1,5 @@
 import React from "react";
+import "./index.css";
 
 interface CartHeaderProps {
   onBack?: () => void;
@@ -6,30 +7,12 @@ interface CartHeaderProps {
 
 const CartHeader: React.FC<CartHeaderProps> = ({ onBack }) => {
   return (
-    <div style={{
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginBottom: "20px",
-      padding: "10px",
-      backgroundColor: "#2a2a2a",
-      borderRadius: "8px"
-    }}>
-      <button
-        onClick={onBack}
-        style={{
-          padding: "8px 16px",
-          backgroundColor: "#444",
-          color: "white",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer"
-        }}
-      >
+    <div className="cart-header">
+      <button onClick={onBack} className="cart-header-back-btn">
         ← 返回主頁
       </button>
-      <h2 style={{ color: "white", margin: 0 }}>購物車</h2>
-      <div style={{ width: "100px" }}></div>
+      <h2 className="cart-header-title">購物車</h2>
+      <div className="cart-header-spacer"></div>
     </div>
   );
 };

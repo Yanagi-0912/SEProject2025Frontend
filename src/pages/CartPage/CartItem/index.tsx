@@ -1,102 +1,88 @@
 import React from "react";
+import "./index.css";
+
+interface Product {
+  productID: string;
+  productName: string;
+  ProductPrice: number;
+  ProductImage: string;
+  ProductStock: number;
+}
+
+interface CartItem {
+  id: string;
+  product: Product;
+  quantity: number;
+  selected: boolean;
+}
 
 interface CartItemProps {
-  item: any;
+  item: CartItem;
   onToggleSelect: () => void;
   onUpdateQuantity: (delta: number) => void;
   onDelete: () => void;
 }
 
-const CartItem: React.FC<CartItemProps> = ({ 
-  item, 
-  onToggleSelect, 
+const CartItemComponent: React.FC<CartItemProps> = ({
+  item,
+  onToggleSelect,
   onUpdateQuantity,
-  onDelete 
+  onDelete
 }) => {
   return (
-    <tr style={{ borderBottom: "1px solid #444" }}>
-      <td style={{ textAlign: "center", padding: "15px" }}>
+    <tr className="cart-item-row">
+      <td className="cart-item-checkbox-cell">
         <input
           type="checkbox"
           checked={item.selected}
           onChange={onToggleSelect}
-          style={{ width: "18px", height: "18px" }}
+          className="cart-item-checkbox"
         />
       </td>
-      <td style={{ padding: "15px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-          <img 
-            src={item.image || "https://via.placeholder.com/60"} 
-            alt={item.name}
-            style={{ 
-              width: "60px", 
-              height: "60px", 
-              objectFit: "cover",
-              borderRadius: "5px",
-              backgroundColor: "#555"
-            }}
+      <td className="cart-item-product-cell">
+        <div className="cart-item-product-info">
+          <img
+            src={item.product.ProductImage || "https://via.placeholder.com/60"}
+            alt={item.product.productName}
+            className="cart-item-image"
           />
-          <div>
-            <div style={{ color: "white", fontSize: "16px", marginBottom: "5px" }}>
-              {item.name}
+          <div className="cart-item-details">
+            <div className="cart-item-name">
+              {item.product.productName}
             </div>
-            <div style={{ color: "#aaa", fontSize: "12px" }}>
-              庫存: {item.stock}
+            <div className="cart-item-stock">
+              庫存: {item.product.ProductStock}
             </div>
           </div>
         </div>
       </td>
-      <td style={{ padding: "15px", textAlign: "center", color: "white" }}>
-        ${item.price}
+      <td className="cart-item-price-cell">
+        ${item.product.ProductPrice}
       </td>
-      <td style={{ padding: "15px", textAlign: "center", color: "white" }}>
+      <td className="cart-item-quantity-cell">
         <button
           onClick={() => onUpdateQuantity(-1)}
           disabled={item.quantity <= 1}
-          style={{
-            padding: "5px 12px",
-            backgroundColor: "#555",
-            color: "white",
-            border: "none",
-            borderRadius: "3px",
-            cursor: "pointer",
-            opacity: item.quantity <= 1 ? 0.5 : 1
-          }}
+          className="cart-item-quantity-btn"
         >
           -
         </button>
-        <span style={{ padding: "0 15px", fontSize: "16px" }}>{item.quantity}</span>
+        <span className="cart-item-quantity-value">{item.quantity}</span>
         <button
           onClick={() => onUpdateQuantity(1)}
-          disabled={item.quantity >= item.stock}
-          style={{
-            padding: "5px 12px",
-            backgroundColor: "#555",
-            color: "white",
-            border: "none",
-            borderRadius: "3px",
-            cursor: "pointer",
-            opacity: item.quantity >= item.stock ? 0.5 : 1
-          }}
+          disabled={item.quantity >= item.product.ProductStock}
+          className="cart-item-quantity-btn"
         >
           +
         </button>
       </td>
-      <td style={{ padding: "15px", textAlign: "center", color: "#5227FF", fontWeight: "bold" }}>
-        ${item.price * item.quantity}
+      <td className="cart-item-subtotal-cell">
+        ${item.product.ProductPrice * item.quantity}
       </td>
-      <td style={{ padding: "15px", textAlign: "center" }}>
+      <td className="cart-item-action-cell">
         <button
           onClick={onDelete}
-          style={{
-            padding: "5px 10px",
-            backgroundColor: "#d32f2f",
-            color: "white",
-            border: "none",
-            borderRadius: "3px",
-            cursor: "pointer",
-            fontSize: "12px"
-          }}
+          className="cart-item-delete-btn"
         >
           刪除
         </button>
@@ -105,4 +91,4 @@ const CartItem: React.FC<CartItemProps> = ({
   );
 };
 
-export default CartItem;
+export default CartItemComponent;
