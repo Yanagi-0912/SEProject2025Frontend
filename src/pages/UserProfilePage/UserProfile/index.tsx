@@ -71,7 +71,7 @@ function UserProfile(profile: UserProps) {
           <div className="profile-avatar-section">
             <div className="profile-avatar">
               <div className="avatar-placeholder">
-                {profile.username.charAt(0).toUpperCase()}
+                {profile?.username?.charAt?.(0)?.toUpperCase() ?? '?'}
               </div>
             </div>
             <div className="profile-basic-info">
