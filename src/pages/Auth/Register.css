@@ -1,21 +1,115 @@
-.register-container {
-  color: white;
-  font-size: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.register-page-container {
+  border-radius: 12px;
+  padding: 50px 60px;
+  min-width: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-.register-title {
+.register-main-title {
+  color: #c9d8ef;
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
   margin-bottom: 20px;
+}
+
+.register-form-wrapper {
+  width: 100%;
+}
+
+.register-input-group {
+  margin-bottom: 24px;
+}
+
+.register-input-label {
+  color: #999;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.register-input-field {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+  color: #333;
+  transition: all 0.3s ease;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.register-input-field:focus {
+  border-color: #5b7fd6;
+  box-shadow: 0 0 0 2px rgba(91, 127, 214, 0.1);
+}
+
+.register-input-field::placeholder {
+  color: #ccc;
+}
+
+.register-main-button {
+  width: 100%;
+  padding: 14px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  background: #5b7fd6;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.register-main-button:hover:not(:disabled) {
+  background: #4a6ec5;
+  box-shadow: 0 4px 12px rgba(91, 127, 214, 0.3);
+}
+
+.register-main-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.register-links-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+  font-size: 0.9rem;
+}
+
+.register-small-link {
+  color: #5b7fd6;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-size: 0.9rem;
+  padding: 0;
+}
+
+.register-small-link:hover:not(:disabled) {
+  color: #4a6ec5;
+  text-decoration: underline;
+}
+
+.register-small-link:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .register-error {
   color: red;
-  margin-top: 10px;
+  margin-bottom: 16px;
+  text-align: center;
 }
 
-.register-back-button {
-  margin-top: 12px;
+.register-center-link {
+  width: 100%;
+  text-align: center;
 }
-

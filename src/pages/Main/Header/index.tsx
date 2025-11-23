@@ -7,7 +7,7 @@ interface HeaderProps {
   onLoginClick?: () => void;
 }
 
-function Header({ page, onBack, onCartClick, onAccountClick, onLoginClick }: HeaderProps) {
+function Header({ page, onCartClick, onAccountClick, onLoginClick }: HeaderProps) {
     const handleCart = () => {
         if (onCartClick) {
             onCartClick();
@@ -27,8 +27,8 @@ function Header({ page, onBack, onCartClick, onAccountClick, onLoginClick }: Hea
     
   return (
     <div className="header-container">
-      <button onClick={onBack} className="back-button">
-        <img src="/home-icon.png" alt="回首頁" className="home-icon-img" />
+      <button onClick={() => window.location.reload()} className="back-button">
+        <img src="/home-icon.png" alt="重新載入" className="home-icon-img" />
       </button>
       <div className="page-title-section">
         <h1>第 {page} 頁</h1>
