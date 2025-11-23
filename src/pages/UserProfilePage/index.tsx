@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Header from '../Main/Header';
 import UserProfile from './UserProfile';
 import ControlPanel from './ControlPanel';
 import './UserProfilePage.css';
+import { useGetCurrentUser } from '../../api/generated';
 
 interface UserProps {
   id: string;               // 使用者ID
@@ -29,68 +30,44 @@ const SAMPLE_USER: UserProps = {
 	onBack: () => { console.log('返回主頁'); }
 };
 
-const UserProfilePage: React.FC<{ userID?: string; onBack?: () => void }> = ({ userID, onBack }) => {
-	const params = useParams<{ id: string }>();
+const UserProfilePage: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
 	const navigate = useNavigate();
 
 	const [user, setUser] = useState<UserProps>(SAMPLE_USER);
-	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
+	const userQuery = useGetCurrentUser();
+
 	useEffect(() => {
-		const controller = new AbortController();
-		const fetchUser = async () => {
-			setLoading(true);
-			setError(null);
-			try {
-				const resp = await fetch(`http://localhost:8080/api/user/me}`, {
-					method: 'GET',
-					signal: controller.signal,
-					headers: {
-						'Accept': 'application/json'
-					}
-				});
-				if (!resp.ok) {
-					throw new Error(`API returned ${resp.status}`);
-				}
-				const data = await resp.json();
-				const fetched = Array.isArray(data) ? data[0] : data;
-				if (fetched) {
-					const normalize = (src: unknown): Partial<UserProps> => {
-						const s = src as Record<string, unknown>;
-						const asString = (v: unknown) => (typeof v === 'string' ? v : v == null ? undefined : String(v));
-						const asNumber = (v: unknown) => (typeof v === 'number' ? v : typeof v === 'string' && v.trim() !== '' ? Number(v) : undefined);
-						return {
-							id: asString(s['id']),
-                            username: asString(s['username']),
-                            email: asString(s['email']),
-                            nickname: asString(s['nickname']),
-                            phoneNumber: asString(s['phoneNumber']),
-                            address: asString(s['address']),
-                            averageRating: asNumber(s['averageRating']),
-                            ratingCount: asNumber(s['ratingCount']),
-						};
-					};
-					setUser(prev => ({ ...prev, ...normalize(fetched) } as UserProps));
-				} else {
-					setError('使用者未登入');
-				}
-			} catch (err: unknown) {
-				// 若是由於取消 (Abort) 導致的錯誤，不處理
-				if (controller.signal.aborted) return;
-				const msg = err instanceof Error ? err.message : '取得使用者失敗';
-				console.error('fetch user error', err);
-				// 顯示錯誤訊息，但使用 sampleUser 作為回退顯示
-				setError(msg);
-				setUser(SAMPLE_USER);
-			} finally {
-				setLoading(false);
-			}
+		if (userQuery.isLoading) return;
+
+		if (userQuery.data && userQuery.data.data) {
+			const fetched = userQuery.data.data;
+			const normalize = (src: unknown): Partial<UserProps> => {
+				const s = src as Record<string, unknown>;
+				const asString = (v: unknown) => (typeof v === 'string' ? v : v == null ? undefined : String(v));
+				const asNumber = (v: unknown) => (typeof v === 'number' ? v : typeof v === 'string' && v.trim() !== '' ? Number(v) : undefined);
+				return {
+					id: asString(s['id']),
+					username: asString(s['username']),
+					email: asString(s['email']),
+					nickname: asString(s['nickname']),
+					phoneNumber: asString(s['phoneNumber']),
+					address: asString(s['address']),
+					averageRating: asNumber(s['averageRating']),
+					ratingCount: asNumber(s['ratingCount']),
+				};
 			};
 
-		fetchUser();
-		return () => controller.abort();
-	}, [userID, params.id]);
+			setUser(prev => ({ ...prev, ...normalize(fetched) } as UserProps));
+			setError(null);
+		} else if (userQuery.isError) {
+			const msg = userQuery.error ? String((userQuery.error as Error).message) : '取得使用者失敗';
+			console.error('fetch user error', userQuery.error);
+			setError(msg);
+			setUser(SAMPLE_USER);
+		}
+	}, [userQuery.data, userQuery.isError, userQuery.error, userQuery.isLoading]);
 
 	const handleCouponsClick = () => {
 		navigate('/profile/coupons');
@@ -114,7 +91,7 @@ const UserProfilePage: React.FC<{ userID?: string; onBack?: () => void }> = ({ u
 		alert('歷史紀錄功能開發中...');
 	};
 
-	if (loading) {
+	if (userQuery.isLoading) {
 		return (
 			<div className="user-profile-loading">
 				<div className="loading-spinner"></div>
