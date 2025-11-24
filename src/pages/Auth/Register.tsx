@@ -70,72 +70,85 @@ function Register({ onBackToLogin, registerSuccess }: RegisterProps) {
   }
 
   return (
-    <div className="register-container">
-      <h2 className="register-title">註冊新帳號</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="username">帳號<br /></label>
+    <div className="register-page-container">
+      <h1 className="register-main-title">註冊新帳號</h1>
+      <form onSubmit={handleSubmit} className="register-form-wrapper">
+        <div className="register-input-group">
+          <label htmlFor="username" className="register-input-label">帳號/Account</label>
           <input
             id="username"
+            className="register-input-field"
             value={username}
             onChange={e => setUsername(e.target.value)}
             disabled={loading}
             required
             minLength={3}
-            placeholder="至少 3 個字元"
+            placeholder="請輸入帳號 (至少 3 個字元)"
           />
         </div>
 
-        <div>
-          <label htmlFor="email">電子郵件<br /></label>
+        <div className="register-input-group">
+          <label htmlFor="email" className="register-input-label">電子郵件/Email</label>
           <input
             id="email"
             type="email"
+            className="register-input-field"
             value={email}
             onChange={e => setEmail(e.target.value)}
             disabled={loading}
             required
-            placeholder="example@email.com"
+            placeholder="請輸入電子郵件"
           />
         </div>
 
-        <div>
-          <label htmlFor="password">密碼<br /></label>
+        <div className="register-input-group">
+          <label htmlFor="password" className="register-input-label">密碼/Password</label>
           <input
             id="password"
             type="password"
+            className="register-input-field"
             value={password}
             onChange={e => setPassword(e.target.value)}
             disabled={loading}
             required
             minLength={6}
-            placeholder="至少 6 個字元"
+            placeholder="請輸入密碼 (至少 6 個字元)"
           />
         </div>
 
-        <div>
-          <label htmlFor="confirmPassword">確認密碼<br /></label>
+        <div className="register-input-group">
+          <label htmlFor="confirmPassword" className="register-input-label">確認密碼/Confirm Password</label>
           <input
             id="confirmPassword"
             type="password"
+            className="register-input-field"
             value={confirmPassword}
             onChange={e => setConfirmPassword(e.target.value)}
             disabled={loading}
             required
-            placeholder="再次輸入密碼"
+            placeholder="請再次輸入密碼"
           />
         </div>
 
         {error && <div className="register-error">{error}</div>}
 
-        <button type="submit" disabled={loading}>
-          {loading ? '註冊中...' : '註冊'}
+        <button type="submit" className="register-main-button" disabled={loading}>
+          {loading ? '註冊中...' : '註冊/Register'}
         </button>
+        
+        <div className="register-links-container">
+          <div className="register-center-link">
+            <button 
+              type="button"
+              onClick={onBackToLogin} 
+              className="register-small-link" 
+              disabled={loading}
+            >
+              返回登入
+            </button>
+          </div>
+        </div>
       </form>
-
-      <button onClick={onBackToLogin} className="register-back-button" disabled={loading}>
-        返回登入
-      </button>
     </div>
   )
 }

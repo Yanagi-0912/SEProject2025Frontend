@@ -5,6 +5,7 @@ import DirectProduct from './DireectProduct';
 import AuctionProduct from './AuctionProduct';
 import Seller from './Seller';
 import Details from './Details';
+import { useGetProductById } from '../../api/generated';
 
 
 interface ProductProps {
@@ -59,88 +60,58 @@ const ProductPage: React.FC<{ productID?: string; onBack?: () => void }> = ({ pr
 	const params = useParams<{ id: string }>();
 
 	const [product, setProduct] = useState<ProductProps>(SAMPLE_PRODUCT);
-	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
+	// 取得 id（優先 props，接著路由參數，再來 query string）
+	const urlParams = new URLSearchParams(window.location.search);
+	const id = productID ?? params.id ?? urlParams.get('id') ?? '';
+
+	// useGetProductById 預設會在 id falsy 時 disabled
+	const productQuery = useGetProductById(id);
+
 	useEffect(() => {
-			// 優先使用傳入的 productID，若沒有再從路由參數或 URL query 取得
-			const urlParams = new URLSearchParams(window.location.search);
-			const id = productID ?? params.id ?? urlParams.get('id');
+		if (productQuery.isLoading) return;
 
-			if (!id) {
-				return;
-			}
-
-		const controller = new AbortController();
-		const fetchProduct = async () => {
-			setLoading(true);
-			setError(null);
-			try {
-				const resp = await fetch(`http://localhost:8080/products/?id=${encodeURIComponent(id)}`, {
-					method: 'GET',
-					signal: controller.signal,
-					headers: {
-						'Accept': 'application/json'
-					}
-				});
-				if (!resp.ok) {
-					throw new Error(`API returned ${resp.status}`);
-				}
-				const data = await resp.json();
-				// 假設 API 回傳單一 product 物件或陣列的第一個元素
-				const fetched = Array.isArray(data) ? data[0] : data;
-				if (fetched) {
-					// 將後端可能使用的 PascalCase 或其他欄位對映到元件使用的 camelCase
-					const normalize = (src: unknown): Partial<ProductProps> => {
-						const s = src as Record<string, unknown>;
-						const asString = (v: unknown) => (typeof v === 'string' ? v : v == null ? undefined : String(v));
-						const asNumber = (v: unknown) => (typeof v === 'number' ? v : typeof v === 'string' && v.trim() !== '' ? Number(v) : undefined);
-						return {
-							productID: asString(s['productID'] ?? s['ProductID'] ?? s['_id'] ?? s['id']),
-							sellerID: asString(s['sellerID'] ?? s['SellerID']),
-							productName: asString(s['productName'] ?? s['ProductName']),
-							productDescription: asString(s['productDescription'] ?? s['ProductDescription']),
-							productPrice: asNumber(s['productPrice'] ?? s['ProductPrice']),
-							productImage: asString(s['productImage'] ?? s['ProductImage']),
-							productType: asString(s['productType'] ?? s['ProductType']),
-							productStock: asNumber(s['productStock'] ?? s['ProductStock']),
-							productCategory: asString(s['productCategory'] ?? s['ProductCategory']),
-							productStatus: asString(s['productStatus'] ?? s['ProductStatus']),
-							createdTime: asString(s['createdTime'] ?? s['CreatedTime']),
-							updatedTime: asString(s['updatedTime'] ?? s['UpdatedTime']),
-							auctionEndTime: asString(s['auctionEndTime'] ?? s['AuctionEndTime']),
-							nowHighestBid: asNumber(s['nowHighestBid'] ?? s['NowHighestBid']),
-							highestBidderID: asString(s['highestBidderID'] ?? s['HighestBidderID']),
-							viewCount: asNumber(s['viewCount'] ?? s['ViewCount']),
-							averageRating: asNumber(s['averageRating'] ?? s['AverageRating']),
-							reviewCount: asNumber(s['reviewCount'] ?? s['ReviewCount']),
-							totalSales: asNumber(s['totalSales'] ?? s['TotalSales']),
-						};
-					};
-
-
-					setProduct(prev => ({ ...prev, ...normalize(fetched) } as ProductProps));
-				} else {
-					setError('未找到對應商品');
-				}
-			} catch (err: unknown) {
-				// 若是由於取消 (Abort) 導致的錯誤，不處理
-				if (controller.signal.aborted) return;
-				const msg = err instanceof Error ? err.message : '取得商品失敗';
-				console.error('fetch product error', err);
-				// 顯示錯誤訊息，但使用 sampleProduct 作為回退顯示
-				setError(msg);
-				setProduct(SAMPLE_PRODUCT);
-			} finally {
-				setLoading(false);
-			}
+		if (productQuery.data && productQuery.data.data) {
+			const fetched = productQuery.data.data;
+			const normalize = (src: unknown): Partial<ProductProps> => {
+				const s = src as Record<string, unknown>;
+				const asString = (v: unknown) => (typeof v === 'string' ? v : v == null ? undefined : String(v));
+				const asNumber = (v: unknown) => (typeof v === 'number' ? v : typeof v === 'string' && v.trim() !== '' ? Number(v) : undefined);
+				return {
+					productID: asString(s['productID'] ?? s['ProductID'] ?? s['_id'] ?? s['id']),
+					sellerID: asString(s['sellerID'] ?? s['SellerID']),
+					productName: asString(s['productName'] ?? s['ProductName']),
+					productDescription: asString(s['productDescription'] ?? s['ProductDescription']),
+					productPrice: asNumber(s['productPrice'] ?? s['ProductPrice']),
+					productImage: asString(s['productImage'] ?? s['ProductImage']),
+					productType: asString(s['productType'] ?? s['ProductType']),
+					productStock: asNumber(s['productStock'] ?? s['ProductStock']),
+					productCategory: asString(s['productCategory'] ?? s['ProductCategory']),
+					productStatus: asString(s['productStatus'] ?? s['ProductStatus']),
+					createdTime: asString(s['createdTime'] ?? s['CreatedTime']),
+					updatedTime: asString(s['updatedTime'] ?? s['UpdatedTime']),
+					auctionEndTime: asString(s['auctionEndTime'] ?? s['AuctionEndTime']),
+					nowHighestBid: asNumber(s['nowHighestBid'] ?? s['NowHighestBid']),
+					highestBidderID: asString(s['highestBidderID'] ?? s['HighestBidderID']),
+					viewCount: asNumber(s['viewCount'] ?? s['ViewCount']),
+					averageRating: asNumber(s['averageRating'] ?? s['AverageRating']),
+					reviewCount: asNumber(s['reviewCount'] ?? s['ReviewCount']),
+					totalSales: asNumber(s['totalSales'] ?? s['TotalSales']),
+				};
 			};
 
-		fetchProduct();
-		return () => controller.abort();
-	}, [productID, params.id]);
+			setProduct(prev => ({ ...prev, ...normalize(fetched) } as ProductProps));
+			setError(null);
+		} else if (productQuery.isError) {
+			const msg = productQuery.error ? String((productQuery.error as Error).message) : '取得商品失敗';
+			console.error('fetch product error', productQuery.error);
+			setError(msg);
+			setProduct(SAMPLE_PRODUCT);
+		}
+	}, [productQuery.data, productQuery.isError, productQuery.error, productQuery.isLoading]);
 
-	if (loading) {
+	if (productQuery.isLoading) {
 		return <div>載入中...</div>;
 	}
 

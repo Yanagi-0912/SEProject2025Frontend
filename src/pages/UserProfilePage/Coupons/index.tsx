@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import SpinWheel from './SpinWheel'
 import MyCoupons from './MyCoupons'
 import Terms from './Terms'
-import BuyerInfo from './BuyerInfo'
 
 interface Coupon {
   id: string
@@ -14,7 +13,7 @@ interface Coupon {
   expiryDate: string
 }
 
-function MyAccount() {
+function Coupons() {
   const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [myCoupons, setMyCoupons] = useState<Coupon[]>([])
@@ -163,11 +162,6 @@ function MyAccount() {
       </div>
 
       <h1>{username} - 消費：${totalSpent.toLocaleString()}</h1>
-     
-      {/* 買家基本資訊 */}
-      <div style={{ marginBottom: '20px' }}>
-        <BuyerInfo />
-      </div>
 
       {/* 優惠券 */}
       <div>
@@ -187,5 +181,5 @@ function MyAccount() {
   )
 }
 
-export default MyAccount
+export default Coupons
 

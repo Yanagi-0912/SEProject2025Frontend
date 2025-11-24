@@ -20,7 +20,8 @@ function Main({ onBack }: MainProps) {
         page={page} 
         onBack={onBack} 
         onCartClick={() => navigate('/cart')}
-        onAccountClick={() => navigate('/myaccount')}
+        onAccountClick={() => navigate('/user/me')}
+        onLoginClick={() => navigate('/login')}
       />
 
       <div style={{ display: 'flex', alignItems: 'stretch' }}>
