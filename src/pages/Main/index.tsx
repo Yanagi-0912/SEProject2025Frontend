@@ -20,7 +20,7 @@ function Main({ onBack }: MainProps) {
         page={page} 
         onBack={onBack} 
         onCartClick={() => navigate('/cart')}
-        onAccountClick={() => navigate('/user/me')}
+        onAccountClick={() => { navigate('/user/me'); window.location.reload(); }}
         onLoginClick={() => navigate('/login')}
       />
 
