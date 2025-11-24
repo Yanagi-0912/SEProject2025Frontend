@@ -134,15 +134,6 @@ export interface UpdateCartQuantityRequest {
   quantity?: number;
 }
 
-export interface Cart {
-  items?: CartItem[];
-}
-
-export interface CartItem {
-  productID?: string;
-  quantity?: number;
-}
-
 export type ProductProductType = typeof ProductProductType[keyof typeof ProductProductType];
 
 
@@ -169,20 +160,32 @@ export interface Product {
   productName?: string;
   productType?: ProductProductType;
   productStatus?: ProductProductStatus;
-  highestBidderID?: string;
   productDescription?: string;
-  productPrice?: number;
-  auctionEndTime?: string;
+  viewCount?: number;
+  productCategory?: string;
+  averageRating?: number;
+  reviewCount?: number;
+  updatedTime?: string;
+  totalSales?: number;
+  createdTime?: string;
   productImage?: string;
   nowHighestBid?: number;
-  createdTime?: string;
-  updatedTime?: string;
   productStock?: number;
-  productCategory?: string;
-  reviewCount?: number;
-  averageRating?: number;
-  totalSales?: number;
-  viewCount?: number;
+  highestBidderID?: string;
+  auctionEndTime?: string;
+  productPrice?: number;
+}
+
+export interface Cart {
+  id?: string;
+  userId?: string;
+  items?: CartItem[];
+}
+
+export interface CartItem {
+  itemId?: string;
+  productId?: string;
+  quantity?: number;
 }
 
 export type OrderOrderType = typeof OrderOrderType[keyof typeof OrderOrderType];
@@ -260,6 +263,44 @@ export interface LoginRequest {
   username: string;
   /** 使用者密碼 */
   password: string;
+}
+
+/**
+ * 購物車項目詳細資訊
+ */
+export interface CartItemDTO {
+  /** 購物車項目 ID */
+  itemId?: string;
+  /** 商品 ID */
+  productId?: string;
+  /** 商品名稱 */
+  productName?: string;
+  /** 商品價格 */
+  price?: number;
+  /** 商品圖片 URL */
+  imageUrl?: string;
+  /** 賣家 ID */
+  sellerId?: string;
+  /** 賣家名稱 */
+  sellerName?: string;
+  /** 數量 */
+  quantity?: number;
+  /** 小計（價格 × 數量） */
+  subtotal?: number;
+}
+
+/**
+ * 購物車完整回應
+ */
+export interface CartResponseDTO {
+  /** 使用者 ID */
+  userId?: string;
+  /** 購物車項目列表 */
+  items?: CartItemDTO[];
+  /** 總金額 */
+  totalAmount?: number;
+  /** 總項目數 */
+  totalItems?: number;
 }
 
 export type UpdatePassword401 = { [key: string]: unknown };
@@ -772,26 +813,27 @@ export const useEditProduct = <TError = AxiosError<unknown>,
     }
     
 /**
- * 更新購物車中指定商品的數量，數量為 0 時將移除該商品
+ * 更新購物車中指定項目的數量，數量為 0 時將移除該項目
  * @summary 更新購物車商品數量
  */
 export const updateQuantity = (
-    productId: string,
+    itemId: string,
     updateCartQuantityRequest: UpdateCartQuantityRequest, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<Cart>> => {
+ ): Promise<AxiosResponse<string>> => {
     
     
     return axios.default.put(
-      `/api/cart/items/${productId}`,
-      updateCartQuantityRequest,options
+      `/api/cart/items/${itemId}`,
+      updateCartQuantityRequest,{
+    ...options,}
     );
   }
 
 
 
-export const getUpdateQuantityMutationOptions = <TError = AxiosError<Cart>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateQuantity>>, TError,{productId: string;data: UpdateCartQuantityRequest}, TContext>, axios?: AxiosRequestConfig}
-): UseMutationOptions<Awaited<ReturnType<typeof updateQuantity>>, TError,{productId: string;data: UpdateCartQuantityRequest}, TContext> => {
+export const getUpdateQuantityMutationOptions = <TError = AxiosError<string>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateQuantity>>, TError,{itemId: string;data: UpdateCartQuantityRequest}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof updateQuantity>>, TError,{itemId: string;data: UpdateCartQuantityRequest}, TContext> => {
 
 const mutationKey = ['updateQuantity'];
 const {mutation: mutationOptions, axios: axiosOptions} = options ?
@@ -803,10 +845,10 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateQuantity>>, {productId: string;data: UpdateCartQuantityRequest}> = (props) => {
-          const {productId,data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateQuantity>>, {itemId: string;data: UpdateCartQuantityRequest}> = (props) => {
+          const {itemId,data} = props ?? {};
 
-          return  updateQuantity(productId,data,axiosOptions)
+          return  updateQuantity(itemId,data,axiosOptions)
         }
 
         
@@ -816,17 +858,17 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type UpdateQuantityMutationResult = NonNullable<Awaited<ReturnType<typeof updateQuantity>>>
     export type UpdateQuantityMutationBody = UpdateCartQuantityRequest
-    export type UpdateQuantityMutationError = AxiosError<Cart>
+    export type UpdateQuantityMutationError = AxiosError<string>
 
     /**
  * @summary 更新購物車商品數量
  */
-export const useUpdateQuantity = <TError = AxiosError<Cart>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateQuantity>>, TError,{productId: string;data: UpdateCartQuantityRequest}, TContext>, axios?: AxiosRequestConfig}
+export const useUpdateQuantity = <TError = AxiosError<string>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateQuantity>>, TError,{itemId: string;data: UpdateCartQuantityRequest}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateQuantity>>,
         TError,
-        {productId: string;data: UpdateCartQuantityRequest},
+        {itemId: string;data: UpdateCartQuantityRequest},
         TContext
       > => {
 
@@ -836,24 +878,25 @@ export const useUpdateQuantity = <TError = AxiosError<Cart>,
     }
     
 /**
- * 從購物車中移除指定的商品
+ * 從購物車中移除指定的項目
  * @summary 從購物車移除商品
  */
 export const removeFromCart = (
-    productId: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<Cart>> => {
+    itemId: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<string>> => {
     
     
     return axios.default.delete(
-      `/api/cart/items/${productId}`,options
+      `/api/cart/items/${itemId}`,{
+    ...options,}
     );
   }
 
 
 
-export const getRemoveFromCartMutationOptions = <TError = AxiosError<Cart>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeFromCart>>, TError,{productId: string}, TContext>, axios?: AxiosRequestConfig}
-): UseMutationOptions<Awaited<ReturnType<typeof removeFromCart>>, TError,{productId: string}, TContext> => {
+export const getRemoveFromCartMutationOptions = <TError = AxiosError<string>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeFromCart>>, TError,{itemId: string}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof removeFromCart>>, TError,{itemId: string}, TContext> => {
 
 const mutationKey = ['removeFromCart'];
 const {mutation: mutationOptions, axios: axiosOptions} = options ?
@@ -865,10 +908,10 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof removeFromCart>>, {productId: string}> = (props) => {
-          const {productId} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof removeFromCart>>, {itemId: string}> = (props) => {
+          const {itemId} = props ?? {};
 
-          return  removeFromCart(productId,axiosOptions)
+          return  removeFromCart(itemId,axiosOptions)
         }
 
         
@@ -878,17 +921,17 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type RemoveFromCartMutationResult = NonNullable<Awaited<ReturnType<typeof removeFromCart>>>
     
-    export type RemoveFromCartMutationError = AxiosError<Cart>
+    export type RemoveFromCartMutationError = AxiosError<string>
 
     /**
  * @summary 從購物車移除商品
  */
-export const useRemoveFromCart = <TError = AxiosError<Cart>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeFromCart>>, TError,{productId: string}, TContext>, axios?: AxiosRequestConfig}
+export const useRemoveFromCart = <TError = AxiosError<string>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeFromCart>>, TError,{itemId: string}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof removeFromCart>>,
         TError,
-        {productId: string},
+        {itemId: string},
         TContext
       > => {
 
@@ -1082,23 +1125,24 @@ export const useCreateAuction = <TError = AxiosError<unknown>,
     }
     
 /**
- * 將指定商品以指定數量加入到購物車中
+ * 將指定商品以指定數量加入購物車，若已存在則累加數量
  * @summary 加入商品到購物車
  */
 export const addToCart = (
     addToCartRequest: AddToCartRequest, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<Cart>> => {
+ ): Promise<AxiosResponse<string>> => {
     
     
     return axios.default.post(
       `/api/cart/items`,
-      addToCartRequest,options
+      addToCartRequest,{
+    ...options,}
     );
   }
 
 
 
-export const getAddToCartMutationOptions = <TError = AxiosError<Cart>,
+export const getAddToCartMutationOptions = <TError = AxiosError<string>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addToCart>>, TError,{data: AddToCartRequest}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof addToCart>>, TError,{data: AddToCartRequest}, TContext> => {
 
@@ -1125,12 +1169,12 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type AddToCartMutationResult = NonNullable<Awaited<ReturnType<typeof addToCart>>>
     export type AddToCartMutationBody = AddToCartRequest
-    export type AddToCartMutationError = AxiosError<Cart>
+    export type AddToCartMutationError = AxiosError<string>
 
     /**
  * @summary 加入商品到購物車
  */
-export const useAddToCart = <TError = AxiosError<Cart>,
+export const useAddToCart = <TError = AxiosError<string>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addToCart>>, TError,{data: AddToCartRequest}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof addToCart>>,
@@ -1607,12 +1651,12 @@ export function useGetOrderById<TData = Awaited<ReturnType<typeof getOrderById>>
 
 
 /**
- * 取得當前登入使用者的購物車內容，包含所有已加入的商品及數量
+ * 取得當前登入使用者的購物車，包含商品完整資訊（名稱、價格、圖片、賣家等）
  * @summary 取得購物車
  */
 export const getCart = (
      options?: AxiosRequestConfig
- ): Promise<AxiosResponse<Cart>> => {
+ ): Promise<AxiosResponse<CartResponseDTO>> => {
     
     
     return axios.default.get(
@@ -1630,7 +1674,7 @@ export const getGetCartQueryKey = () => {
     }
 
     
-export const getGetCartQueryOptions = <TData = Awaited<ReturnType<typeof getCart>>, TError = AxiosError<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCart>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getGetCartQueryOptions = <TData = Awaited<ReturnType<typeof getCart>>, TError = AxiosError<CartResponseDTO>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCart>>, TError, TData>>, axios?: AxiosRequestConfig}
 ) => {
 
 const {query: queryOptions, axios: axiosOptions} = options ?? {};
@@ -1649,10 +1693,10 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type GetCartQueryResult = NonNullable<Awaited<ReturnType<typeof getCart>>>
-export type GetCartQueryError = AxiosError<unknown>
+export type GetCartQueryError = AxiosError<CartResponseDTO>
 
 
-export function useGetCart<TData = Awaited<ReturnType<typeof getCart>>, TError = AxiosError<unknown>>(
+export function useGetCart<TData = Awaited<ReturnType<typeof getCart>>, TError = AxiosError<CartResponseDTO>>(
   options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCart>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getCart>>,
@@ -1662,7 +1706,7 @@ export function useGetCart<TData = Awaited<ReturnType<typeof getCart>>, TError =
       >, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetCart<TData = Awaited<ReturnType<typeof getCart>>, TError = AxiosError<unknown>>(
+export function useGetCart<TData = Awaited<ReturnType<typeof getCart>>, TError = AxiosError<CartResponseDTO>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCart>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getCart>>,
@@ -1672,7 +1716,7 @@ export function useGetCart<TData = Awaited<ReturnType<typeof getCart>>, TError =
       >, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetCart<TData = Awaited<ReturnType<typeof getCart>>, TError = AxiosError<unknown>>(
+export function useGetCart<TData = Awaited<ReturnType<typeof getCart>>, TError = AxiosError<CartResponseDTO>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCart>>, TError, TData>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -1680,7 +1724,7 @@ export function useGetCart<TData = Awaited<ReturnType<typeof getCart>>, TError =
  * @summary 取得購物車
  */
 
-export function useGetCart<TData = Awaited<ReturnType<typeof getCart>>, TError = AxiosError<unknown>>(
+export function useGetCart<TData = Awaited<ReturnType<typeof getCart>>, TError = AxiosError<CartResponseDTO>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCart>>, TError, TData>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
