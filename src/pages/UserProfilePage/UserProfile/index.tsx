@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useUpdateUser } from '../../../api/generated';
 import './UserProfile.css';
 
 interface UserProps {
@@ -11,11 +12,13 @@ interface UserProps {
   averageRating?: number;   // 使用者平均評分
   ratingCount?: number;     // 使用者評分數量
   onBack?: () => void;
+  onUpdateSuccess?: () => void; // 更新成功的回調
 }
 
 function UserProfile(profile: UserProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState<UserProps>(profile);
+  const updateUserMutation = useUpdateUser();
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -27,7 +30,7 @@ function UserProfile(profile: UserProps) {
     setEditedProfile({ ...profile });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // 驗證必填欄位
     if (!editedProfile.nickname.trim()) {
       alert('請填寫暱稱');
@@ -40,10 +43,24 @@ function UserProfile(profile: UserProps) {
       return;
     }
 
-    // TODO:儲存到資料庫
-    setIsEditing(false);
-    
-    alert('個人資料已更新！');
+    try {
+      await updateUserMutation.mutateAsync({
+        data: {
+          nickname: editedProfile.nickname,
+          phoneNumber: editedProfile.phoneNumber,
+          address: editedProfile.address,
+        }
+      });
+      
+      setIsEditing(false);
+      alert('個人資料已更新！');
+      
+      // 通知父組件重新獲取資料
+      profile.onUpdateSuccess?.();
+    } catch (error) {
+      console.error('更新個人資料失敗:', error);
+      alert('更新失敗，請稍後再試');
+    }
   };
 
   const handleChange = (field: keyof UserProps, value: string) => {
@@ -87,10 +104,18 @@ function UserProfile(profile: UserProps) {
               </button>
             ) : (
               <div className="edit-actions">
-                <button onClick={handleSave} className="btn btn-success">
-                  儲存
+                <button 
+                  onClick={handleSave} 
+                  className="btn btn-success"
+                  disabled={updateUserMutation.isPending}
+                >
+                  {updateUserMutation.isPending ? '儲存中...' : '儲存'}
                 </button>
-                <button onClick={handleCancel} className="btn btn-secondary">
+                <button 
+                  onClick={handleCancel} 
+                  className="btn btn-secondary"
+                  disabled={updateUserMutation.isPending}
+                >
                   取消
                 </button>
               </div>
