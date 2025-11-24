@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router-dom'
 import './DireectProduct.css';
 import { useState, useEffect } from 'react';
+import { useAddToCart } from '../../../api/generated';
 
 interface DirectProps {
+    productID?: string;
     productName?: string;
     productDescription?: string;
     productPrice?: number;
@@ -17,10 +19,13 @@ type ProductStatuses = 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'BANNED';
 
 function DirectProduct(props: DirectProps) {
     const navigate = useNavigate()
+    const addToCartMutation = useAddToCart();
+    
     const [quantity, setQuantity] = useState<number>(() => {
         const stock = props.productStock;
         return (typeof stock === 'number') ? Math.min(1, Math.max(0, stock)) : 1;
     });
+    
     // 當 props.productStock 改變時調整 quantity（不超過庫存，若庫存為 0 設為 0）
     useEffect(() => {
         const stock = props.productStock;
@@ -31,6 +36,26 @@ function DirectProduct(props: DirectProps) {
             });
         }
     }, [props.productStock]);
+
+    const handleAddToCart = async () => {
+        if (!props.productID) {
+            alert('商品ID無效');
+            return;
+        }
+        
+        try {
+            await addToCartMutation.mutateAsync({
+                data: {
+                    productId: props.productID,
+                    quantity: quantity
+                }
+            });
+            alert('成功加入購物車！');
+        } catch (error) {
+            console.error('加入購物車失敗:', error);
+            alert('加入購物車失敗，請稍後再試');
+        }
+    };
     return (
         <div className="product-card">
         <div><img src={props.productImage} alt={props.productName} /></div>
@@ -57,7 +82,14 @@ function DirectProduct(props: DirectProps) {
                     > + </button>
                 </div>
                 <div className='actionButtons'>
-                    <button type="button" className="cart-button" disabled={quantity <= 0}>加入購物車</button>
+                    <button 
+                        type="button" 
+                        className="cart-button" 
+                        onClick={handleAddToCart}
+                        disabled={quantity <= 0 || addToCartMutation.isPending}
+                    >
+                        {addToCartMutation.isPending ? '加入中...' : '加入購物車'}
+                    </button>
                     <button
                         type="button"
                         className="buy-button"
