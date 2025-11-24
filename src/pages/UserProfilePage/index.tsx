@@ -80,9 +80,7 @@ const UserProfilePage: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
 	};
 
 	const handleSellerDashboardClick = () => {
-		console.log('進入賣家後台');
-		// TODO: 導航到賣家後台
-		alert('賣家後台功能開發中...');
+		navigate('/seller/dashboard');
 	};
 
 	const handleHistoryClick = () => {
