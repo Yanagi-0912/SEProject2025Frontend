@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import './Header.css'
 interface HeaderProps {
   page: number;
@@ -8,6 +9,7 @@ interface HeaderProps {
 }
 
 function Header({ page, onCartClick, onAccountClick, onLoginClick }: HeaderProps) {
+    const navigate = useNavigate();
     const handleCart = () => {
         if (onCartClick) {
             onCartClick();
@@ -27,8 +29,8 @@ function Header({ page, onCartClick, onAccountClick, onLoginClick }: HeaderProps
     
   return (
     <div className="header-container">
-      <button onClick={() => window.location.reload()} className="back-button">
-        <img src="/home-icon.png" alt="重新載入" className="home-icon-img" />
+      <button onClick={() => { navigate('/'); window.location.reload(); }} className="back-button">
+        <img src="/home-icon.png" alt="回到首頁" className="home-icon-img" />
       </button>
       <div className="page-title-section">
         <h1>第 {page} 頁</h1>
