@@ -1,0 +1,79 @@
+/* SellerSection/index.css */
+
+.seller-section {
+  border: 2px solid #444;
+  margin-bottom: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #333;
+}
+
+.seller-section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #555;
+  padding-bottom: 10px;
+}
+
+.seller-section-checkbox {
+  margin-right: 10px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.seller-section-name {
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.seller-section-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.seller-section-table-header {
+  border-bottom: 2px solid #555;
+}
+
+.seller-table-th-checkbox {
+  width: 50px;
+  padding: 10px;
+  color: #aaa;
+}
+
+.seller-table-th-product {
+  padding: 10px;
+  text-align: left;
+  color: #aaa;
+}
+
+.seller-table-th-price {
+  width: 120px;
+  padding: 10px;
+  text-align: center;
+  color: #aaa;
+}
+
+.seller-table-th-quantity {
+  width: 150px;
+  padding: 10px;
+  text-align: center;
+  color: #aaa;
+}
+
+.seller-table-th-subtotal {
+  width: 120px;
+  padding: 10px;
+  text-align: center;
+  color: #aaa;
+}
+
+.seller-table-th-action {
+  width: 80px;
+  padding: 10px;
+  text-align: center;
+  color: #aaa;
+}

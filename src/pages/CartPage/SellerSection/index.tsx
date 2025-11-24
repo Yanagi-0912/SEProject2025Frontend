@@ -1,8 +1,30 @@
 import React from "react";
-import CartItem from "../CartItem";
+import CartItemComponent from "../CartItem";
+import "./index.css";
+
+interface Product {
+  productID: string;
+  productName: string;
+  ProductPrice: number;
+  ProductImage: string;
+  ProductStock: number;
+}
+
+interface CartItem {
+  id: string;
+  product: Product;
+  quantity: number;
+  selected: boolean;
+}
+
+interface Seller {
+  sellerId: string;
+  sellerName: string;
+  items: CartItem[];
+}
 
 interface SellerSectionProps {
-  seller: any;
+  seller: Seller;
   onToggleSellerSelect: (sellerId: string) => void;
   onToggleItemSelect: (sellerId: string, itemId: string) => void;
   onUpdateQuantity: (sellerId: string, itemId: string, delta: number) => void;
@@ -16,24 +38,12 @@ const SellerSection: React.FC<SellerSectionProps> = ({
   onUpdateQuantity,
   onDeleteItem
 }) => {
-  const allSelected = seller.items.every((item: any) => item.selected);
-  const someSelected = seller.items.some((item: any) => item.selected);
+  const allSelected = seller.items.every(item => item.selected);
+  const someSelected = seller.items.some(item => item.selected);
 
   return (
-    <div style={{
-      border: "2px solid #444",
-      marginBottom: "20px",
-      padding: "15px",
-      borderRadius: "8px",
-      backgroundColor: "#333"
-    }}>
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        marginBottom: "15px",
-        borderBottom: "1px solid #555",
-        paddingBottom: "10px"
-      }}>
+    <div className="seller-section">
+      <div className="seller-section-header">
         <input
           type="checkbox"
           checked={allSelected}
@@ -43,27 +53,27 @@ const SellerSection: React.FC<SellerSectionProps> = ({
             }
           }}
           onChange={() => onToggleSellerSelect(seller.sellerId)}
-          style={{ marginRight: "10px", width: "18px", height: "18px" }}
+          className="seller-section-checkbox"
         />
-        <span style={{ color: "white", fontSize: "18px", fontWeight: "bold" }}>
+        <span className="seller-section-name">
           {seller.sellerName}
         </span>
       </div>
 
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      <table className="seller-section-table">
         <thead>
-          <tr style={{ borderBottom: "2px solid #555" }}>
-            <th style={{ width: "50px", padding: "10px", color: "#aaa" }}></th>
-            <th style={{ padding: "10px", textAlign: "left", color: "#aaa" }}>商品</th>
-            <th style={{ width: "120px", padding: "10px", textAlign: "center", color: "#aaa" }}>單價</th>
-            <th style={{ width: "150px", padding: "10px", textAlign: "center", color: "#aaa" }}>數量</th>
-            <th style={{ width: "120px", padding: "10px", textAlign: "center", color: "#aaa" }}>小計</th>
-            <th style={{ width: "80px", padding: "10px", textAlign: "center", color: "#aaa" }}>操作</th>
+          <tr className="seller-section-table-header">
+            <th className="seller-table-th-checkbox"></th>
+            <th className="seller-table-th-product">商品</th>
+            <th className="seller-table-th-price">單價</th>
+            <th className="seller-table-th-quantity">數量</th>
+            <th className="seller-table-th-subtotal">小計</th>
+            <th className="seller-table-th-action">操作</th>
           </tr>
         </thead>
         <tbody>
-          {seller.items.map((item: any) => (
-            <CartItem
+          {seller.items.map((item) => (
+            <CartItemComponent
               key={item.id}
               item={item}
               onToggleSelect={() => onToggleItemSelect(seller.sellerId, item.id)}
