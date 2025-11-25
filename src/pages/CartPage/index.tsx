@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import CartHeader from "./CartHeader";
 import SellerSection from "./SellerSection";
 import CartFooter from "./CartFooter";
 import "./index.css";
+import {
+  useGetCart,
+  useUpdateQuantity,
+  useRemoveFromCart,
+} from "../../api/generated";
 
 interface Product {
   productID: string;
@@ -30,38 +36,63 @@ interface CartPageProps {
   onCheckout?: (items: Seller[]) => void;
 }
 
-// ========== 購物車主組件 ==========
 const CartPage: React.FC<CartPageProps> = ({ onBack, onCheckout }) => {
   const [cartData, setCartData] = useState<Seller[]>([]);
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  // 使用 generated hooks
+  const { data: cartResponse, isLoading, isError, error, refetch } = useGetCart();
+  const updateQuantityMutation = useUpdateQuantity();
+  const removeFromCartMutation = useRemoveFromCart();
 
   useEffect(() => {
-    fetchCartData();
-  }, []);
+    if (cartResponse?.data) {
+      const data = cartResponse.data;
+      console.log("API 回應:", data);
 
-  const fetchCartData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/cart');
-      const data = await response.json();
+      if (data.items && Array.isArray(data.items)) {
+        // 按賣家 ID 分組
+        const sellerMap = new Map<string, any[]>();
 
-      // 為每個 item 加上 selected 屬性
-      const cartWithSelection = data.sellers.map((seller: Seller) => ({
-        ...seller,
-        items: seller.items.map((item: CartItem) => ({
-          ...item,
-          selected: false
-        }))
-      }));
+        data.items.forEach((item: any) => {
+          const sellerId = item.sellerId;
+          if (!sellerMap.has(sellerId)) {
+            sellerMap.set(sellerId, []);
+          }
+          sellerMap.get(sellerId)!.push(item);
+        });
 
-      setCartData(cartWithSelection);
-    } catch (error) {
-      console.error("載入購物車失敗:", error);
-      alert("載入購物車失敗，請重試");
-    } finally {
-      setLoading(false);
+        // 轉換成 Seller[] 格式
+        const cartWithSelection: Seller[] = Array.from(sellerMap.entries()).map(([sellerId, items]) => ({
+          sellerId: sellerId,
+          sellerName: items[0].sellerName,
+          items: items.map((item) => ({
+            id: item.itemId,
+            product: {
+              productID: item.productId,
+              productName: item.productName,
+              ProductPrice: item.price,
+              ProductImage: item.imageUrl,
+              ProductStock: item.ProductStock
+            },
+            quantity: item.quantity,
+            selected: false
+          }))
+        }));
+
+        setCartData(cartWithSelection);
+      } else {
+        setCartData([]);
+      }
     }
-  };
+  }, [cartResponse]);
+
+  useEffect(() => {
+    if (isError) {
+      console.error("載入購物車失敗:", error);
+      alert("載入購物車失敗,請重試");
+    }
+  }, [isError, error]);
 
   const handleToggleItemSelect = (sellerId: string, itemId: string) => {
     setCartData(cartData.map(seller => {
@@ -101,6 +132,7 @@ const CartPage: React.FC<CartPageProps> = ({ onBack, onCheckout }) => {
   };
 
   const handleUpdateQuantity = async (sellerId: string, itemId: string, delta: number) => {
+    // 先樂觀更新 UI
     const updatedCart = cartData.map(seller => {
       if (seller.sellerId === sellerId) {
         return {
@@ -126,35 +158,26 @@ const CartPage: React.FC<CartPageProps> = ({ onBack, onCheckout }) => {
         .find(i => i.id === itemId);
 
       if (cartItem) {
-        const productId = cartItem.product.productID;
-        const newQty = cartItem.quantity;
-
-        await fetch(`/api/cart/items/${productId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quantity: newQty })
+        // 使用 generated mutation
+        await updateQuantityMutation.mutateAsync({
+          itemId: itemId,
+          data: { quantity: cartItem.quantity }
         });
 
-        console.log(`已更新商品 ${productId} 數量為 ${newQty}`);
+        console.log(`已更新商品 ${itemId} 數量為 ${cartItem.quantity}`);
       }
     } catch (error) {
       console.error("更新數量失敗:", error);
-      fetchCartData();
+      alert("更新數量失敗,請重試");
+      refetch();
     }
   };
 
   const handleDeleteItem = async (sellerId: string, itemId: string) => {
-    if (!confirm("確定要刪除此商品？")) return;
+    if (!confirm("確定要刪除此商品?")) return;
 
-    const cartItem = cartData
-      .find(s => s.sellerId === sellerId)?.items
-      .find(i => i.id === itemId);
-
-    if (!cartItem) return;
-
-    const productId = cartItem.product.productID;
-
-    setCartData(cartData.map(seller => {
+    // 先樂觀更新 UI
+    const newCartData = cartData.map(seller => {
       if (seller.sellerId === sellerId) {
         return {
           ...seller,
@@ -162,17 +185,18 @@ const CartPage: React.FC<CartPageProps> = ({ onBack, onCheckout }) => {
         };
       }
       return seller;
-    }));
+    }).filter(seller => seller.items.length > 0);
+
+    setCartData(newCartData);
 
     try {
-      await fetch(`/api/cart/items/${productId}`, {
-        method: 'DELETE'
-      });
-
-      console.log(`已刪除商品 ${productId}`);
+      // 使用 generated mutation
+      await removeFromCartMutation.mutateAsync({ itemId });
+      console.log(`已刪除商品 ${itemId}`);
     } catch (error) {
       console.error("刪除失敗:", error);
-      fetchCartData();
+      alert("刪除失敗,請重試");
+      refetch();
     }
   };
 
@@ -200,40 +224,44 @@ const CartPage: React.FC<CartPageProps> = ({ onBack, onCheckout }) => {
       return;
     }
 
-    try {
-      const response = await fetch('/api/order/add', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          items: selectedItems.map(item => ({
-            productId: item.product.productID,
-            quantity: item.quantity
+    // 準備跳轉到結帳頁面的資料
+    const checkoutData = cartData
+      .map(seller => ({
+        sellerId: seller.sellerId,
+        sellerName: seller.sellerName,
+        items: seller.items
+          .filter(item => item.selected)
+          .map(item => ({
+            id: item.id,  // 購物車項目 ID (用於後續刪除)
+            productId: item.product.productID,  // 商品 ID
+            name: item.product.productName,
+            price: item.product.ProductPrice,
+            quantity: item.quantity,
+            stock: item.product.ProductStock  // 📦 傳遞庫存資訊
           }))
-        })
-      });
+      }))
+      .filter(seller => seller.items.length > 0);
 
-      const order = await response.json();
+    console.log("準備結帳的商品:", checkoutData);
 
-      const checkoutData = cartData
+    // 如果有 onCheckout 回調就呼叫
+    if (onCheckout) {
+      onCheckout(cartData
         .map(seller => ({
           sellerId: seller.sellerId,
           sellerName: seller.sellerName,
           items: seller.items.filter(item => item.selected)
         }))
-        .filter(seller => seller.items.length > 0);
-
-      console.log("準備結帳的商品:", checkoutData);
-
-      if (onCheckout) {
-        onCheckout(checkoutData);
-      }
-    } catch (error) {
-      console.error("結帳失敗:", error);
-      alert("結帳失敗，請重試");
+        .filter(seller => seller.items.length > 0));
     }
+
+    // 跳轉到結帳頁面,並將商品資料透過 state 傳遞
+    navigate('/checkout', {
+      state: { orderItems: checkoutData }
+    });
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="cart-loading">
         <div className="loading-text">載入中...</div>

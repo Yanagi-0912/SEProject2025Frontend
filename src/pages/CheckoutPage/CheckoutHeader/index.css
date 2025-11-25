@@ -1,0 +1,28 @@
+/* CheckoutHeader/index.css */
+.checkout-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+}
+
+.checkout-header-back-button {
+  padding: 8px 16px;
+  background-color: #444;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+.checkout-header-back-button:hover {
+  background-color: #555;
+}
+
+.checkout-header-title {
+  color: white;
+  margin: 0;
+}

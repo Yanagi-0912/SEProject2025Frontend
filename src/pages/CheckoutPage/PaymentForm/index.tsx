@@ -1,8 +1,6 @@
-// 功能：付款方式選擇
-// 前端負責：收集付款方式
-// 後端負責：處理付款邏輯（串接金流）
-
+// PaymentForm/index.tsx
 import React from "react";
+import "./index.css";
 
 interface PaymentFormProps {
   selectedMethod: string;
@@ -17,26 +15,13 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ selectedMethod, onChange }) =
   ];
 
   return (
-    <div style={{
-      backgroundColor: "#2a2a2a",
-      borderRadius: "8px",
-      padding: "20px"
-    }}>
-      <h3 style={{ color: "white", marginBottom: "15px" }}>2. 付款方式</h3>
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+    <div className="payment-form-container">
+      <h3 className="payment-form-title">付款方式</h3>
+      <div className="payment-form-options">
         {paymentMethods.map((method) => (
           <label
             key={method.id}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "15px",
-              backgroundColor: selectedMethod === method.id ? "#444" : "#333",
-              border: selectedMethod === method.id ? "2px solid #5227FF" : "2px solid #444",
-              borderRadius: "8px",
-              cursor: "pointer",
-              transition: "all 0.2s"
-            }}
+            className={`payment-form-option ${selectedMethod === method.id ? 'selected' : ''}`}
           >
             <input
               type="radio"
@@ -44,10 +29,10 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ selectedMethod, onChange }) =
               value={method.id}
               checked={selectedMethod === method.id}
               onChange={(e) => onChange(e.target.value)}
-              style={{ marginRight: "12px", width: "18px", height: "18px" }}
+              className="payment-form-radio"
             />
-            <span style={{ fontSize: "24px", marginRight: "12px" }}>{method.icon}</span>
-            <span style={{ color: "white", fontSize: "16px" }}>{method.label}</span>
+            <span className="payment-form-icon">{method.icon}</span>
+            <span className="payment-form-label">{method.label}</span>
           </label>
         ))}
       </div>

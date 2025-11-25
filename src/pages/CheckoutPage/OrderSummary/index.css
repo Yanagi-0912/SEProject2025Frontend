@@ -1,0 +1,55 @@
+/* OrderSummary/index.css */
+.order-summary-container {
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.order-summary-title {
+  color: white;
+  margin-bottom: 15px;
+}
+
+.order-summary-scroll {
+  border: 2px solid #444;
+  border-radius: 8px;
+  overflow: hidden;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.order-summary-seller-header {
+  background-color: #333;
+  color: white;
+  padding: 10px 15px;
+  font-weight: bold;
+  border-bottom: 1px solid #444;
+}
+
+.order-summary-item {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  padding: 12px 15px;
+  border-bottom: 1px solid #444;
+  color: white;
+  align-items: center;
+}
+
+.order-summary-item:nth-child(even) {
+  background-color: #2a2a2a;
+}
+
+.order-summary-item:nth-child(odd) {
+  background-color: #252525;
+}
+
+.order-summary-item-quantity {
+  text-align: center;
+}
+
+.order-summary-item-price {
+  text-align: right;
+  color: #5227FF;
+  font-weight: bold;
+}

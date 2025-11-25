@@ -1,8 +1,6 @@
-// 功能：收貨地址表單
-// 前端負責：表單驗證、收集資料
-// 後端負責：儲存地址資訊（在訂單中）
-
+// ShippingForm/index.tsx
 import React from "react";
+import "./index.css";
 
 interface ShippingAddress {
   recipientName: string;
@@ -22,53 +20,38 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ address, onChange }) => {
     onChange({ ...address, [field]: value });
   };
 
-  const inputStyle = {
-    width: "100%",
-    padding: "10px",
-    backgroundColor: "#333",
-    border: "1px solid #555",
-    borderRadius: "5px",
-    color: "white",
-    fontSize: "14px"
-  };
-
   return (
-    <div style={{
-      backgroundColor: "#2a2a2a",
-      borderRadius: "8px",
-      padding: "20px",
-      marginBottom: "20px"
-    }}>
-      <h3 style={{ color: "white", marginBottom: "15px" }}>1. 收貨地址</h3>
-      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+    <div className="shipping-form-container">
+      <h3 className="shipping-form-title">收貨地址</h3>
+      <div className="shipping-form-fields">
         <input
           type="text"
           placeholder="收件人姓名"
           value={address.recipientName}
           onChange={(e) => handleChange("recipientName", e.target.value)}
-          style={inputStyle}
+          className="shipping-form-input"
         />
         <input
           type="tel"
           placeholder="聯絡電話"
           value={address.phone}
           onChange={(e) => handleChange("phone", e.target.value)}
-          style={inputStyle}
+          className="shipping-form-input"
         />
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "12px" }}>
+        <div className="shipping-form-row">
           <input
             type="text"
             placeholder="城市/縣市"
             value={address.city}
             onChange={(e) => handleChange("city", e.target.value)}
-            style={inputStyle}
+            className="shipping-form-input"
           />
           <input
             type="text"
             placeholder="郵遞區號"
             value={address.postalCode}
             onChange={(e) => handleChange("postalCode", e.target.value)}
-            style={inputStyle}
+            className="shipping-form-input"
           />
         </div>
         <textarea
@@ -76,7 +59,7 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ address, onChange }) => {
           value={address.address}
           onChange={(e) => handleChange("address", e.target.value)}
           rows={3}
-          style={{ ...inputStyle, resize: "vertical" }}
+          className="shipping-form-input shipping-form-textarea"
         />
       </div>
     </div>
