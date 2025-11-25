@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import './Header.css'
 interface HeaderProps {
   page: number;
@@ -8,8 +9,16 @@ interface HeaderProps {
   onLoginClick?: () => void;
 }
 
-function Header({ page, onCartClick, onAccountClick, onLoginClick }: HeaderProps) {
+function Header({onCartClick, onAccountClick, onLoginClick }: HeaderProps) {
     const navigate = useNavigate();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    // 檢查登入狀態
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        setIsLoggedIn(!!token);
+    }, []);
+
     const handleCart = () => {
         if (onCartClick) {
             onCartClick();
@@ -21,25 +30,39 @@ function Header({ page, onCartClick, onAccountClick, onLoginClick }: HeaderProps
             onAccountClick();
         }
     };
+
     const handlelogin = () => {
         if (onLoginClick) {
             onLoginClick();
         }
     }
+
+    const handleLogout = () => {
+        if (confirm('確定要登出嗎？')) {
+            // 清除 localStorage 中的認證資料
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            setIsLoggedIn(false);
+            alert('已成功登出');
+            // 導向登入頁
+            navigate('/');
+        }
+    };
     
   return (
     <div className="header-container">
       <button onClick={() => { navigate('/'); window.location.reload(); }} className="back-button">
         <img src="/home-icon.png" alt="回到首頁" className="home-icon-img" />
       </button>
-      <div className="page-title-section">
-        <h1>第 {page} 頁</h1>
-      </div>
       <div className="search-section">
         <input  type="text" placeholder="搜尋" className="search-input" />
       </div>
       <div className="actions-section">
-        <button type="button" onClick={handlelogin} className="action-button">登入</button>
+        {isLoggedIn ? (
+          <button type="button" onClick={handleLogout} className="action-button">登出</button>
+        ) : (
+          <button type="button" onClick={handlelogin} className="action-button">登入</button>
+        )}
         <button type="button" onClick={handleAccount} className="action-button">我的帳號</button>
         <button type="button" onClick={handleCart} className="action-button">購物車</button>
         <button className="action-button">訊息</button>

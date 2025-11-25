@@ -126,6 +126,7 @@ const ProductPage: React.FC<{ productID?: string; onBack?: () => void }> = ({ pr
 			{product.productType === 'DIRECT' ? (
 
 				<DirectProduct 
+					productID={product.productID}
 					productName={product.productName}
 					productDescription={product.productDescription}
 					productPrice={product.productPrice}

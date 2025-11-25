@@ -10,6 +10,7 @@ import CartPage from './pages/CartPage'
 import ProductPage from './pages/ProductPage'
 import UserProfilePage from './pages/UserProfilePage'
 import Coupons from './pages/UserProfilePage/Coupons'
+import SellerDashboard from './pages/UserProfilePage/SellerDashboard'
 
 function App() {
   const navigate = useNavigate()
@@ -30,6 +31,9 @@ function App() {
           
           {/* 優惠券 */}
           <Route path="/profile/coupons" element={<Coupons />} />
+          
+          {/* 賣家後台 */}
+          <Route path="/seller/dashboard" element={<SellerDashboard />} />
           
           {/* 登入 */}
           <Route path="/login" element={
