@@ -11,7 +11,6 @@ interface UserProps {
   address: string;          // 使用者地址
   averageRating?: number;   // 使用者平均評分
   ratingCount?: number;     // 使用者評分數量
-  onBack?: () => void;
   onUpdateSuccess?: () => void; // 更新成功的回調
 }
 

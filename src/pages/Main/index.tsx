@@ -5,24 +5,14 @@ import Header from './Header'
 import Products from './Products'
 import Pagination from './Pagination'
 
-interface MainProps {
-  onBack?: () => void
-}
-
-function Main({ onBack }: MainProps) {
+function Main() {
   const navigate = useNavigate()
   const [page, setPage] = useState(1)
   const total = 10
 
   return (
     <div style={{ border: '2px solid yellowgreen', backgroundColor: 'rgb(62, 64, 68)', color: 'white'}}>
-      <Header 
-        page={page} 
-        onBack={onBack} 
-        onCartClick={() => navigate('/cart')}
-        onAccountClick={() => { navigate('/user/me'); window.location.reload(); }}
-        onLoginClick={() => navigate('/login')}
-      />
+      <Header />
 
       <div style={{ display: 'flex', alignItems: 'stretch' }}>
         <div style={{ flex: 1, backgroundColor: 'white'}}>

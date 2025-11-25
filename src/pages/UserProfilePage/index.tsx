@@ -15,7 +15,6 @@ interface UserProps {
   address: string;          // 使用者地址
   averageRating?: number;   // 使用者平均評分
   ratingCount?: number;     // 使用者評分數量
-  onBack?: () => void;
 }
 
 const SAMPLE_USER: UserProps = {
@@ -27,10 +26,9 @@ const SAMPLE_USER: UserProps = {
     address: '台北市中正區仁愛路一段1號',
     averageRating: 4.5,
     ratingCount: 120,
-	onBack: () => { console.log('返回主頁'); }
 };
 
-const UserProfilePage: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
+const UserProfilePage: React.FC = () => {
 	const navigate = useNavigate();
 
 	const [user, setUser] = useState<UserProps>(SAMPLE_USER);
@@ -145,7 +143,7 @@ const UserProfilePage: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
 
 	return (
 		<div className="user-profile-page-wrapper">
-			<Header page={0} onBack={onBack ?? user.onBack} />
+			<Header />
 			{error && (
 				<div className="error-banner">
 					⚠️ 錯誤：{error} — 使用範例使用者顯示

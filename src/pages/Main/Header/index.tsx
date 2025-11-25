@@ -1,15 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import './Header.css'
-interface HeaderProps {
-  page: number;
-  onBack?: () => void;
-  onCartClick?: () => void;
-  onAccountClick?: () => void;
-  onLoginClick?: () => void;
-}
 
-function Header({onCartClick, onAccountClick, onLoginClick }: HeaderProps) {
+function Header() {
     const navigate = useNavigate();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -20,21 +13,16 @@ function Header({onCartClick, onAccountClick, onLoginClick }: HeaderProps) {
     }, []);
 
     const handleCart = () => {
-        if (onCartClick) {
-            onCartClick();
-        }
+        navigate('/cart');
     };
     
     const handleAccount = () => {
-        if (onAccountClick) {
-            onAccountClick();
-        }
+        navigate('/user/me'); 
+        window.location.reload();
     };
 
-    const handlelogin = () => {
-        if (onLoginClick) {
-            onLoginClick();
-        }
+    const handleLogin = () => {
+        navigate('/login');
     }
 
     const handleLogout = () => {
@@ -61,7 +49,7 @@ function Header({onCartClick, onAccountClick, onLoginClick }: HeaderProps) {
         {isLoggedIn ? (
           <button type="button" onClick={handleLogout} className="action-button">登出</button>
         ) : (
-          <button type="button" onClick={handlelogin} className="action-button">登入</button>
+          <button type="button" onClick={handleLogin} className="action-button">登入</button>
         )}
         <button type="button" onClick={handleAccount} className="action-button">我的帳號</button>
         <button type="button" onClick={handleCart} className="action-button">購物車</button>

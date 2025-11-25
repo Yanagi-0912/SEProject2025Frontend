@@ -18,16 +18,16 @@ function App() {
   return (
         <Routes>
           {/* 主頁 */}
-          <Route path="/" element={<Main onBack={() => navigate('/')} />} />
+          <Route path="/" element={<Main />} />
           
           {/* 購物車 */}
           <Route path="/cart" element={<CartPage onBack={() => navigate('/')} />} />
           
           {/* 商品詳情 */}
-          <Route path="/product/:id" element={<ProductPage onBack={() => navigate('/')} />} />
+          <Route path="/product/:id" element={<ProductPage />} />
 
           {/* 使用者頁 */}
-          <Route path="/user/me" element={<UserProfilePage onBack={() => navigate('/')} />} />
+          <Route path="/user/me" element={<UserProfilePage />} />
           
           {/* 優惠券 */}
           <Route path="/profile/coupons" element={<Coupons />} />
