@@ -1,0 +1,85 @@
+/* CheckoutPage/index.css */
+.checkout-container {
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #1a1a1a;
+}
+
+.checkout-loading {
+  text-align: center;
+  color: white;
+  padding: 40px;
+  font-size: 18px;
+}
+
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 20px;
+}
+
+.checkout-summary-sidebar {
+  position: sticky;
+  top: 20px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.checkout-summary-title {
+  color: white;
+  margin-bottom: 20px;
+}
+
+.checkout-summary-content {
+  margin-bottom: 20px;
+}
+
+.checkout-summary-row {
+  display: flex;
+  justify-content: space-between;
+  color: #aaa;
+  margin-bottom: 10px;
+}
+
+.checkout-summary-divider {
+  border-top: 1px solid #555;
+  padding-top: 15px;
+  margin-top: 15px;
+}
+
+.checkout-summary-total {
+  display: flex;
+  justify-content: space-between;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.checkout-summary-total-amount {
+  color: #5227FF;
+}
+
+.checkout-submit-button {
+  width: 100%;
+  padding: 15px;
+  background-color: #5227FF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.checkout-submit-button:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+}
+
+.checkout-terms {
+  text-align: center;
+  color: #aaa;
+  font-size: 12px;
+}

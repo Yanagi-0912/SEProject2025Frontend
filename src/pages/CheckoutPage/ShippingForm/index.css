@@ -1,0 +1,43 @@
+/* ShippingForm/index.css */
+.shipping-form-container {
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.shipping-form-title {
+  color: white;
+  margin-bottom: 15px;
+}
+
+.shipping-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.shipping-form-input {
+  width: 100%;
+  padding: 10px;
+  background-color: #333;
+  border: 1px solid #555;
+  border-radius: 5px;
+  color: white;
+  font-size: 14px;
+}
+
+.shipping-form-input:focus {
+  outline: none;
+  border-color: #5227FF;
+}
+
+.shipping-form-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+}
+
+.shipping-form-textarea {
+  resize: vertical;
+}

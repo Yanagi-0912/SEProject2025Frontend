@@ -1,16 +1,20 @@
-// 結帳頁面主組件
-
-import React, { useState } from "react";
+// CheckoutPage/index.tsx
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import CheckoutHeader from "./CheckoutHeader";
 import OrderSummary from "./OrderSummary";
 import ShippingForm from "./ShippingForm";
 import PaymentForm from "./PaymentForm";
+import { useCreateOrder, useRemoveFromCart } from "../../api/generated";
+import "./index.css";
 
 interface CartItem {
-  id: string;
+  id: string;          // 購物車項目 ID
+  productId?: string;  // 商品 ID
   name?: string;
   price: number;
   quantity: number;
+  stock?: number;      // 📦 庫存數量
 }
 
 interface SellerGroup {
@@ -20,17 +24,28 @@ interface SellerGroup {
 }
 
 interface CheckoutPageProps {
-  orderItems?: SellerGroup[];  // 從購物車傳來的選中商品
   onBack?: () => void;
   onSuccess?: (orderId: string) => void;
 }
 
 const CheckoutPage: React.FC<CheckoutPageProps> = ({
-  orderItems = [],
   onBack,
   onSuccess
 }) => {
-  // ========== 前端狀態管理 ==========
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // 從 location.state 接收購物車傳來的資料
+  const orderItems: SellerGroup[] = location.state?.orderItems || [];
+
+  // 如果沒有商品,跳轉回購物車
+  useEffect(() => {
+    if (orderItems.length === 0) {
+      alert("購物車是空的,請先選擇商品");
+      navigate('/cart');
+    }
+  }, [orderItems, navigate]);
+
   const [shippingAddress, setShippingAddress] = useState({
     recipientName: "",
     phone: "",
@@ -40,16 +55,32 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   });
 
   const [paymentMethod, setPaymentMethod] = useState("CREDIT_CARD");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ========== 前端計算 - 總金額 ==========
+  // 使用 generated mutations
+  const createOrderMutation = useCreateOrder();
+  const removeFromCartMutation = useRemoveFromCart();
+
   const totalAmount = orderItems.reduce((total, seller) => {
     return total + seller.items.reduce((sum: number, item: CartItem) =>
       sum + item.price * item.quantity, 0
     );
   }, 0);
 
-  // ========== 前端驗證 ==========
+  // 檢查是否有庫存不足的商品
+  const hasStockIssue = orderItems.some(seller =>
+    seller.items.some(item => {
+      const stock = item.stock;
+      return stock !== undefined && stock !== null && item.quantity > stock;
+    })
+  );
+
+  const stockIssueItems = orderItems.flatMap(seller =>
+    seller.items.filter(item => {
+      const stock = item.stock;
+      return stock !== undefined && stock !== null && item.quantity > stock;
+    })
+  );
+
   const validateForm = () => {
     if (!shippingAddress.recipientName.trim()) {
       alert("請輸入收件人姓名");
@@ -70,188 +101,244 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     return true;
   };
 
-  // ========== 前端+後端 - 送出訂單 ==========
   const handleSubmitOrder = async () => {
     // 1. 前端驗證表單
     if (!validateForm()) {
       return;
     }
 
-    setIsSubmitting(true);
+    // 2. 檢查是否有商品
+    if (orderItems.length === 0) {
+      alert("購物車是空的");
+      return;
+    }
+
+    // 3. 檢查商品庫存 (如果有庫存資訊)
+    const outOfStockItems = orderItems.flatMap(seller =>
+      seller.items.filter(item => {
+        // 如果商品有庫存資訊,檢查是否足夠
+        const stock = (item as any).stock;
+        if (stock !== undefined && stock !== null) {
+          return item.quantity > stock;
+        }
+        return false;
+      })
+    );
+
+    if (outOfStockItems.length > 0) {
+      const itemNames = outOfStockItems.map(item => item.name).join(', ');
+      alert(`以下商品庫存不足,無法結帳:\n${itemNames}\n\n請調整數量或移除商品後再試`);
+      return;
+    }
 
     try {
-      // 2. 整理要送給後端的資料
+      // 3. 準備 Cart 物件 (用於 order.cart)
+      const cartItems = orderItems.flatMap(seller =>
+        seller.items.map((item: CartItem) => ({
+          itemId: item.id,                    // 購物車項目 ID
+          productId: item.productId || item.id,  // 商品 ID
+          quantity: item.quantity
+        }))
+      );
+
+      // 4. 準備 OrderItems 陣列
+      const orderItemsPayload = orderItems.flatMap(seller =>
+        seller.items.map((item: CartItem) => ({
+          productID: item.productId || item.id,
+          quantity: item.quantity,
+          sellerID: seller.sellerId,
+          price: item.price,
+          totalPrice: item.price * item.quantity
+        }))
+      );
+
+      // 5. 組合完整的 Order payload
       const orderPayload = {
-        items: orderItems.flatMap(seller =>
-          seller.items.map((item: CartItem) => ({
-            productId: item.id,
-            quantity: item.quantity,
-            price: item.price
-          }))
-        ),
-        shippingAddress: {
-          recipientName: shippingAddress.recipientName,
-          phone: shippingAddress.phone,
-          address: shippingAddress.address,
-          city: shippingAddress.city,
-          postalCode: shippingAddress.postalCode
+        orderType: "DIRECT" as const,
+        orderStatus: "PENDING" as const,
+        cart: {
+          items: cartItems
         },
-        paymentMethod: {
-          type: paymentMethod
-        },
-        totalAmount: totalAmount
+        orderItems: orderItemsPayload
       };
 
-      console.log("送出訂單資料:", orderPayload);
+      console.log("=== 送出訂單資料 ===");
+      console.log(JSON.stringify(orderPayload, null, 2));
+      console.log("配送資訊:", shippingAddress);
+      console.log("付款方式:", paymentMethod);
 
-      // 3. 📡 呼叫後端 API 建立訂單
-      // TODO: 替換成真實的 API 端點
-      // const response = await fetch('/api/orders/checkout', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(orderPayload)
-      // });
-      //
-      // if (!response.ok) {
-      //   throw new Error('訂單建立失敗');
-      // }
-      //
-      // const result = await response.json();
-      // const orderId = result.orderId;
+      // 6. 📡 呼叫後端 API 建立訂單
+      const response = await createOrderMutation.mutateAsync({
+        data: orderPayload
+      });
 
-      // 4. 模擬 API 回應
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      const mockOrderId = `ORD${Date.now()}`;
+      console.log("✅ 訂單建立成功:", response.data);
 
-      // 5. 成功後跳轉或顯示成功訊息
-      alert(`訂單建立成功！\n訂單編號：${mockOrderId}\n總金額：$${totalAmount}`);
+      const orderId = response.data?.orderID || `ORD${Date.now()}`;
 
-      if (onSuccess) {
-        onSuccess(mockOrderId);
+      // 7. 訂單建立成功後,從購物車移除已結帳的商品
+      try {
+        const itemIdsToRemove = orderItems.flatMap(seller =>
+          seller.items.map(item => item.id)
+        );
+
+        console.log("準備從購物車移除的商品:", itemIdsToRemove);
+
+        // 🔧 改用循序刪除,避免競態條件
+        for (const itemId of itemIdsToRemove) {
+          try {
+            await removeFromCartMutation.mutateAsync({ itemId });
+            console.log(`✅ 已刪除商品: ${itemId}`);
+          } catch (err) {
+            console.error(`⚠️ 刪除商品 ${itemId} 失敗:`, err);
+            // 繼續刪除其他商品
+          }
+        }
+
+        console.log("✅ 已從購物車移除所有已結帳的商品");
+      } catch (removeError) {
+        console.error("⚠️ 從購物車移除商品失敗:", removeError);
+        // 不阻止後續流程,因為訂單已經建立成功
       }
 
-    } catch (error) {
-      console.error("建立訂單失敗:", error);
-      alert("訂單建立失敗，請重試");
-    } finally {
-      setIsSubmitting(false);
+      // 8. 成功後跳轉或顯示成功訊息
+      alert(`訂單建立成功!\n訂單編號: ${orderId}\n總金額: $${totalAmount}`);
+
+      if (onSuccess) {
+        onSuccess(orderId);
+      } else {
+        navigate('/');
+      }
+
+    } catch (error: any) {
+      console.error("❌ 建立訂單失敗:", error);
+
+      // 更詳細的錯誤訊息
+      if (error.response) {
+        console.error("後端回應:", error.response.data);
+        console.error("狀態碼:", error.response.status);
+
+        const errorData = error.response.data;
+        let errorMsg = "訂單建立失敗";
+
+        // 處理各種錯誤類型
+        if (typeof errorData === 'string') {
+          errorMsg = errorData;
+        } else if (errorData?.message) {
+          errorMsg = errorData.message;
+        } else if (errorData?.error) {
+          errorMsg = errorData.error;
+        }
+
+        // 特別處理庫存不足的錯誤
+        if (errorMsg.includes("Out of stock") || errorMsg.includes("庫存不足")) {
+          const productMatch = errorMsg.match(/product: (.+?)(?:$|,|\n)/);
+          const productName = productMatch ? productMatch[1] : "某商品";
+
+          alert(
+            `⚠️ 庫存不足\n\n` +
+            `商品「${productName}」的庫存不足,無法完成訂單。\n\n` +
+            `請返回購物車調整數量或移除該商品後再試。`
+          );
+        } else {
+          alert(`訂單建立失敗:\n${errorMsg}`);
+        }
+      } else if (error.request) {
+        console.error("請求已發送但無回應:", error.request);
+        alert("訂單建立失敗: 伺服器無回應,請檢查網路連線");
+      } else {
+        console.error("錯誤訊息:", error.message);
+        alert(`訂單建立失敗: ${error.message}`);
+      }
     }
   };
 
   return (
-    <div style={{ padding: "20px", minHeight: "100vh", backgroundColor: "#1a1a1a" }}>
+    <div className="checkout-container">
       <CheckoutHeader onBack={onBack} />
 
-      <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: "20px" }}>
-        {/* 左側：表單區 */}
-        <div>
-          <OrderSummary sellers={orderItems} />
-          <ShippingForm
-            address={shippingAddress}
-            onChange={setShippingAddress}
-          />
-          <PaymentForm
-            selectedMethod={paymentMethod}
-            onChange={setPaymentMethod}
-          />
-        </div>
+      {orderItems.length === 0 ? (
+        <div className="checkout-loading">載入中...</div>
+      ) : (
+        <div className="checkout-grid">
+          <div>
+            <OrderSummary sellers={orderItems} />
+            <ShippingForm
+              address={shippingAddress}
+              onChange={setShippingAddress}
+            />
+            <PaymentForm
+              selectedMethod={paymentMethod}
+              onChange={setPaymentMethod}
+            />
+          </div>
 
-        {/* 右側：總金額摘要（固定位置）*/}
-        <div>
-          <div style={{
-            position: "sticky",
-            top: "20px",
-            backgroundColor: "#2a2a2a",
-            borderRadius: "8px",
-            padding: "20px"
-          }}>
-            <h3 style={{ color: "white", marginBottom: "20px" }}>訂單摘要</h3>
+          <div>
+            <div className="checkout-summary-sidebar">
+              <h3 className="checkout-summary-title">訂單摘要</h3>
 
-            <div style={{ marginBottom: "20px" }}>
-              <div style={{
-                display: "flex",
-                justifyContent: "space-between",
-                color: "#aaa",
-                marginBottom: "10px"
-              }}>
-                <span>商品小計</span>
-                <span>${totalAmount}</span>
-              </div>
-              <div style={{
-                display: "flex",
-                justifyContent: "space-between",
-                color: "#aaa",
-                marginBottom: "10px"
-              }}>
-                <span>運費</span>
-                <span>$0</span>
-              </div>
-              <div style={{
-                borderTop: "1px solid #555",
-                paddingTop: "15px",
-                marginTop: "15px"
-              }}>
+              {/* 庫存警告 */}
+              {hasStockIssue && (
                 <div style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  color: "white",
-                  fontSize: "20px",
-                  fontWeight: "bold"
+                  padding: '12px',
+                  marginBottom: '16px',
+                  backgroundColor: '#fff3cd',
+                  border: '1px solid #ffc107',
+                  borderRadius: '4px',
+                  color: '#856404'
                 }}>
-                  <span>總計</span>
-                  <span style={{ color: "#5227FF" }}>${totalAmount}</span>
+                  <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>
+                    ⚠️ 庫存不足警告
+                  </div>
+                  <div style={{ fontSize: '14px' }}>
+                    {stockIssueItems.map((item, idx) => (
+                      <div key={idx}>
+                        • {item.name}: 需要 {item.quantity} 個,庫存僅剩 {item.stock} 個
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ fontSize: '12px', marginTop: '8px', color: '#666' }}>
+                    請返回購物車調整數量
+                  </div>
+                </div>
+              )}
+
+              <div className="checkout-summary-content">
+                <div className="checkout-summary-row">
+                  <span>商品小計</span>
+                  <span>${totalAmount}</span>
+                </div>
+                <div className="checkout-summary-row">
+                  <span>運費</span>
+                  <span>$0</span>
+                </div>
+                <div className="checkout-summary-divider">
+                  <div className="checkout-summary-total">
+                    <span>總計</span>
+                    <span className="checkout-summary-total-amount">${totalAmount}</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <button
-              onClick={handleSubmitOrder}
-              disabled={isSubmitting}
-              style={{
-                width: "100%",
-                padding: "15px",
-                backgroundColor: isSubmitting ? "#666" : "#5227FF",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                fontSize: "18px",
-                fontWeight: "bold",
-                cursor: isSubmitting ? "not-allowed" : "pointer",
-                marginBottom: "10px"
-              }}
-            >
-              {isSubmitting ? "處理中..." : "結帳"}
-            </button>
+              <button
+                onClick={handleSubmitOrder}
+                disabled={createOrderMutation.isPending || hasStockIssue}
+                className="checkout-submit-button"
+                style={{
+                  opacity: hasStockIssue ? 0.5 : 1,
+                  cursor: hasStockIssue ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {createOrderMutation.isPending ? "處理中..." : hasStockIssue ? "庫存不足" : "結帳"}
+              </button>
 
-            <div style={{
-              textAlign: "center",
-              color: "#aaa",
-              fontSize: "12px"
-            }}>
-              點擊結帳即表示您同意我們的服務條款
+              <div className="checkout-terms">
+                點擊結帳即表示您同意我們的服務條款
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* 開發提示 */}
-      <div style={{
-        marginTop: "20px",
-        padding: "15px",
-        backgroundColor: "#2a2a2a",
-        borderRadius: "8px",
-        color: "#aaa",
-        fontSize: "12px"
-      }}>
-        <div style={{ marginBottom: "10px", fontWeight: "bold", color: "#5227FF" }}>
-          💡 前後端分工說明：
-        </div>
-        <div>✅ 前端負責：表單收集、驗證、計算總金額、呼叫 API</div>
-        <div>✅ 後端負責：訂單建立、庫存扣減、付款處理、訂單記錄</div>
-        <div style={{ marginTop: "10px", color: "#666" }}>
-          📡 需要的 API: POST /api/orders/checkout
-        </div>
-      </div>
+      )}
     </div>
   );
 };

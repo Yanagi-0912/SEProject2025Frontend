@@ -11,6 +11,7 @@ import ProductPage from './pages/ProductPage'
 import UserProfilePage from './pages/UserProfilePage'
 import Coupons from './pages/UserProfilePage/Coupons'
 import SellerDashboard from './pages/UserProfilePage/SellerDashboard'
+import CheckoutPage from './pages/CheckoutPage'
 
 function App() {
   const navigate = useNavigate()
@@ -22,6 +23,9 @@ function App() {
           
           {/* 購物車 */}
           <Route path="/cart" element={<CartPage onBack={() => navigate('/')} />} />
+
+          {/* 結帳頁面 */}
+          <Route path="/checkout" element={<CheckoutPage onBack={() => navigate('/cart')} />} />
           
           {/* 商品詳情 */}
           <Route path="/product/:id" element={<ProductPage onBack={() => navigate('/')} />} />
