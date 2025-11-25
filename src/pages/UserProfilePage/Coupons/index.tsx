@@ -156,7 +156,7 @@ function Coupons() {
     <div style={{ border: '1px solid red', minHeight: '100vh', padding: '20px', overflowY: 'auto', paddingBottom: '60px' }}>
       {/* 頂部導航區 */}
       <div style={{ marginBottom: '20px' }}>
-        <button onClick={() => navigate('/main')}>
+        <button onClick={() => navigate('/user/me')}>
           <img src="/home-icon.png" alt="回首頁" className="home-icon-img" />
         </button>
       </div>

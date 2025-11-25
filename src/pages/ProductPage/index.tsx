@@ -27,8 +27,7 @@ interface ProductProps {
     viewCount?: number;               // 產品瀏覽次數
     averageRating?: number;           // 產品平均評分
     reviewCount?: number;             // 產品評論數量
-    totalSales?: number;              // 產品總銷售量
-    onBack?: () => void;
+	totalSales?: number;              // 產品總銷售量
 }
 
 type ProductStatuses = 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'BANNED';
@@ -53,10 +52,9 @@ const SAMPLE_PRODUCT: ProductProps = {
 	averageRating: 4.5,
 	reviewCount: 100,
 	totalSales: 100,
-	onBack: () => { console.log('返回主頁'); }
 };
 
-const ProductPage: React.FC<{ productID?: string; onBack?: () => void }> = ({ productID, onBack }) => {
+const ProductPage: React.FC<{ productID?: string }> = ({ productID }) => {
 	const params = useParams<{ id: string }>();
 
 	const [product, setProduct] = useState<ProductProps>(SAMPLE_PRODUCT);
@@ -117,7 +115,7 @@ const ProductPage: React.FC<{ productID?: string; onBack?: () => void }> = ({ pr
 
 	return (
 		<div>
-			<Header page={0} onBack={onBack ?? product.onBack} />
+			<Header />
 			{error && (
 				<div style={{ color: 'orange', padding: '8px' }}>
 					錯誤：{error} — 使用範例商品顯示
