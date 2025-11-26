@@ -87,12 +87,23 @@ function UserProfile(profile: UserProps) {
           <div className="profile-avatar-section">
             <div className="profile-avatar">
               <div className="avatar-placeholder">
-                {profile?.username?.charAt?.(0)?.toUpperCase() ?? '?'}
+                {profile?.nickname?.charAt?.(0)?.toUpperCase() ?? '?'}
               </div>
             </div>
             <div className="profile-basic-info">
               <h1 className="profile-username">{profile.username}</h1>
               <p className="profile-email">{profile.email}</p>
+            </div>
+          </div>
+          
+          <div className="profile-rating-section">
+            <div className="rating-item">
+              <span className="rating-label">平均評分</span>
+              <span className="rating-value">⭐ {profile.averageRating?.toFixed(1) ?? '尚無評分'}</span>
+            </div>
+            <div className="rating-item">
+              <span className="rating-label">評分次數</span>
+              <span className="rating-value">{profile.ratingCount ?? 0} 次</span>
             </div>
           </div>
           
@@ -134,20 +145,16 @@ function UserProfile(profile: UserProps) {
                     <span className="info-value">{profile.nickname || '未設定'}</span>
                   </div>
                   <div className="info-item">
+                    <span className="info-label">Email</span>
+                    <span className="info-value">{profile.email || '未設定'}</span>
+                  </div>
+                  <div className="info-item">
                     <span className="info-label">電話</span>
                     <span className="info-value">{profile.phoneNumber || '未填寫'}</span>
                   </div>
                   <div className="info-item">
                     <span className="info-label">地址</span>
                     <span className="info-value">{profile.address || '未填寫'}</span>
-                  </div>
-                  <div className="info-item">
-                    <span className="info-label">平均評分</span>
-                    <span className="info-value">{profile.averageRating || '未被評分'}</span>
-                  </div>
-                  <div className="info-item full-width">
-                    <span className="info-label">評分次數</span>
-                    <span className="info-value">{profile.ratingCount || '未填寫'}</span>
                   </div>
                 </div>
               </div>
@@ -226,28 +233,6 @@ function UserProfile(profile: UserProps) {
                       value={editedProfile.address}
                       onChange={(e) => handleChange('address', e.target.value)}
                       placeholder="例：台北市"
-                      className="form-input"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">平均評分</label>
-                    <input
-                      type="text"
-                      value={editedProfile.averageRating}
-                      onChange={(e) => handleChange('averageRating', e.target.value)}
-                      placeholder="例：100"
-                      className="form-input"
-                    />
-                  </div>
-
-                  <div className="form-group full-width">
-                    <label className="form-label">評分次數</label>
-                    <input
-                      type="text"
-                      value={editedProfile.ratingCount}
-                      onChange={(e) => handleChange('ratingCount', e.target.value)}
-                      placeholder="請輸入詳細地址"
                       className="form-input"
                     />
                   </div>

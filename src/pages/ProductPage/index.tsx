@@ -33,25 +33,25 @@ interface ProductProps {
 type ProductStatuses = 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'BANNED';
 
 const SAMPLE_PRODUCT: ProductProps = {
-	productID: '12345',
-	sellerID: '67890',
-	productName: '商品名稱',
-	productDescription: '商品描述',
-	productPrice: 100,
-	productImage: '商品圖片URL',
-	productType: 'AUCTION',
-	productStock: 1,
-	productCategory: '商品類別',
+	productID: '無效的商品ID',
+	sellerID: '無效的賣家ID',
+	productName: '無效的商品名稱',
+	productDescription: '無',
+	productPrice: 404,
+	productImage: `https://picsum.photos/300/300?random=100`,
+	productType: 'INACTIVE',
+	productStock: 404,
+	productCategory: '無',
 	productStatus: 'ACTIVE',
-	createdTime: '2023-01-01',
-	updatedTime: '2023-01-02',
-	auctionEndTime: '2023-12-31',
-	nowHighestBid: 150,
-	highestBidderID: '54321',
-	viewCount: 1000,
-	averageRating: 4.5,
-	reviewCount: 100,
-	totalSales: 100,
+	createdTime: '{資料遺失}',
+	updatedTime: '{資料遺失}',
+	auctionEndTime: '未設定',
+	nowHighestBid: 404,
+	highestBidderID: '無效的出價者ID',
+	viewCount: 404,
+	averageRating: 4.04,
+	reviewCount: 404,
+	totalSales: 404,
 };
 
 const ProductPage: React.FC<{ productID?: string }> = ({ productID }) => {
@@ -99,7 +99,30 @@ const ProductPage: React.FC<{ productID?: string }> = ({ productID }) => {
 				};
 			};
 
-			setProduct(prev => ({ ...prev, ...normalize(fetched) } as ProductProps));
+			const normalizedData = normalize(fetched);
+			
+			// 將正規化的資料與 SAMPLE_PRODUCT 合併，確保每個欄位都有值
+			setProduct({
+				productID: normalizedData.productID ?? SAMPLE_PRODUCT.productID,
+				sellerID: normalizedData.sellerID ?? SAMPLE_PRODUCT.sellerID,
+				productName: normalizedData.productName ?? SAMPLE_PRODUCT.productName,
+				productDescription: normalizedData.productDescription ?? SAMPLE_PRODUCT.productDescription,
+				productPrice: normalizedData.productPrice ?? SAMPLE_PRODUCT.productPrice,
+				productImage: normalizedData.productImage ?? SAMPLE_PRODUCT.productImage,
+				productType: normalizedData.productType ?? SAMPLE_PRODUCT.productType,
+				productStock: normalizedData.productStock ?? SAMPLE_PRODUCT.productStock,
+				productCategory: normalizedData.productCategory ?? SAMPLE_PRODUCT.productCategory,
+				productStatus: normalizedData.productStatus ?? SAMPLE_PRODUCT.productStatus,
+				createdTime: normalizedData.createdTime ?? SAMPLE_PRODUCT.createdTime,
+				updatedTime: normalizedData.updatedTime ?? SAMPLE_PRODUCT.updatedTime,
+				auctionEndTime: normalizedData.auctionEndTime ?? SAMPLE_PRODUCT.auctionEndTime,
+				nowHighestBid: normalizedData.nowHighestBid ?? SAMPLE_PRODUCT.nowHighestBid,
+				highestBidderID: normalizedData.highestBidderID ?? SAMPLE_PRODUCT.highestBidderID,
+				viewCount: normalizedData.viewCount ?? SAMPLE_PRODUCT.viewCount,
+				averageRating: normalizedData.averageRating ?? SAMPLE_PRODUCT.averageRating,
+				reviewCount: normalizedData.reviewCount ?? SAMPLE_PRODUCT.reviewCount,
+				totalSales: normalizedData.totalSales ?? SAMPLE_PRODUCT.totalSales,
+			});
 			setError(null);
 		} else if (productQuery.isError) {
 			const msg = productQuery.error ? String((productQuery.error as Error).message) : '取得商品失敗';

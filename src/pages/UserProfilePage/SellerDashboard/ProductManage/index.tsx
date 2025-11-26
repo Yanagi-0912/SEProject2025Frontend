@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Product } from '../../../../api/generated';
+import { useCreateProduct } from '../../../../api/generated';
 import './ProductManage.css';
 
 interface ProductManageProps {
@@ -8,7 +9,10 @@ interface ProductManageProps {
   onModeChange: (mode: 'list' | 'create' | 'edit') => void;
 }
 
+
 const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManageProps) => {
+  const createProductMutation = useCreateProduct();
+  
   // TODO: 使用實際的 API 獲取賣家的商品列表
   // const { data: userData } = useGetCurrentUser();
   // const sellerId = userData?.data?.id;
@@ -16,36 +20,61 @@ const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManagePro
   // TODO: 使用實際的 API 獲取商品
   const [products] = useState<Product[]>([
     {
-      productID: '1',
-      productName: '範例商品 1',
-      productPrice: 1000,
-      productStock: 10,
-      productStatus: 'ACTIVE',
-      productType: 'DIRECT',
-      productImage: 'https://picsum.photos/200/200?random=1',
-      productDescription: '這是範例商品描述',
+        productID: '無效的商品ID',
+	    sellerID: '無效的賣家ID',
+	    productName: '無效的商品名稱',
+	    productDescription: '無效的商品描述',
+	    productPrice: 404,
+	    productImage: `https://picsum.photos/300/300?random=100`,
+	    productType: 'DIRECT',
+	    productCategory: '{資料遺失}',
+	    productStatus: 'ACTIVE',
+	    createdTime: '{資料遺失}',
+	    updatedTime: '{資料遺失}',
+        productStock: 404,
+	    auctionEndTime: '{資料遺失}',
+	    nowHighestBid: 404,
+	    highestBidderID: '無效的出價者ID',
+	    viewCount: 404,
+	    averageRating: 4.04,
+	    reviewCount: 404,
+	    totalSales: 404,
     },
     {
-      productID: '2',
-      productName: '範例商品 2',
-      productPrice: 2000,
-      productStock: 5,
-      productStatus: 'ACTIVE',
-      productType: 'AUCTION',
-      productImage: 'https://picsum.photos/200/200?random=2',
-      productDescription: '這是範例商品描述',
+        productID: '無效的商品ID2',
+	    sellerID: '無效的賣家ID',
+	    productName: '無效的商品名稱',
+	    productDescription: '無效的商品描述',
+	    productPrice: 404,
+	    productImage: `https://picsum.photos/300/300?random=100`,
+	    productType: 'DIRECT',
+	    productCategory: '{資料遺失}',
+	    productStatus: 'ACTIVE',
+	    createdTime: '{資料遺失}',
+	    updatedTime: '{資料遺失}',
+        productStock: 404,
+	    auctionEndTime: '{資料遺失}',
+	    nowHighestBid: 404,
+	    highestBidderID: '無效的出價者ID',
+	    viewCount: 404,
+	    averageRating: 4.04,
+	    reviewCount: 404,
+	    totalSales: 404,
     },
   ]);
 
-  // 商品表單狀態
-  const [newProduct, setNewProduct] = useState({
+  // 商品表單狀態 - 使用完整的 Product 結構
+  const [newProduct, setNewProduct] = useState<Product>({
     productName: '',
     productPrice: 0,
     productStock: 0,
-    productType: 'DIRECT' as const,
+    productType: 'DIRECT',
     productDescription: '',
     productImage: '',
     productCategory: '',
+    productStatus: 'ACTIVE',
+    auctionEndTime: '',
+    nowHighestBid: 0,
   });
 
   // 編輯中的商品
@@ -56,28 +85,42 @@ const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManagePro
     product.productName?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleInputChange = (field: string, value: string | number) => {
+  const handleInputChange = (field: keyof Product, value: string | number) => {
     setNewProduct(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: 調用 API 創建商品
-    console.log('創建商品:', newProduct);
-    alert('商品創建功能開發中...');
-    setNewProduct({
-      productName: '',
-      productPrice: 0,
-      productStock: 0,
-      productType: 'DIRECT',
-      productDescription: '',
-      productImage: '',
-      productCategory: '',
-    });
-    onModeChange('list');
+    
+    try {
+      await createProductMutation.mutateAsync({
+        data: newProduct
+      });
+      
+      alert('商品創建成功！');
+      
+      // 重置表單
+      setNewProduct({
+        productName: '',
+        productPrice: 0,
+        productStock: 0,
+        productType: 'DIRECT',
+        productDescription: '',
+        productImage: '',
+        productCategory: '',
+        productStatus: 'ACTIVE',
+        auctionEndTime: '',
+        nowHighestBid: 0,
+      });
+      
+      onModeChange('list');
+    } catch (error) {
+      console.error('創建商品失敗:', error);
+      alert('創建商品失敗，請稍後再試');
+    }
   };
 
   const handleUpdateProduct = (e: React.FormEvent) => {
@@ -91,7 +134,7 @@ const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManagePro
     onModeChange('list');
   };
 
-  const handleEditInputChange = (field: string, value: string | number) => {
+  const handleEditInputChange = (field: keyof Product, value: string | number) => {
     if (!editingProduct) return;
     setEditingProduct({
       ...editingProduct,
@@ -300,6 +343,31 @@ const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManagePro
           </div>
 
           <div className="form-group">
+            <label className="form-label">商品狀態 *</label>
+            <select
+              value={newProduct.productStatus}
+              onChange={(e) => handleInputChange('productStatus', e.target.value)}
+              className="form-input"
+            >
+              <option value="ACTIVE">上架</option>
+              <option value="INACTIVE">下架</option>
+            </select>
+          </div>
+
+          {newProduct.productType === 'AUCTION' && (
+            <div className="form-group">
+              <label className="form-label">競標結束時間 {newProduct.productType === 'AUCTION' ? '*' : ''}</label>
+              <input
+                type="datetime-local"
+                value={newProduct.auctionEndTime}
+                onChange={(e) => handleInputChange('auctionEndTime', e.target.value)}
+                className="form-input"
+                required={newProduct.productType === 'AUCTION'}
+              />
+            </div>
+          )}
+
+          <div className="form-group">
             <label className="form-label">圖片網址</label>
             <input
               type="url"
@@ -327,13 +395,18 @@ const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManagePro
           </div>
 
           <div className="form-actions">
-            <button type="submit" className="form-btn submit-btn">
-              創建商品
+            <button 
+              type="submit" 
+              className="form-btn submit-btn"
+              disabled={createProductMutation.isPending}
+            >
+              {createProductMutation.isPending ? '創建中...' : '創建商品'}
             </button>
             <button 
               type="button" 
               onClick={() => onModeChange('list')}
               className="form-btn cancel-btn"
+              disabled={createProductMutation.isPending}
             >
               取消
             </button>

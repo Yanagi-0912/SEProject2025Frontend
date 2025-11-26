@@ -56,53 +56,91 @@ function DirectProduct(props: DirectProps) {
             alert('加入購物車失敗，請稍後再試');
         }
     };
+
     return (
-        <div className="product-card">
-        <div><img src={props.productImage} alt={props.productName} /></div>
-        <div className="product-title">{props.productName}</div>
-        <div>產品價格: ${props.productPrice}</div>
-        <div>庫存數量: {props.productStock}</div>
-        <div>目前狀態: {props.productStatus === 'ACTIVE' ? '上架中' : props.productStatus === 'INACTIVE' ? '下架中' : props.productStatus === 'SOLD' ? '已售出' : '已禁用'}</div>
-        <div className="product-rating">平均評分: {props.averageRating}</div>
-        {props.productStatus === 'ACTIVE' ? (
-            <div className='button-card'>
-                <div className='setQuantity'>
-                    <button
-                        type="button"
-                        className="quantityBtn"
-                        onClick={(e) => { e.preventDefault(); setQuantity(prev => Math.max(1, prev - 1)); }}
-                        disabled={quantity <= 1}
-                    > - </button>
-                    <div>{quantity}</div>
-                    <button
-                        type="button"
-                        className='quantityBtn'
-                        onClick={(e) => { e.preventDefault(); setQuantity(prev => Math.min((props.productStock ?? Infinity), prev + 1)); }}
-                        disabled={typeof props.productStock === 'number' ? quantity >= props.productStock : false}
-                    > + </button>
-                </div>
-                <div className='actionButtons'>
-                    <button 
-                        type="button" 
-                        className="cart-button" 
-                        onClick={handleAddToCart}
-                        disabled={quantity <= 0 || addToCartMutation.isPending}
-                    >
-                        {addToCartMutation.isPending ? '加入中...' : '加入購物車'}
-                    </button>
-                    <button
-                        type="button"
-                        className="buy-button"
-                        onClick={() => navigate('/cart')}
-                        disabled={quantity <= 0}
-                    >
-                        立即購買
-                    </button>
-                </div>
+      <div className="direct-card">
+        <div className="direct-image-container">
+          <img src={props.productImage} alt={props.productName} />
+          <div className={`status-badge ${props.productStatus?.toLowerCase()}`}>
+            {props.productStatus === 'ACTIVE' ? '販售中' : props.productStatus === 'INACTIVE' ? '已下架' : props.productStatus === 'SOLD' ? '已售出' : '已禁用'}
+          </div>
+        </div>
+
+        <div className="direct-content">
+          <div className="direct-header">
+            <h2 className="direct-title">{props.productName}</h2>
+            <div className="direct-rating">
+              ⭐ {props.averageRating?.toFixed(1) ?? 'N/A'}
             </div>
-        ) : (
-            <div className='warning-word'>*商品不可購買</div>
-        )}
+          </div>
+
+          <div className={`stock-section ${(props.productStock ?? 0) <= 10 ? 'low' : ''}`}>
+            <div className="stock-label">庫存狀況</div>
+            <div className={`stock-display ${(props.productStock ?? 0) <= 10 ? 'low' : ''}`}>
+              {props.productStock ?? 0} 件
+            </div>
+            {(props.productStock ?? 0) <= 10 && (props.productStock ?? 0) > 0 && (
+              <div className="stock-warning">⚠️ 庫存不足</div>
+            )}
+          </div>
+
+          <div className="price-section-direct">
+            <div className="price-label">商品價格</div>
+            <div className="price-value-large">${props.productPrice?.toLocaleString()}</div>
+          </div>
+
+          {props.productStatus === 'ACTIVE' ? (
+            <div className="purchase-section">
+              <div className="quantity-control">
+                <span className="quantity-label">購買數量</span>
+                <div className="quantity-selector">
+                  <button
+                    type="button"
+                    className="quantity-btn minus"
+                    onClick={(e) => { e.preventDefault(); setQuantity(prev => Math.max(1, prev - 1)); }}
+                    disabled={quantity <= 1}
+                  >
+                    −
+                  </button>
+                  <span className="quantity-display">{quantity}</span>
+                  <button
+                    type="button"
+                    className="quantity-btn plus"
+                    onClick={(e) => { e.preventDefault(); setQuantity(prev => Math.min((props.productStock ?? Infinity), prev + 1)); }}
+                    disabled={typeof props.productStock === 'number' ? quantity >= props.productStock : false}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <div className="action-buttons">
+                <button 
+                  type="button" 
+                  className="cart-button" 
+                  onClick={handleAddToCart}
+                  disabled={quantity <= 0 || addToCartMutation.isPending}
+                >
+                  <span>🛒</span>
+                  {addToCartMutation.isPending ? '加入中...' : '加入購物車'}
+                </button>
+                <button
+                  type="button"
+                  className="buy-button"
+                  onClick={() => { handleAddToCart(); navigate('/cart'); }}
+                  disabled={quantity <= 0}
+                >
+                  <span>⚡</span>
+                  立即購買
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="warning-message">
+              ⚠️ 此商品目前無法購買
+            </div>
+          )}
+        </div>
       </div>    
     );
 }
