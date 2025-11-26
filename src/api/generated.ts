@@ -160,20 +160,20 @@ export interface Product {
   productName?: string;
   productType?: ProductProductType;
   productStatus?: ProductProductStatus;
-  productDescription?: string;
-  viewCount?: number;
-  productCategory?: string;
   averageRating?: number;
-  reviewCount?: number;
-  updatedTime?: string;
+  viewCount?: number;
   totalSales?: number;
   createdTime?: string;
+  productCategory?: string;
+  updatedTime?: string;
+  reviewCount?: number;
   productImage?: string;
-  nowHighestBid?: number;
   productStock?: number;
-  highestBidderID?: string;
-  auctionEndTime?: string;
   productPrice?: number;
+  auctionEndTime?: string;
+  highestBidderID?: string;
+  nowHighestBid?: number;
+  productDescription?: string;
 }
 
 export interface Cart {
@@ -265,6 +265,27 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface SellerInfoResponse {
+  sellerId?: string;
+  username?: string;
+  nickname?: string;
+  address?: string;
+  phoneNumber?: string;
+  email?: string;
+  averageRating?: number;
+  ratingCount?: number;
+  products?: SellerProduct[];
+  totalProducts?: number;
+}
+
+export interface SellerProduct {
+  productId?: string;
+  productName?: string;
+  price?: number;
+  imageUrl?: string;
+  status?: string;
+}
+
 /**
  * 購物車項目詳細資訊
  */
@@ -331,6 +352,14 @@ price: number;
 bidderId: string;
 };
 
+export type GetSellerInfo404 = { [key: string]: unknown };
+
+export type SearchByKeywordParams = {
+keyword: string;
+};
+
+export type SearchByKeyword200 = { [key: string]: unknown };
+
 export type GetAllProductParams = {
 /**
  * 頁碼（從1開始）
@@ -343,6 +372,12 @@ pageSize?: number;
 };
 
 export type GetOrderById200 = { [key: string]: unknown };
+
+export type BlursearchParams = {
+keyword: string;
+};
+
+export type Blursearch200 = { [key: string]: unknown };
 
 /**
  * 手動結束指定商品的拍賣，拍賣結束後將無法再出價
@@ -1380,6 +1415,185 @@ export const useLogin = <TError = AxiosError<unknown>,
     }
     
 /**
+ * 根據指定的使用者 ID 取得該賣家的公開資訊及販售商品列表
+ * @summary 取得賣家資訊
+ */
+export const getSellerInfo = (
+    userId: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<SellerInfoResponse>> => {
+    
+    
+    return axios.default.get(
+      `/api/user/${userId}/seller`,options
+    );
+  }
+
+
+
+
+export const getGetSellerInfoQueryKey = (userId?: string,) => {
+    return [
+    `/api/user/${userId}/seller`
+    ] as const;
+    }
+
+    
+export const getGetSellerInfoQueryOptions = <TData = Awaited<ReturnType<typeof getSellerInfo>>, TError = AxiosError<GetSellerInfo404>>(userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSellerInfo>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSellerInfoQueryKey(userId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSellerInfo>>> = ({ signal }) => getSellerInfo(userId, { signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(userId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSellerInfo>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSellerInfoQueryResult = NonNullable<Awaited<ReturnType<typeof getSellerInfo>>>
+export type GetSellerInfoQueryError = AxiosError<GetSellerInfo404>
+
+
+export function useGetSellerInfo<TData = Awaited<ReturnType<typeof getSellerInfo>>, TError = AxiosError<GetSellerInfo404>>(
+ userId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSellerInfo>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSellerInfo>>,
+          TError,
+          Awaited<ReturnType<typeof getSellerInfo>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSellerInfo<TData = Awaited<ReturnType<typeof getSellerInfo>>, TError = AxiosError<GetSellerInfo404>>(
+ userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSellerInfo>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSellerInfo>>,
+          TError,
+          Awaited<ReturnType<typeof getSellerInfo>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSellerInfo<TData = Awaited<ReturnType<typeof getSellerInfo>>, TError = AxiosError<GetSellerInfo404>>(
+ userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSellerInfo>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 取得賣家資訊
+ */
+
+export function useGetSellerInfo<TData = Awaited<ReturnType<typeof getSellerInfo>>, TError = AxiosError<GetSellerInfo404>>(
+ userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSellerInfo>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSellerInfoQueryOptions(userId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+export const searchByKeyword = (
+    params: SearchByKeywordParams, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<SearchByKeyword200>> => {
+    
+    
+    return axios.default.get(
+      `/api/search`,{
+    ...options,
+        params: {...params, ...options?.params},}
+    );
+  }
+
+
+
+
+export const getSearchByKeywordQueryKey = (params?: SearchByKeywordParams,) => {
+    return [
+    `/api/search`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getSearchByKeywordQueryOptions = <TData = Awaited<ReturnType<typeof searchByKeyword>>, TError = AxiosError<unknown>>(params: SearchByKeywordParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchByKeyword>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSearchByKeywordQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof searchByKeyword>>> = ({ signal }) => searchByKeyword(params, { signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof searchByKeyword>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SearchByKeywordQueryResult = NonNullable<Awaited<ReturnType<typeof searchByKeyword>>>
+export type SearchByKeywordQueryError = AxiosError<unknown>
+
+
+export function useSearchByKeyword<TData = Awaited<ReturnType<typeof searchByKeyword>>, TError = AxiosError<unknown>>(
+ params: SearchByKeywordParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchByKeyword>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof searchByKeyword>>,
+          TError,
+          Awaited<ReturnType<typeof searchByKeyword>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSearchByKeyword<TData = Awaited<ReturnType<typeof searchByKeyword>>, TError = AxiosError<unknown>>(
+ params: SearchByKeywordParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchByKeyword>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof searchByKeyword>>,
+          TError,
+          Awaited<ReturnType<typeof searchByKeyword>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSearchByKeyword<TData = Awaited<ReturnType<typeof searchByKeyword>>, TError = AxiosError<unknown>>(
+ params: SearchByKeywordParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchByKeyword>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useSearchByKeyword<TData = Awaited<ReturnType<typeof searchByKeyword>>, TError = AxiosError<unknown>>(
+ params: SearchByKeywordParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchByKeyword>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSearchByKeywordQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
  * 分頁查詢所有商品，支援自訂每頁商品數量
  * @summary 取得商品列表（分頁）
  */
@@ -1804,6 +2018,93 @@ export const useClearCart = <TError = AxiosError<void>,
       return useMutation(mutationOptions, queryClient);
     }
     
+export const blursearch = (
+    params: BlursearchParams, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<Blursearch200>> => {
+    
+    
+    return axios.default.get(
+      `/api/blursearch`,{
+    ...options,
+        params: {...params, ...options?.params},}
+    );
+  }
+
+
+
+
+export const getBlursearchQueryKey = (params?: BlursearchParams,) => {
+    return [
+    `/api/blursearch`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getBlursearchQueryOptions = <TData = Awaited<ReturnType<typeof blursearch>>, TError = AxiosError<unknown>>(params: BlursearchParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof blursearch>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getBlursearchQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof blursearch>>> = ({ signal }) => blursearch(params, { signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof blursearch>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type BlursearchQueryResult = NonNullable<Awaited<ReturnType<typeof blursearch>>>
+export type BlursearchQueryError = AxiosError<unknown>
+
+
+export function useBlursearch<TData = Awaited<ReturnType<typeof blursearch>>, TError = AxiosError<unknown>>(
+ params: BlursearchParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof blursearch>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof blursearch>>,
+          TError,
+          Awaited<ReturnType<typeof blursearch>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useBlursearch<TData = Awaited<ReturnType<typeof blursearch>>, TError = AxiosError<unknown>>(
+ params: BlursearchParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof blursearch>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof blursearch>>,
+          TError,
+          Awaited<ReturnType<typeof blursearch>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useBlursearch<TData = Awaited<ReturnType<typeof blursearch>>, TError = AxiosError<unknown>>(
+ params: BlursearchParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof blursearch>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useBlursearch<TData = Awaited<ReturnType<typeof blursearch>>, TError = AxiosError<unknown>>(
+ params: BlursearchParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof blursearch>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getBlursearchQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
 /**
  * 查詢所有正在進行拍賣的商品列表
  * @summary 取得所有拍賣中的商品
