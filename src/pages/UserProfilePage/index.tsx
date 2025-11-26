@@ -46,11 +46,15 @@ const UserProfilePage: React.FC = () => {
 				const s = src as Record<string, unknown>;
 				const asString = (v: unknown) => (typeof v === 'string' ? v : v == null ? undefined : String(v));
 				const asNumber = (v: unknown) => (typeof v === 'number' ? v : typeof v === 'string' && v.trim() !== '' ? Number(v) : undefined);
+				
+				const username = asString(s['username']);
+				const nickname = asString(s['nickname']);
+				
 				return {
 					id: asString(s['id']),
-					username: asString(s['username']),
+					username: username,
 					email: asString(s['email']),
-					nickname: asString(s['nickname']),
+					nickname: nickname || username, // 若暱稱為空則使用 username
 					phoneNumber: asString(s['phoneNumber']),
 					address: asString(s['address']),
 					averageRating: asNumber(s['averageRating']),

@@ -12,7 +12,28 @@ const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManagePro
   // TODO: 使用實際的 API 獲取賣家的商品列表
   // const { data: userData } = useGetCurrentUser();
   // const sellerId = userData?.data?.id;
-
+/*
+const SAMPLE_PRODUCT: ProductProps = {
+	productID: '無效的商品ID',
+	sellerID: '無效的賣家ID',
+	productName: '無效的商品名稱',
+	productDescription: '無效的商品描述',
+	productPrice: 404,
+	productImage: `https://picsum.photos/300/300?random=100`,
+	productType: 'INACTIVE',
+	productStock: 404,
+	productCategory: '{資料遺失}',
+	productStatus: 'ACTIVE',
+	createdTime: '{資料遺失}',
+	updatedTime: '{資料遺失}',
+	auctionEndTime: '{資料遺失}',
+	nowHighestBid: 404,
+	highestBidderID: '無效的出價者ID',
+	viewCount: 404,
+	averageRating: 4.04,
+	reviewCount: 404,
+	totalSales: 404,
+};*/
   // TODO: 使用實際的 API 獲取商品
   const [products] = useState<Product[]>([
     {
