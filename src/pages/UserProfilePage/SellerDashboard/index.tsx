@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 import { useGetCurrentUser } from '../../../api/generated';
 import Header from '../../Main/Header';
 import SellerInfo from './SellerInfo';
@@ -10,7 +10,7 @@ import './SellerDashboard.css';
 type ViewMode = 'list' | 'create' | 'edit';
 
 const SellerDashboard = () => {
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -31,14 +31,9 @@ const SellerDashboard = () => {
     setViewMode('list');
   };
 
-  const handleBack = () => {
-    navigate('/user/me');
-  };
-
   return (
     <div className="seller-dashboard-page">
-      <Header page={0} onBack={handleBack} />
-      
+      <Header/>
       <div className="seller-dashboard-container">
         <h1 className="dashboard-title">賣家後台</h1>
         
