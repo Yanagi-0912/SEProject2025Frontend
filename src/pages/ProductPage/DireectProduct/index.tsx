@@ -127,7 +127,7 @@ function DirectProduct(props: DirectProps) {
                 <button
                   type="button"
                   className="buy-button"
-                  onClick={() => navigate('/cart')}
+                  onClick={() => { handleAddToCart(); navigate('/cart'); }}
                   disabled={quantity <= 0}
                 >
                   <span>⚡</span>
