@@ -15,7 +15,6 @@ max-width: 900px;
     min-height: 150px;
     flex-shrink: 0;
     object-fit: cover;
-    background: #000;
     display: block;
     max-width: 320px;
     width: 100%;
