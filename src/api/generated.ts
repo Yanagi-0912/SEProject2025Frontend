@@ -96,6 +96,8 @@ export interface UserInfoResponse {
   averageRating?: number;
   /** 評分次數 */
   ratingCount?: number;
+  /** 是否被封鎖 */
+  isBanned?: boolean;
 }
 
 export type EditProductRequestProductType = typeof EditProductRequestProductType[keyof typeof EditProductRequestProductType];
@@ -134,6 +136,18 @@ export interface UpdateCartQuantityRequest {
   quantity?: number;
 }
 
+export interface Review {
+  userName?: string;
+  userID?: string;
+  reviewID?: string;
+  productID?: string;
+  comment?: string;
+  createdTime?: string;
+  updatedTime?: string;
+  imgURL?: string;
+  startCount?: number;
+}
+
 export type ProductProductType = typeof ProductProductType[keyof typeof ProductProductType];
 
 
@@ -158,22 +172,22 @@ export interface Product {
   productID?: string;
   sellerID?: string;
   productName?: string;
-  productType?: ProductProductType;
-  productStatus?: ProductProductStatus;
-  averageRating?: number;
-  viewCount?: number;
-  totalSales?: number;
-  createdTime?: string;
-  productCategory?: string;
-  updatedTime?: string;
-  reviewCount?: number;
-  productImage?: string;
-  productStock?: number;
-  productPrice?: number;
-  auctionEndTime?: string;
-  highestBidderID?: string;
-  nowHighestBid?: number;
   productDescription?: string;
+  productPrice?: number;
+  productImage?: string;
+  productType?: ProductProductType;
+  productStock?: number;
+  productCategory?: string;
+  productStatus?: ProductProductStatus;
+  createdTime?: string;
+  updatedTime?: string;
+  auctionEndTime?: string;
+  nowHighestBid?: number;
+  highestBidderID?: string;
+  viewCount?: number;
+  averageRating?: number;
+  reviewCount?: number;
+  totalSales?: number;
 }
 
 export interface Cart {
@@ -265,25 +279,26 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface SellerInfoResponse {
-  sellerId?: string;
+/**
+ * 公開使用者資訊
+ */
+export interface PublicUserInfoResponse {
+  /** 使用者 ID */
+  id?: string;
+  /** 使用者名稱 */
   username?: string;
+  /** 使用者暱稱 */
   nickname?: string;
+  /** 地址 */
   address?: string;
+  /** 電話號碼 */
   phoneNumber?: string;
-  email?: string;
+  /** 平均評分 */
   averageRating?: number;
+  /** 評分次數 */
   ratingCount?: number;
-  products?: SellerProduct[];
-  totalProducts?: number;
-}
-
-export interface SellerProduct {
-  productId?: string;
-  productName?: string;
-  price?: number;
-  imageUrl?: string;
-  status?: string;
+  /** 是否被封鎖 */
+  isBanned?: boolean;
 }
 
 /**
@@ -328,6 +343,20 @@ export type UpdatePassword401 = { [key: string]: unknown };
 
 export type UpdateUser401 = { [key: string]: unknown };
 
+export type EditReviewParams = {
+starCount: number;
+content: string;
+imgURL?: string;
+};
+
+export type EditReview200 = { [key: string]: unknown };
+
+export type CreateReview201 = { [key: string]: unknown };
+
+export type CreateReview400 = { [key: string]: unknown };
+
+export type CreateReview500 = { [key: string]: unknown };
+
 export type CreateOrder200 = { [key: string]: unknown };
 
 export type CreateAuctionParams = {
@@ -352,13 +381,16 @@ price: number;
 bidderId: string;
 };
 
-export type GetSellerInfo404 = { [key: string]: unknown };
+export type GetUserById404 = { [key: string]: unknown };
 
 export type SearchByKeywordParams = {
+/**
+ * 搜尋關鍵字 (商品名稱)
+ */
 keyword: string;
 };
 
-export type SearchByKeyword200 = { [key: string]: unknown };
+export type GetAllReviewHistory200Item = { [key: string]: unknown };
 
 export type GetAllProductParams = {
 /**
@@ -374,10 +406,11 @@ pageSize?: number;
 export type GetOrderById200 = { [key: string]: unknown };
 
 export type BlursearchParams = {
+/**
+ * 搜尋關鍵字 (模糊比對)
+ */
 keyword: string;
 };
-
-export type Blursearch200 = { [key: string]: unknown };
 
 /**
  * 手動結束指定商品的拍賣，拍賣結束後將無法再出價
@@ -655,6 +688,64 @@ export const useUpdateUser = <TError = AxiosError<UpdateUser401>,
       > => {
 
       const mutationOptions = getUpdateUserMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+export const editReview = (
+    reviewId: string,
+    params: EditReviewParams, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<EditReview200>> => {
+    
+    
+    return axios.default.put(
+      `/api/reviews/edit/${reviewId}`,undefined,{
+    ...options,
+        params: {...params, ...options?.params},}
+    );
+  }
+
+
+
+export const getEditReviewMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof editReview>>, TError,{reviewId: string;params: EditReviewParams}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof editReview>>, TError,{reviewId: string;params: EditReviewParams}, TContext> => {
+
+const mutationKey = ['editReview'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof editReview>>, {reviewId: string;params: EditReviewParams}> = (props) => {
+          const {reviewId,params} = props ?? {};
+
+          return  editReview(reviewId,params,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type EditReviewMutationResult = NonNullable<Awaited<ReturnType<typeof editReview>>>
+    
+    export type EditReviewMutationError = AxiosError<unknown>
+
+    export const useEditReview = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof editReview>>, TError,{reviewId: string;params: EditReviewParams}, TContext>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof editReview>>,
+        TError,
+        {reviewId: string;params: EditReviewParams},
+        TContext
+      > => {
+
+      const mutationOptions = getEditReviewMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -971,6 +1062,62 @@ export const useRemoveFromCart = <TError = AxiosError<string>,
       > => {
 
       const mutationOptions = getRemoveFromCartMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+export const createReview = (
+    review: Review, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<CreateReview201>> => {
+    
+    
+    return axios.default.post(
+      `/api/reviews/add`,
+      review,options
+    );
+  }
+
+
+
+export const getCreateReviewMutationOptions = <TError = AxiosError<CreateReview400 | CreateReview500>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createReview>>, TError,{data: Review}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof createReview>>, TError,{data: Review}, TContext> => {
+
+const mutationKey = ['createReview'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createReview>>, {data: Review}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createReview(data,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateReviewMutationResult = NonNullable<Awaited<ReturnType<typeof createReview>>>
+    export type CreateReviewMutationBody = Review
+    export type CreateReviewMutationError = AxiosError<CreateReview400 | CreateReview500>
+
+    export const useCreateReview = <TError = AxiosError<CreateReview400 | CreateReview500>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createReview>>, TError,{data: Review}, TContext>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createReview>>,
+        TError,
+        {data: Review},
+        TContext
+      > => {
+
+      const mutationOptions = getCreateReviewMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -1352,6 +1499,68 @@ export const useRegister = <TError = AxiosError<unknown>,
     }
     
 /**
+ * 登出系統。由於 JWT 是無狀態的，客戶端需要刪除儲存的 Token。Token 會在 30 分鐘後自動過期失效。
+ * @summary 使用者登出
+ */
+export const logout = (
+     options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<unknown>> => {
+    
+    
+    return axios.default.post(
+      `/api/auth/logout`,undefined,options
+    );
+  }
+
+
+
+export const getLogoutMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError,void, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError,void, TContext> => {
+
+const mutationKey = ['logout'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof logout>>, void> = () => {
+          
+
+          return  logout(axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type LogoutMutationResult = NonNullable<Awaited<ReturnType<typeof logout>>>
+    
+    export type LogoutMutationError = AxiosError<unknown>
+
+    /**
+ * @summary 使用者登出
+ */
+export const useLogout = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError,void, TContext>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof logout>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getLogoutMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+/**
  * 使用者登入系統。登入成功後返回 JWT Token，前端需要在後續請求的 Authorization Header 中攜帶此 Token。
  * @summary 使用者登入
  */
@@ -1415,85 +1624,93 @@ export const useLogin = <TError = AxiosError<unknown>,
     }
     
 /**
- * 根據指定的使用者 ID 取得該賣家的公開資訊及販售商品列表
- * @summary 取得賣家資訊
+ * 根據使用者 ID 取得該使用者的公開資訊。
+
+**用途**：
+- 查看其他使用者的基本資料
+- 聊天功能顯示對方資訊
+- 商品頁面顯示賣家資訊
+
+**注意**：此 API 不需要登入，且不會返回敏感資訊（如 email）
+
+ * @summary 取得使用者公開資訊
  */
-export const getSellerInfo = (
+export const getUserById = (
     userId: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<SellerInfoResponse>> => {
+ ): Promise<AxiosResponse<PublicUserInfoResponse>> => {
     
     
     return axios.default.get(
-      `/api/user/${userId}/seller`,options
+      `/api/user/${userId}`,options
     );
   }
 
 
 
 
-export const getGetSellerInfoQueryKey = (userId?: string,) => {
+export const getGetUserByIdQueryKey = (userId?: string,) => {
     return [
-    `/api/user/${userId}/seller`
+    `/api/user/${userId}`
     ] as const;
     }
 
     
-export const getGetSellerInfoQueryOptions = <TData = Awaited<ReturnType<typeof getSellerInfo>>, TError = AxiosError<GetSellerInfo404>>(userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSellerInfo>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getGetUserByIdQueryOptions = <TData = Awaited<ReturnType<typeof getUserById>>, TError = AxiosError<GetUserById404>>(userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserById>>, TError, TData>>, axios?: AxiosRequestConfig}
 ) => {
 
 const {query: queryOptions, axios: axiosOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetSellerInfoQueryKey(userId);
+  const queryKey =  queryOptions?.queryKey ?? getGetUserByIdQueryKey(userId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSellerInfo>>> = ({ signal }) => getSellerInfo(userId, { signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUserById>>> = ({ signal }) => getUserById(userId, { signal, ...axiosOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(userId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSellerInfo>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(userId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUserById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetSellerInfoQueryResult = NonNullable<Awaited<ReturnType<typeof getSellerInfo>>>
-export type GetSellerInfoQueryError = AxiosError<GetSellerInfo404>
+export type GetUserByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getUserById>>>
+export type GetUserByIdQueryError = AxiosError<GetUserById404>
 
 
-export function useGetSellerInfo<TData = Awaited<ReturnType<typeof getSellerInfo>>, TError = AxiosError<GetSellerInfo404>>(
- userId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSellerInfo>>, TError, TData>> & Pick<
+export function useGetUserById<TData = Awaited<ReturnType<typeof getUserById>>, TError = AxiosError<GetUserById404>>(
+ userId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserById>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getSellerInfo>>,
+          Awaited<ReturnType<typeof getUserById>>,
           TError,
-          Awaited<ReturnType<typeof getSellerInfo>>
+          Awaited<ReturnType<typeof getUserById>>
         > , 'initialData'
       >, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetSellerInfo<TData = Awaited<ReturnType<typeof getSellerInfo>>, TError = AxiosError<GetSellerInfo404>>(
- userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSellerInfo>>, TError, TData>> & Pick<
+export function useGetUserById<TData = Awaited<ReturnType<typeof getUserById>>, TError = AxiosError<GetUserById404>>(
+ userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserById>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getSellerInfo>>,
+          Awaited<ReturnType<typeof getUserById>>,
           TError,
-          Awaited<ReturnType<typeof getSellerInfo>>
+          Awaited<ReturnType<typeof getUserById>>
         > , 'initialData'
       >, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetSellerInfo<TData = Awaited<ReturnType<typeof getSellerInfo>>, TError = AxiosError<GetSellerInfo404>>(
- userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSellerInfo>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetUserById<TData = Awaited<ReturnType<typeof getUserById>>, TError = AxiosError<GetUserById404>>(
+ userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserById>>, TError, TData>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary 取得賣家資訊
+ * @summary 取得使用者公開資訊
  */
 
-export function useGetSellerInfo<TData = Awaited<ReturnType<typeof getSellerInfo>>, TError = AxiosError<GetSellerInfo404>>(
- userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSellerInfo>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetUserById<TData = Awaited<ReturnType<typeof getUserById>>, TError = AxiosError<GetUserById404>>(
+ userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserById>>, TError, TData>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetSellerInfoQueryOptions(userId,options)
+  const queryOptions = getGetUserByIdQueryOptions(userId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1506,9 +1723,13 @@ export function useGetSellerInfo<TData = Awaited<ReturnType<typeof getSellerInfo
 
 
 
+/**
+ * 根據商品名稱進行精確搜尋，商品名稱需完全符合
+ * @summary 精確搜尋商品
+ */
 export const searchByKeyword = (
     params: SearchByKeywordParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<SearchByKeyword200>> => {
+ ): Promise<AxiosResponse<Product>> => {
     
     
     return axios.default.get(
@@ -1574,6 +1795,9 @@ export function useSearchByKeyword<TData = Awaited<ReturnType<typeof searchByKey
  params: SearchByKeywordParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchByKeyword>>, TError, TData>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 精確搜尋商品
+ */
 
 export function useSearchByKeyword<TData = Awaited<ReturnType<typeof searchByKeyword>>, TError = AxiosError<unknown>>(
  params: SearchByKeywordParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchByKeyword>>, TError, TData>>, axios?: AxiosRequestConfig}
@@ -1581,6 +1805,91 @@ export function useSearchByKeyword<TData = Awaited<ReturnType<typeof searchByKey
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getSearchByKeywordQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+export const getAllReviewHistory = (
+     options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<GetAllReviewHistory200Item[]>> => {
+    
+    
+    return axios.default.get(
+      `/api/reviews/history`,options
+    );
+  }
+
+
+
+
+export const getGetAllReviewHistoryQueryKey = () => {
+    return [
+    `/api/reviews/history`
+    ] as const;
+    }
+
+    
+export const getGetAllReviewHistoryQueryOptions = <TData = Awaited<ReturnType<typeof getAllReviewHistory>>, TError = AxiosError<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllReviewHistory>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAllReviewHistoryQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAllReviewHistory>>> = ({ signal }) => getAllReviewHistory({ signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAllReviewHistory>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAllReviewHistoryQueryResult = NonNullable<Awaited<ReturnType<typeof getAllReviewHistory>>>
+export type GetAllReviewHistoryQueryError = AxiosError<unknown>
+
+
+export function useGetAllReviewHistory<TData = Awaited<ReturnType<typeof getAllReviewHistory>>, TError = AxiosError<unknown>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllReviewHistory>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAllReviewHistory>>,
+          TError,
+          Awaited<ReturnType<typeof getAllReviewHistory>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAllReviewHistory<TData = Awaited<ReturnType<typeof getAllReviewHistory>>, TError = AxiosError<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllReviewHistory>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAllReviewHistory>>,
+          TError,
+          Awaited<ReturnType<typeof getAllReviewHistory>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAllReviewHistory<TData = Awaited<ReturnType<typeof getAllReviewHistory>>, TError = AxiosError<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllReviewHistory>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetAllReviewHistory<TData = Awaited<ReturnType<typeof getAllReviewHistory>>, TError = AxiosError<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllReviewHistory>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAllReviewHistoryQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -2018,9 +2327,13 @@ export const useClearCart = <TError = AxiosError<void>,
       return useMutation(mutationOptions, queryClient);
     }
     
+/**
+ * 根據關鍵字進行模糊搜尋，可搜尋商品名稱、描述等相關內容
+ * @summary 模糊搜尋商品
+ */
 export const blursearch = (
     params: BlursearchParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<Blursearch200>> => {
+ ): Promise<AxiosResponse<Product>> => {
     
     
     return axios.default.get(
@@ -2086,6 +2399,9 @@ export function useBlursearch<TData = Awaited<ReturnType<typeof blursearch>>, TE
  params: BlursearchParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof blursearch>>, TError, TData>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 模糊搜尋商品
+ */
 
 export function useBlursearch<TData = Awaited<ReturnType<typeof blursearch>>, TError = AxiosError<unknown>>(
  params: BlursearchParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof blursearch>>, TError, TData>>, axios?: AxiosRequestConfig}
