@@ -1,5 +1,7 @@
 import './Products.css'
 import { useGetAllProduct, useAddToCart, type Product } from '../../../api/generated'
+import { useSearchParams } from 'react-router-dom'
+import { useBlurSearch } from '../../../api/search'
 
 interface ProductItem {
   id: string;
@@ -18,7 +20,31 @@ interface ProductsProps {
 }
 
 function Products({ page, onProductClick }: ProductsProps) {
-  const { data, isLoading, error } = useGetAllProduct({ page, pageSize: 20 });
+  const [searchParams] = useSearchParams();
+  const keyword = searchParams.get('keyword');
+
+  const { 
+    data: allData, 
+    isLoading: isAllLoading, 
+    error: allError 
+  } = useGetAllProduct(
+    { page, pageSize: 20 },
+    { query: { enabled: !keyword } }
+  );
+
+  const { 
+    data: searchData, 
+    isLoading: isSearchLoading, 
+    error: searchError 
+  } = useBlurSearch(
+    keyword || '',
+    { query: { enabled: !!keyword } }
+  );
+
+  const isLoading = keyword ? isSearchLoading : isAllLoading;
+  const error = keyword ? searchError : allError;
+  const data = keyword ? searchData : allData;
+
   const addToCartMutation = useAddToCart();
   // 正規化資料
   const products: ProductItem[] = data?.data 
@@ -36,8 +62,11 @@ function Products({ page, onProductClick }: ProductsProps) {
     : [];
 
   if (isLoading) return <div>載入中...</div>;
-  if (error) return <div>載入失敗：{error.message}</div>;
-  
+  if (error) {
+    const errorMessage = (error as Error).message || '發生未知錯誤';
+    return <div>載入失敗：{errorMessage}</div>;
+  }
+
   const handleAddToCart = async (product: ProductItem, e: React.MouseEvent) => {
     e.stopPropagation(); // 阻止事件冒泡
     

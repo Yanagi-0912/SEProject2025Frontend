@@ -37,13 +37,32 @@ function Header() {
         }
     };
     
+    const [searchKeyword, setSearchKeyword] = useState('');
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newKeyword = e.target.value;
+        setSearchKeyword(newKeyword);
+        
+        if (newKeyword.trim() === '') {
+            navigate('/');
+        } else {
+            navigate(`/?keyword=${newKeyword}`);
+        }
+    };
+
   return (
     <div className="header-container">
       <button onClick={() => { navigate('/'); window.location.reload(); }} className="back-button">
         <img src="/home-icon.png" alt="回到首頁" className="home-icon-img" />
       </button>
       <div className="search-section">
-        <input  type="text" placeholder="搜尋" className="search-input" />
+        <input 
+          type="text" 
+          placeholder="搜尋" 
+          className="search-input" 
+          value={searchKeyword}
+          onChange={handleSearchChange}
+        />
       </div>
       <div className="actions-section">
         {isLoggedIn ? (
