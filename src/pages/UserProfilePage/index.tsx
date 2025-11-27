@@ -4,7 +4,7 @@ import Header from '../Main/Header';
 import UserProfile from './UserProfile';
 import ControlPanel from './ControlPanel';
 import './UserProfilePage.css';
-import { useGetCurrentUser, useUpdatePassword } from '../../api/generated';
+import { useGetCurrentUser, useUpdatePassword, type Product } from '../../api/generated';
 
 interface UserProps {
   id: string;               // 使用者ID
@@ -15,6 +15,8 @@ interface UserProps {
   address: string;          // 使用者地址
   averageRating?: number;   // 使用者平均評分
   ratingCount?: number;     // 使用者評分數量
+  isBanned?: boolean;      // 使用者是否被封鎖
+  sellingProducts?: Product[]; // 使用者正在販售的商品
 }
 
 const SAMPLE_USER: UserProps = {

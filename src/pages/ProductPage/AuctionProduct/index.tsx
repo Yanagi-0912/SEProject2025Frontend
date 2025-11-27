@@ -1,6 +1,6 @@
-
 import './AuctionProduct.css';
 import { useState, useEffect } from 'react';
+//import { placeBid } from '../../../api/generated';
 
 interface AuctionProps {
     productName?: string;
@@ -57,7 +57,7 @@ function AuctionProduct(props: AuctionProps) {
             const seconds = totalSeconds % 60;
 
             setCountdown(
-                `${String(days).padStart(2, '0')}:${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+                `${String(days).padStart(2, '0')}天${String(hours).padStart(2, '0')}時${String(minutes).padStart(2, '0')}分${String(seconds).padStart(2, '0')}秒`
             );
         };
 
@@ -90,14 +90,7 @@ function AuctionProduct(props: AuctionProps) {
               {countdown}
             </div>
             <div className="countdown-units">
-              {!countdown.includes('年以上') && !countdown.includes('已結束') && !countdown.includes('未設定') && (
-                <div className="time-units">
-                  <span>天</span>
-                  <span>時</span>
-                  <span>分</span>
-                  <span>秒</span>
-                </div>
-              )}
+              {!countdown.includes('年以上') && !countdown.includes('已結束') && !countdown.includes('未設定')}
             </div>
           </div>
 

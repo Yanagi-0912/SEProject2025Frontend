@@ -171,7 +171,7 @@ const ProductPage: React.FC<{ productID?: string }> = ({ productID }) => {
 					highestBidderID={product.highestBidderID}
 				/>
 			)}
-			<Seller sellerID={product.sellerID} />
+			{product.sellerID && <Seller sellerID={product.sellerID} />}
 			<Details
 				productName={product.productName}
 				productDescription={product.productDescription}
