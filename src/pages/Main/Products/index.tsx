@@ -1,7 +1,7 @@
 import './Products.css'
 import { useGetAllProduct, useAddToCart, type Product } from '../../../api/generated'
 import { useSearchParams } from 'react-router-dom'
-import { useBlurSearch } from '../../../api/search'
+import { useBlurSearch, useGetProductsByIds } from '../../../api/search'
 
 interface ProductItem {
   id: string;
@@ -22,30 +22,48 @@ interface ProductsProps {
 function Products({ page, onProductClick }: ProductsProps) {
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get('keyword');
+  const ragIdsParam = searchParams.get('ragIds');
 
-  const { 
-    data: allData, 
-    isLoading: isAllLoading, 
-    error: allError 
-  } = useGetAllProduct(
+  // 簡化：有 ragIds 就用 RAG，有 keyword 就用模糊搜尋，都沒有就顯示全部
+  const ragIds = ragIdsParam ? ragIdsParam.split(',') : [];
+
+  // 1. 全部商品
+  const { data: allData, isLoading: isAllLoading, error: allError } = useGetAllProduct(
     { page, pageSize: 20 },
-    { query: { enabled: !keyword } }
+    { query: { enabled: !keyword && ragIds.length === 0 } }
   );
 
-  const { 
-    data: searchData, 
-    isLoading: isSearchLoading, 
-    error: searchError 
-  } = useBlurSearch(
+  // 2. 模糊搜尋
+  const { data: searchData, isLoading: isSearchLoading, error: searchError } = useBlurSearch(
     keyword || '',
-    { query: { enabled: !!keyword } }
+    { query: { enabled: !!keyword && ragIds.length === 0 } }
   );
 
-  const isLoading = keyword ? isSearchLoading : isAllLoading;
-  const error = keyword ? searchError : allError;
-  const data = keyword ? searchData : allData;
+  // 3. RAG 搜尋
+  const ragQueries = useGetProductsByIds(ragIds);
+  const isRagLoading = ragIds.length > 0 && ragQueries.some(q => q.isLoading);
+  const ragError = ragIds.length > 0 && ragQueries.find(q => q.error)?.error;
+
+  // 整合 RAG 資料
+  let ragData: { data: Product[] } | undefined;
+  if (ragIds.length > 0) {
+    const products = ragQueries
+      .map(q => q.data?.data)
+      .filter((p): p is Product => !!p);
+    if (products.length > 0) {
+      ragData = { data: products };
+    }
+  }
+
+  // 決定顯示的資料和狀態
+  const data = ragIds.length > 0 ? ragData : (keyword ? searchData : allData);
+  const isLoading = ragIds.length > 0 
+    ? (ragData === undefined && isRagLoading)
+    : (keyword ? isSearchLoading : isAllLoading);
+  const error = ragIds.length > 0 ? ragError : (keyword ? searchError : allError);
 
   const addToCartMutation = useAddToCart();
+  
   // 正規化資料
   const products: ProductItem[] = data?.data 
     ? (Array.isArray(data.data) ? data.data : [data.data]).map((p: Product) => ({
@@ -68,7 +86,7 @@ function Products({ page, onProductClick }: ProductsProps) {
   }
 
   const handleAddToCart = async (product: ProductItem, e: React.MouseEvent) => {
-    e.stopPropagation(); // 阻止事件冒泡
+    e.stopPropagation();
     
     if (!product.id) {
       alert('商品ID無效');
@@ -113,9 +131,7 @@ function Products({ page, onProductClick }: ProductsProps) {
                     ? new Date(product.auctionEndTime).toLocaleString('zh-TW') 
                     : '未設定'}
                 </p>
-                <button 
-                  className="add-to-auction-button"
-                >
+                <button className="add-to-auction-button">
                   加入競標
                 </button>
               </>
@@ -141,4 +157,3 @@ function Products({ page, onProductClick }: ProductsProps) {
 }
 
 export default Products
-

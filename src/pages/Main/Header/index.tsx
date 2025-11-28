@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import './Header.css'
+import { ragSearch } from '../../../api/search';
 
 function Header() {
     const navigate = useNavigate();
@@ -50,6 +51,27 @@ function Header() {
         }
     };
 
+    const handleRagSearch = async () => {
+        if (!searchKeyword.trim()) {
+            alert('請輸入搜尋內容');
+            return;
+        }
+
+        try {
+            const ids = await ragSearch(searchKeyword);
+            if (ids && ids.length > 0) {
+                const idString = ids.join(',');
+                // 使用新的參數名稱 ragIds，避免污染一般搜尋的 keyword
+                navigate(`/?ragIds=${idString}`);
+            } else {
+                alert('找不到相關商品');
+            }
+        } catch (error) {
+            console.error('RAG Search failed:', error);
+            alert('RAG 搜尋失敗');
+        }
+    };
+
   return (
     <div className="header-container">
       <button onClick={() => { navigate('/'); window.location.reload(); }} className="back-button">
@@ -58,11 +80,14 @@ function Header() {
       <div className="search-section">
         <input 
           type="text" 
-          placeholder="搜尋" 
+          placeholder="搜尋，輸入商品名稱或描述" 
           className="search-input" 
           value={searchKeyword}
           onChange={handleSearchChange}
         />
+        <button className="search-btn rag-btn" onClick={handleRagSearch}>
+          RAG 搜尋
+        </button>
       </div>
       <div className="actions-section">
         {isLoggedIn ? (
