@@ -5,6 +5,7 @@ import DirectProduct from './DireectProduct';
 import AuctionProduct from './AuctionProduct';
 import Seller from './Seller';
 import Details from './Details';
+import Review from './Review';
 import { useGetProductById } from '../../api/generated';
 
 
@@ -171,7 +172,7 @@ const ProductPage: React.FC<{ productID?: string }> = ({ productID }) => {
 					highestBidderID={product.highestBidderID}
 				/>
 			)}
-			<Seller sellerID={product.sellerID} />
+			{product.sellerID && <Seller sellerID={product.sellerID} />}
 			<Details
 				productName={product.productName}
 				productDescription={product.productDescription}
@@ -180,11 +181,10 @@ const ProductPage: React.FC<{ productID?: string }> = ({ productID }) => {
 				productStatus={product.productStatus}
 				totalSales={product.totalSales}
 				createdTime={product.createdTime}
-				updatedTime={product.updatedTime}
-			/>
+			updatedTime={product.updatedTime}
+		/>
+			{product.productID && <Review productID={product.productID} />}
 		</div>
 	);
-};
-
-export default ProductPage;
+};export default ProductPage;
 

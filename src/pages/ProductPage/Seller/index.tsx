@@ -1,34 +1,41 @@
 import './Seller.css';
+import { useGetUserById } from '../../../api/generated';
 
 interface SellerProps {
-    sellerID?: string;
+    sellerID: string;
 }
 
-interface SellerInfo {
-    userId: string;
-    userNickname: string;
-    averageRating: number;
-    ratingCount: number;
-}
+function Seller({ sellerID }: SellerProps) {
+    const { data: sellerData, isLoading, error } = useGetUserById(sellerID);
+    const seller = sellerData?.data;
 
-function Seller(props: SellerProps) {
-    // API
-    const info : SellerInfo = {
-        userId: props.sellerID || '000000',
-        userNickname: '000000',
-        averageRating: 0,
-        ratingCount: 0
-    };
+    if (isLoading) {
+        return (
+            <div className="seller-card">
+                <h3>賣家資訊</h3>
+                <div>載入中...</div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="seller-card">
+                <h3>賣家資訊</h3>
+                <div>載入失敗</div>
+            </div>
+        );
+    }
 
     return (
         <div>
             <div className="seller-card">
                 <h3>賣家資訊</h3>
-                {info && (
+                {seller && (
                     <div>
-                        <div className="seller-nickname">暱稱: {info.userNickname}</div>
-                        <div>平均評分: {info.averageRating}</div>
-                        <div>評分次數: {info.ratingCount}</div>
+                        <div className="seller-nickname">{seller.nickname || seller.username || '未設定'}</div>
+                        <div>平均評分: ⭐ {seller.averageRating?.toFixed(1) ?? 'N/A'}</div>
+                        <div>評分次數: {seller.ratingCount ?? 0} 次</div>
                     </div>
                 )}
             </div>

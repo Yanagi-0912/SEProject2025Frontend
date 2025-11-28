@@ -5,26 +5,21 @@ import './UserProfile.css';
 interface UserProps {
   id: string;               // 使用者ID
   username: string;         // 使用者名稱
-  email?: string;           // 使用者電子郵件
+  email: string;            // 使用者電子郵件
   nickname: string;         // 使用者暱稱
-  phoneNumber?: string;     // 使用者電話
-  address?: string;         // 使用者地址
+  phoneNumber: string;      // 使用者電話
+  address: string;          // 使用者地址
   averageRating?: number;   // 使用者平均評分
   ratingCount?: number;     // 使用者評分數量
   onUpdateSuccess?: () => void; // 更新成功的回調
-  readOnly?: boolean;       // 是否為只讀模式
 }
 
 function UserProfile(profile: UserProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState<UserProps>(profile);
   const updateUserMutation = useUpdateUser();
-  
-  // 只讀模式不允許編輯
-  const canEdit = !profile.readOnly;
 
   const handleEdit = () => {
-    if (!canEdit) return;
     setIsEditing(true);
     setEditedProfile({ ...profile });
   };
@@ -113,11 +108,11 @@ function UserProfile(profile: UserProps) {
           </div>
           
           <div className="profile-actions">
-            {canEdit && !isEditing ? (
+            {!isEditing ? (
               <button onClick={handleEdit} className="btn btn-primary">
                 編輯個人資料
               </button>
-            ) : canEdit && isEditing ? (
+            ) : (
               <div className="edit-actions">
                 <button 
                   onClick={handleSave} 
@@ -134,7 +129,7 @@ function UserProfile(profile: UserProps) {
                   取消
                 </button>
               </div>
-            ) : null}
+            )}
           </div>
         </div>
 
