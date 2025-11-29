@@ -13,6 +13,7 @@ import Coupons from './pages/MyProfilePage/Coupons'
 import SellerDashboard from './pages/MyProfilePage/SellerDashboard'
 import UserProfilePage from './pages/UserProfilePage'
 import CheckoutPage from './pages/CheckoutPage'
+import FavoriteList from './pages/FavoriteList'
 
 function App() {
   const navigate = useNavigate()
@@ -39,6 +40,9 @@ function App() {
               <Route path="/seller/dashboard" element={<SellerDashboard />} />
           {/* 其他使用者頁 */}
           <Route path="/user/:id" element={<UserProfilePage />} />
+
+          {/* 最愛清單頁面 */}
+          <Route path="/favorites/:id" element={<FavoriteList/>} />
 
           {/* 登入 */}
           <Route path="/login" element={
