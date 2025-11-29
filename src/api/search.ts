@@ -53,12 +53,13 @@ export const useBlurSearch = <TData = AxiosResponse<Product[]>, TError = unknown
 /**
  * RAG 搜尋 API
  * POST http://localhost:5001/api/search
+ * const API_BASE_URL = 'https://carefully-give-prescribed-certificate.trycloudflare.com';
  */
 export const ragSearch = async (
     query: string
 ): Promise<string[]> => {
     const response = await axios.post<string[]>(
-        'http://localhost:5001/api/search',
+        'https://carefully-give-prescribed-certificate.trycloudflare.com/api/search',
         { query }
     );
     return response.data;
