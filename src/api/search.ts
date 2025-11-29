@@ -59,7 +59,7 @@ export const ragSearch = async (
     query: string
 ): Promise<string[]> => {
     const response = await axios.post<string[]>(
-        'https://carefully-give-prescribed-certificate.trycloudflare.com/api/search',
+        ' https://rag-api.jamessu2016.com/api/search',
         { query }
     );
     return response.data;
