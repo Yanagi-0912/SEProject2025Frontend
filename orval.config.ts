@@ -2,7 +2,7 @@ export default {
   auctionSystem: {
     input: 'http://localhost:8080/v3/api-docs',
     output: {
-      target: './src/api/generated.ts',
+      target: './src/api/generated/index.ts',
       client: 'react-query',
       clean: true,
     },
