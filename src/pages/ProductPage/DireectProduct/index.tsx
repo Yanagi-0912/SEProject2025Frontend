@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import './DireectProduct.css';
 import { useState, useEffect } from 'react';
-import { useAddToCart } from '../../../api/generated';
+import { useAddToCart, useGetCurrentUser } from '../../../api/generated';
 
 interface DirectProps {
     productID?: string;
@@ -26,6 +26,10 @@ function DirectProduct(props: DirectProps) {
         return (typeof stock === 'number') ? Math.min(1, Math.max(0, stock)) : 1;
     });
     
+    // 取得目前使用者（若已登入）
+    const { data: currentUserResp } = useGetCurrentUser();
+    const currentUserId = currentUserResp?.data?.id;
+
     // 當 props.productStock 改變時調整 quantity（不超過庫存，若庫存為 0 設為 0）
     useEffect(() => {
         const stock = props.productStock;
@@ -43,6 +47,15 @@ function DirectProduct(props: DirectProps) {
             return;
         }
         
+      // 先使用從 hook 取得的 user id，若沒有則退回到 localStorage 的 username 或 userId
+      const userId = currentUserId || localStorage.getItem('userId') || localStorage.getItem('username') || '';
+      if (!userId) {
+        alert('請先登入以出價');
+        navigate('/login');
+        return;
+      }
+
+
         try {
             await addToCartMutation.mutateAsync({
                 data: {
