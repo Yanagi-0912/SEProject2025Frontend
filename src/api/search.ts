@@ -4,17 +4,18 @@ import { useQuery, useQueries } from '@tanstack/react-query';
 import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 import type { Product } from './generated';
 import { getProductById } from './generated';
+import { PRODUCT_API, RAG_API } from '../config/api';
 
 /**
  * 模糊搜尋 API
- * GET http://localhost:8080/api/blursearch?keyword=...
+ * GET {PRODUCT_API}/api/blursearch?keyword=...
  */
 export const blurSearch = (
     keyword: string,
     options?: AxiosRequestConfig
 ): Promise<AxiosResponse<Product[]>> => {
     return axios.get(
-        `http://localhost:8080/api/blursearch`,
+        `${PRODUCT_API}/api/blursearch`,
         {
             ...options,
             params: { keyword, ...options?.params }
@@ -52,14 +53,13 @@ export const useBlurSearch = <TData = AxiosResponse<Product[]>, TError = unknown
 
 /**
  * RAG 搜尋 API
- * POST http://localhost:5001/api/search
- * const API_BASE_URL = 'https://carefully-give-prescribed-certificate.trycloudflare.com';
+ * POST {RAG_API}/api/search
  */
 export const ragSearch = async (
     query: string
 ): Promise<string[]> => {
     const response = await axios.post<string[]>(
-        'https://rag-api.jamessu2016.com/api/search',
+        `${RAG_API}/api/search`,
         { query }
     );
     return response.data;
