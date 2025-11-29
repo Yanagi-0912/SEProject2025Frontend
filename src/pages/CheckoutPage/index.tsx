@@ -26,17 +26,19 @@ interface SellerGroup {
 interface CheckoutPageProps {
   onBack?: () => void;
   onSuccess?: (orderId: string) => void;
+  orderItems?: SellerGroup[];
 }
 
 const CheckoutPage: React.FC<CheckoutPageProps> = ({
   onBack,
-  onSuccess
+  onSuccess,
+  orderItems: orderItemsProp
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // 從 location.state 接收購物車傳來的資料
-  const orderItems: SellerGroup[] = location.state?.orderItems || [];
+  // 優先從 props 接收，否則從 location.state 接收購物車傳來的資料
+  const orderItems: SellerGroup[] = orderItemsProp || location.state?.orderItems || [];
 
   // 如果沒有商品,跳轉回購物車
   useEffect(() => {
@@ -174,7 +176,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
       console.log("✅ 訂單建立成功:", response.data);
 
-      const orderId = response.data?.orderID || `ORD${Date.now()}`;
+      const orderId: string = (response.data as any)?.orderID || `ORD${Date.now()}`;
 
       // 7. 訂單建立成功後,從購物車移除已結帳的商品
       try {
