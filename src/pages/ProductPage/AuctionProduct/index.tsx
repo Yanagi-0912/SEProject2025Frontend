@@ -1,6 +1,6 @@
 import './AuctionProduct.css';
 import { useState, useEffect, useRef } from 'react';
-import { placeBid, terminateAuction } from '../../../api/generated';
+import { placeBid, terminateAuction, useGetCurrentUser } from '../../../api/generated';
 
 interface AuctionProps {
     productName?: string;
@@ -95,6 +95,10 @@ function AuctionProduct(props: AuctionProps) {
       setCurrentBid(props.nowHighestBid);
     }, [props.nowHighestBid]);
 
+    // 取得目前使用者（若已登入）
+    const { data: currentUserResp } = useGetCurrentUser();
+    const currentUserId = currentUserResp?.data?.id;
+
     const handlePlaceBid = async () => {
       setMessage(null);
       if (props.productID == null) {
@@ -114,8 +118,8 @@ function AuctionProduct(props: AuctionProps) {
         return;
       }
 
-      // 嘗試從 localStorage 取得使用者 id（視專案登入實作而定）
-      const bidderId = localStorage.getItem('userId') || '';
+      // 先使用從 hook 取得的 user id，若沒有則退回到 localStorage 的 username 或 userId
+      const bidderId = currentUserId || localStorage.getItem('userId') || localStorage.getItem('username') || '';
       if (!bidderId) {
         setMessage('請先登入以出價');
         return;
@@ -138,7 +142,11 @@ function AuctionProduct(props: AuctionProps) {
     return (
       <div className="auction-card">
         <div className="auction-image-container">
-          <img src={props.productImage} alt={props.productName} />
+          {props.productImage ? (
+            <img src={props.productImage} alt={props.productName} />
+          ) : (
+            <div className="image-placeholder" aria-hidden>沒有圖片</div>
+          )}
           <div className={`status-badge ${props.productStatus?.toLowerCase()}`}>
             {props.productStatus === 'ACTIVE' ? '競標中' : props.productStatus === 'INACTIVE' ? '已下架' : props.productStatus === 'SOLD' ? '已售出' : '已禁用'}
           </div>

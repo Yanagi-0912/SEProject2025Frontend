@@ -1,5 +1,6 @@
 // CheckoutPage/index.tsx
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import { useLocation, useNavigate } from "react-router-dom";
 import CheckoutHeader from "./CheckoutHeader";
 import OrderSummary from "./OrderSummary";
@@ -212,24 +213,24 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         navigate('/');
       }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("❌ 建立訂單失敗:", error);
 
-      // 更詳細的錯誤訊息
-      if (error.response) {
+      // 更詳細的錯誤訊息 (僅在為 axios 錯誤時讀取 response)
+      if (axios.isAxiosError(error) && error.response) {
         console.error("後端回應:", error.response.data);
         console.error("狀態碼:", error.response.status);
 
-        const errorData = error.response.data;
+        const errorData = error.response.data as unknown;
         let errorMsg = "訂單建立失敗";
 
         // 處理各種錯誤類型
         if (typeof errorData === 'string') {
           errorMsg = errorData;
-        } else if (errorData?.message) {
-          errorMsg = errorData.message;
-        } else if (errorData?.error) {
-          errorMsg = errorData.error;
+        } else if (errorData && typeof errorData === 'object' && 'message' in (errorData as any) && typeof (errorData as any).message === 'string') {
+          errorMsg = (errorData as any).message;
+        } else if (errorData && typeof errorData === 'object' && 'error' in (errorData as any) && typeof (errorData as any).error === 'string') {
+          errorMsg = (errorData as any).error;
         }
 
         // 特別處理庫存不足的錯誤

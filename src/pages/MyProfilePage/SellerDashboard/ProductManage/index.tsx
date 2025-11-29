@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import axios from 'axios';
 import type { Product } from '../../../../api/generated';
 import { useCreateProduct } from '../../../../api/generated';
 import './ProductManage.css';
@@ -73,12 +74,25 @@ const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManagePro
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    // 簡單前端驗證
+    if (!newProduct.productName || newProduct.productName.trim() === '') {
+      alert('請輸入商品名稱');
+      return;
+    }
+
+    if (newProduct.productType === 'AUCTION' && (!newProduct.auctionEndTime || newProduct.auctionEndTime === '')) {
+      alert('競標商品請設定競標結束時間');
+      return;
+    }
+
+    // 印出實際要送的 payload，方便除錯後端回傳 400 的原因
+    console.debug('Create product payload:', newProduct);
+
     try {
       await createProductMutation.mutateAsync({
         data: newProduct
       });
-      
+
       alert('商品創建成功！');
       
       // 重置表單
@@ -96,9 +110,16 @@ const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManagePro
       });
       
       onModeChange('list');
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('創建商品失敗:', error);
-      alert('創建商品失敗，請稍後再試');
+      // 嘗試顯示後端回傳的錯誤內容（若為 axios 錯誤）
+      if (axios.isAxiosError(error) && error.response) {
+        console.error('Server response status:', error.response.status);
+        console.error('Server response data:', error.response.data);
+        alert(`創建商品失敗：${error.response.status} ${JSON.stringify(error.response.data)}`);
+      } else {
+        alert('創建商品失敗，請稍後再試');
+      }
     }
   };
 
@@ -414,7 +435,11 @@ const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManagePro
           {filteredProducts.map(product => (
             <div key={product.productID} className="product-card">
               <div className="product-image">
-                <img src={product.productImage} alt={product.productName} />
+                {product.productImage ? (
+                  <img src={product.productImage} alt={product.productName} />
+                ) : (
+                  <div className="image-placeholder" aria-hidden>沒有圖片</div>
+                )}
                 <span className={`product-badge ${product.productType?.toLowerCase()}`}>
                   {product.productType === 'DIRECT' ? '直購' : '競標'}
                 </span>

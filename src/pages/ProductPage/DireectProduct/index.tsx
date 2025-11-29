@@ -60,7 +60,11 @@ function DirectProduct(props: DirectProps) {
     return (
       <div className="direct-card">
         <div className="direct-image-container">
-          <img src={props.productImage} alt={props.productName} />
+          {props.productImage ? (
+            <img src={props.productImage} alt={props.productName} />
+          ) : (
+            <div className="image-placeholder" aria-hidden>沒有圖片</div>
+          )}
           <div className={`status-badge ${props.productStatus?.toLowerCase()}`}>
             {props.productStatus === 'ACTIVE' ? '販售中' : props.productStatus === 'INACTIVE' ? '已下架' : props.productStatus === 'SOLD' ? '已售出' : '已禁用'}
           </div>
