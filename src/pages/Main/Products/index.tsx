@@ -86,7 +86,7 @@ function Products({ page, onProductClick }: ProductsProps) {
   }
 
   const handleAddToCart = async (product: ProductItem, e: React.MouseEvent) => {
-    e.stopPropagation();
+    e.stopPropagation(); // 阻止事件冒泡
     
     if (!product.id) {
       alert('商品ID無效');
