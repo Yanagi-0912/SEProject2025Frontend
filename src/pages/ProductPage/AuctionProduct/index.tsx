@@ -1,6 +1,7 @@
 import './AuctionProduct.css';
 import { useState, useEffect, useRef } from 'react';
 import { placeBid, terminateAuction, useGetCurrentUser } from '../../../api/generated';
+import { useNavigate } from 'react-router-dom';
 
 interface AuctionProps {
     productName?: string;
@@ -20,7 +21,8 @@ interface AuctionProps {
 type ProductStatuses = 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'BANNED';
 
 function AuctionProduct(props: AuctionProps) {
-    const [countdown, setCountdown] = useState<string>('');
+  const navigator = useRef(useNavigate()).current;
+  const [countdown, setCountdown] = useState<string>('');
   const [bidAmount, setBidAmount] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -118,10 +120,18 @@ function AuctionProduct(props: AuctionProps) {
         return;
       }
 
+      const top = props.productPrice ?? Infinity;
+      if (price > top) {
+        setMessage(`出價不可高於直購價格 $${top.toLocaleString()}`);
+        return;
+      }
+
       // 先使用從 hook 取得的 user id，若沒有則退回到 localStorage 的 username 或 userId
       const bidderId = currentUserId || localStorage.getItem('userId') || localStorage.getItem('username') || '';
       if (!bidderId) {
         setMessage('請先登入以出價');
+        alert('請先登入以出價');
+        navigator('/login');
         return;
       }
 
