@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import './Login.css'
+import { PRODUCT_API } from '../../config/api'
 
 interface LoginProps {
   onGuestLogin?: () => void
@@ -18,7 +19,7 @@ function Login({ onGuestLogin, loginSuccess, onGoToRegister }: LoginProps) {
 
     try {
       //呼叫api 登入
-      const response = await fetch('http://localhost:8080/api/auth/login', {
+      const response = await fetch(`${PRODUCT_API}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

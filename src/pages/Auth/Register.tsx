@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import './Register.css'
+import { PRODUCT_API } from '../../config/api'
 
 interface RegisterProps {
   onBackToLogin?: () => void
@@ -36,7 +37,7 @@ function Register({ onBackToLogin, registerSuccess }: RegisterProps) {
 
     try {
       // 呼叫 API 註冊
-      const response = await fetch('http://localhost:8080/api/auth/register', {
+      const response = await fetch(`${PRODUCT_API}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
