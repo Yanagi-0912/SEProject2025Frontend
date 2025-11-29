@@ -40,27 +40,6 @@ const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManagePro
 	    reviewCount: 404,
 	    totalSales: 404,
     },
-    {
-        productID: '無效的商品ID2',
-	    sellerID: '無效的賣家ID',
-	    productName: '無效的商品名稱',
-	    productDescription: '無效的商品描述',
-	    productPrice: 404,
-	    productImage: `https://picsum.photos/300/300?random=100`,
-	    productType: 'DIRECT',
-	    productCategory: '{資料遺失}',
-	    productStatus: 'ACTIVE',
-	    createdTime: '{資料遺失}',
-	    updatedTime: '{資料遺失}',
-        productStock: 404,
-	    auctionEndTime: '{資料遺失}',
-	    nowHighestBid: 404,
-	    highestBidderID: '無效的出價者ID',
-	    viewCount: 404,
-	    averageRating: 4.04,
-	    reviewCount: 404,
-	    totalSales: 404,
-    },
   ]);
 
   // 商品表單狀態 - 使用完整的 Product 結構
