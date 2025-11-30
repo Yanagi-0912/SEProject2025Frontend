@@ -23,7 +23,7 @@ function Review({ productID, reviews = [] }: ReviewProps) {
             await createReviewMutation.mutateAsync({
                 data: {
                     productID,
-                    startCount: starCount,
+                    starCount: starCount,
                     comment: comment.trim(),
                     imgURL: imgURL.trim() || undefined,
                 }
@@ -114,7 +114,7 @@ function Review({ productID, reviews = [] }: ReviewProps) {
                                             {review.createdTime ? new Date(review.createdTime).toLocaleDateString('zh-TW') : ''}
                                         </span>
                                     </div>
-                                    {renderStars(review.startCount ?? 0)}
+                                    {renderStars(review.starCount ?? 0)}
                                 </div>
                                 
                                 <div className="review-content">

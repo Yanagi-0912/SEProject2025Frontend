@@ -1,6 +1,6 @@
 import './AuctionProduct.css';
 import { useState, useEffect, useRef } from 'react';
-import { placeBid, terminateAuction, useGetCurrentUser } from '../../../api/generated';
+import { placeBid, terminateAuction, useGetCurrentUser, useIsFavorited, useAddToFavorites, useRemoveFromFavorites } from '../../../api/generated';
 import { useNavigate } from 'react-router-dom';
 
 interface AuctionProps {
@@ -29,6 +29,8 @@ function AuctionProduct(props: AuctionProps) {
   const [currentBid, setCurrentBid] = useState<number | undefined>(props.nowHighestBid);
   const [terminated, setTerminated] = useState<boolean>(false);
   const terminatedRef = useRef<boolean>(false);
+  const addToFavoritesMutation = useAddToFavorites();
+  const removeFromFavoritesMutation = useRemoveFromFavorites();
 
     useEffect(() => {
         const calculateCountdown = () => {
@@ -100,6 +102,46 @@ function AuctionProduct(props: AuctionProps) {
     // 取得目前使用者（若已登入）
     const { data: currentUserResp } = useGetCurrentUser();
     const currentUserId = currentUserResp?.data?.id;
+
+    // 檢查是否已收藏
+    const { data: isFavoritedResp, refetch: refetchFavorited } = useIsFavorited(
+        currentUserId || '',
+        props.productID || '',
+        { query: { enabled: !!currentUserId && !!props.productID } }
+    );
+    const isFavorite = isFavoritedResp?.data === true;
+
+    const handleToggleFavorite = async () => {
+        const userId = currentUserId || localStorage.getItem('userId') || localStorage.getItem('username') || '';
+        if (!userId) {
+            alert('請先登入');
+            navigator('/login');
+            return;
+        }
+
+        if (!props.productID) {
+            alert('商品ID無效');
+            return;
+        }
+
+        try {
+            if (isFavorite) {
+                await removeFromFavoritesMutation.mutateAsync({
+                    userId,
+                    productId: props.productID
+                });
+            } else {
+                await addToFavoritesMutation.mutateAsync({
+                    userId,
+                    productId: props.productID
+                });
+            }
+            refetchFavorited();
+        } catch (error) {
+            console.error('收藏操作失敗:', error);
+            alert('收藏操作失敗，請稍後再試');
+        }
+    };
 
     const handlePlaceBid = async () => {
       setMessage(null);
@@ -202,9 +244,19 @@ function AuctionProduct(props: AuctionProps) {
                 onChange={(e) => setBidAmount(e.target.value)}
                 disabled={loading || terminated}
               />
-              <button className="bid-button" onClick={handlePlaceBid} disabled={loading || terminated}>
-                {loading ? '出價中...' : (<><span>🔨</span> 立即出價</>)}
-              </button>
+              <div className="bid-actions">
+                <button className="bid-button" onClick={handlePlaceBid} disabled={loading || terminated}>
+                  {loading ? '出價中...' : (<><span>🔨</span> 立即出價</>)}
+                </button>
+                <button 
+                  className="favorite-button-auction" 
+                  onClick={handleToggleFavorite}
+                  disabled={addToFavoritesMutation.isPending || removeFromFavoritesMutation.isPending}
+                >
+                  <span>{isFavorite ? '❤️' : '🤍'}</span>
+                  {isFavorite ? '移除收藏' : '加入收藏'}
+                </button>
+              </div>
               {message && <div className="bid-message">{message}</div>}
             </div>
           ) : (

@@ -43,6 +43,7 @@ function App() {
 
           {/* 最愛清單頁面 */}
           <Route path="/favorites/:id" element={<FavoriteList/>} />
+          <Route path="/favorites/me" element={<FavoriteList/>} />
 
           {/* 登入 */}
           <Route path="/login" element={

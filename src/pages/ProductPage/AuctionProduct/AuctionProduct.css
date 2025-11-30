@@ -194,6 +194,7 @@
 /* 出價區 */
 .bid-section {
   display: flex;
+  flex-direction: column;
   gap: 12px;
   margin-top: auto;
 }
@@ -218,12 +219,20 @@
   color: #999;
 }
 
-.bid-button {
+.bid-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bid-button,
+.favorite-button-auction {
+  flex: 1;
+  min-width: 120px;
   padding: 14px 32px;
   font-size: 16px;
   font-weight: 600;
   color: white;
-  background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -231,13 +240,45 @@
   box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   white-space: nowrap;
 }
 
-.bid-button:hover {
+.bid-button {
+  background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+}
+
+.bid-button:hover:not(:disabled) {
   background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
   transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(211, 47, 47, 0.4);
+}
+
+.favorite-button-auction {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  color: #d63031;
+  box-shadow: 0 4px 12px rgba(252, 182, 159, 0.3);
+}
+
+.favorite-button-auction:hover:not(:disabled) {
+  background: linear-gradient(135deg, #fcb69f 0%, #ff9a76 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(252, 182, 159, 0.4);
+}
+
+.bid-button:disabled,
+.favorite-button-auction:disabled {
+  background: #bdbdbd;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.bid-button:active:not(:disabled),
+.favorite-button-auction:active:not(:disabled) {
+  transform: translateY(0);
+}
   box-shadow: 0 6px 16px rgba(211, 47, 47, 0.4);
 }
 

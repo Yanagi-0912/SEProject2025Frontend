@@ -273,11 +273,14 @@
 .action-buttons {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .cart-button,
-.buy-button {
+.buy-button,
+.favorite-button {
   flex: 1;
+  min-width: 120px;
   padding: 16px 24px;
   font-size: 16px;
   font-weight: 600;
@@ -314,15 +317,29 @@
   box-shadow: 0 6px 16px rgba(211, 47, 47, 0.4);
 }
 
+.favorite-button {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  color: #d63031;
+  box-shadow: 0 4px 12px rgba(252, 182, 159, 0.3);
+}
+
+.favorite-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #fcb69f 0%, #ff9a76 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(252, 182, 159, 0.4);
+}
+
 .cart-button:disabled,
-.buy-button:disabled {
+.buy-button:disabled,
+.favorite-button:disabled {
   background: #bdbdbd;
   cursor: not-allowed;
   box-shadow: none;
 }
 
 .cart-button:active:not(:disabled),
-.buy-button:active:not(:disabled) {
+.buy-button:active:not(:disabled),
+.favorite-button:active:not(:disabled) {
   transform: translateY(0);
 }
 
