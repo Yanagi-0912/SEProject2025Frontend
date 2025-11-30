@@ -23,9 +23,13 @@ function Products({ page, onProductClick }: ProductsProps) {
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get('keyword');
   const ragIdsParam = searchParams.get('ragIds');
+  const minPriceParam = searchParams.get('minPrice');
+  const maxPriceParam = searchParams.get('maxPrice');
 
   // 簡化：有 ragIds 就用 RAG，有 keyword 就用模糊搜尋，都沒有就顯示全部
   const ragIds = ragIdsParam ? ragIdsParam.split(',') : [];
+  const minPrice = minPriceParam ? Number(minPriceParam) : undefined;
+  const maxPrice = maxPriceParam ? Number(maxPriceParam) : undefined;
 
   // 1. 全部商品
   const { data: allData, isLoading: isAllLoading, error: allError } = useGetAllProduct(
@@ -65,7 +69,7 @@ function Products({ page, onProductClick }: ProductsProps) {
   const addToCartMutation = useAddToCart();
   
   // 正規化資料
-  const products: ProductItem[] = data?.data 
+  let products: ProductItem[] = data?.data 
     ? (Array.isArray(data.data) ? data.data : [data.data]).map((p: Product) => ({
         id: p.productID ?? '',
         name: p.productName ?? '未命名商品',
@@ -78,6 +82,22 @@ function Products({ page, onProductClick }: ProductsProps) {
         ...p
       }))
     : [];
+
+  // 根據價格區間篩選商品（只在有設定價格時才篩選）
+  if (minPrice !== undefined || maxPrice !== undefined) {
+    products = products.filter(product => {
+      // 對於拍賣商品，使用最高出價；對於一般商品，使用價格
+      const productPrice = product.productType === 'AUCTION' 
+        ? (product.nowHighestBid ?? product.price ?? 0)
+        : (product.price ?? 0);
+      
+      // 檢查是否符合價格區間
+      const meetsMinPrice = minPrice === undefined || productPrice >= minPrice;
+      const meetsMaxPrice = maxPrice === undefined || productPrice <= maxPrice;
+      
+      return meetsMinPrice && meetsMaxPrice;
+    });
+  }
 
   if (isLoading) return <div>載入中...</div>;
   if (error) {

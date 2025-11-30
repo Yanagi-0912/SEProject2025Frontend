@@ -1,14 +1,38 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import './Filter.css'
 
 function Filter() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedDepartment, setSelectedDepartment] = useState('all')
   const [selectedBrands, setSelectedBrands] = useState<string[]>([])
   const [selectedReview, setSelectedReview] = useState('all')
   const [showAllDepartments, setShowAllDepartments] = useState(false)
   const [showAllBrands, setShowAllBrands] = useState(false)
-  const [minPrice, setMinPrice] = useState(0)
-  const [maxPrice, setMaxPrice] = useState(50000)
+  
+  // 從 URL 讀取價格參數
+  const minPriceFromUrl = searchParams.get('minPrice');
+  const maxPriceFromUrl = searchParams.get('maxPrice');
+  
+  const [minPrice, setMinPrice] = useState<string>(minPriceFromUrl || '')
+  const [maxPrice, setMaxPrice] = useState<string>(maxPriceFromUrl || '')
+
+  // 當價格改變時，更新 URL 參數
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    if (minPrice && minPrice.trim() !== '') {
+      params.set('minPrice', minPrice);
+    } else {
+      params.delete('minPrice');
+    }
+    if (maxPrice && maxPrice.trim() !== '') {
+      params.set('maxPrice', maxPrice);
+    } else {
+      params.delete('maxPrice');
+    }
+    setSearchParams(params, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [minPrice, maxPrice]);
 
   const departments = [
     { id: 'all', label: '全部' },
@@ -41,9 +65,6 @@ function Filter() {
     )
   }
 
-  const formatPrice = (price: number) => {
-    return `$${price.toLocaleString()}`
-  }
 
   return (
     <div className="filter-container">
@@ -135,39 +156,36 @@ function Filter() {
       {/* Price Section */}
       <div className="filter-section">
         <h3 className="filter-title">價格</h3>
-        <div className="price-range-display">
-          {formatPrice(minPrice)} – {formatPrice(maxPrice)}
-        </div>
-        <div className="price-slider-container">
-          <input
-            type="range"
-            min="0"
-            max="50000"
-            value={minPrice}
-            onChange={(e) => {
-              const value = Number(e.target.value)
-              if (value < maxPrice - 1000) {
-                setMinPrice(value)
-              }
-            }}
-            className="price-range-input min"
-            aria-label="最低價格"
-          />
-          <input
-            type="range"
-            min="0"
-            max="50000"
-            value={maxPrice}
-            onChange={(e) => {
-              const value = Number(e.target.value)
-              if (value > minPrice + 1000) {
-                setMaxPrice(value)
-              }
-            }}
-            className="price-range-input max"
-            aria-label="最高價格"
-          />
-          <div className="price-slider-track"></div>
+        <div className="price-input-container">
+          <div className="price-input-group">
+            <label htmlFor="min-price-input">最低價格</label>
+            <input
+              type="number"
+              id="min-price-input"
+              min="0"
+              value={minPrice}
+              onChange={(e) => {
+                setMinPrice(e.target.value);
+              }}
+              className="price-input"
+              placeholder="最低價格"
+            />
+          </div>
+          <div className="price-separator">–</div>
+          <div className="price-input-group">
+            <label htmlFor="max-price-input">最高價格</label>
+            <input
+              type="number"
+              id="max-price-input"
+              min="0"
+              value={maxPrice}
+              onChange={(e) => {
+                setMaxPrice(e.target.value);
+              }}
+              className="price-input"
+              placeholder="最高價格"
+            />
+          </div>
         </div>
       </div>
     </div>
