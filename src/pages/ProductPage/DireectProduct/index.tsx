@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import './DireectProduct.css';
 import { useState, useEffect } from 'react';
-import { useAddToCart, useGetCurrentUser } from '../../../api/generated';
+import { useAddToCart, useGetCurrentUser, useIsFavorited, useAddToFavorites, useRemoveFromFavorites } from '../../../api/generated';
 
 interface DirectProps {
     productID?: string;
@@ -20,6 +20,8 @@ type ProductStatuses = 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'BANNED';
 function DirectProduct(props: DirectProps) {
     const navigate = useNavigate()
     const addToCartMutation = useAddToCart();
+    const addToFavoritesMutation = useAddToFavorites();
+    const removeFromFavoritesMutation = useRemoveFromFavorites();
     
     const [quantity, setQuantity] = useState<number>(() => {
         const stock = props.productStock;
@@ -29,6 +31,14 @@ function DirectProduct(props: DirectProps) {
     // 取得目前使用者（若已登入）
     const { data: currentUserResp } = useGetCurrentUser();
     const currentUserId = currentUserResp?.data?.id;
+
+    // 檢查是否已收藏
+    const { data: isFavoritedResp, refetch: refetchFavorited } = useIsFavorited(
+        currentUserId || '',
+        props.productID || '',
+        { query: { enabled: !!currentUserId && !!props.productID } }
+    );
+    const isFavorite = isFavoritedResp?.data === true;
 
     // 當 props.productStock 改變時調整 quantity（不超過庫存，若庫存為 0 設為 0）
     useEffect(() => {
@@ -50,7 +60,7 @@ function DirectProduct(props: DirectProps) {
       // 先使用從 hook 取得的 user id，若沒有則退回到 localStorage 的 username 或 userId
       const userId = currentUserId || localStorage.getItem('userId') || localStorage.getItem('username') || '';
       if (!userId) {
-        alert('請先登入以出價');
+        alert('請先登入');
         navigate('/login');
         return;
       }
@@ -67,6 +77,38 @@ function DirectProduct(props: DirectProps) {
         } catch (error) {
             console.error('加入購物車失敗:', error);
             alert('加入購物車失敗，請稍後再試');
+        }
+    };
+
+    const handleToggleFavorite = async () => {
+        const userId = currentUserId || localStorage.getItem('userId') || localStorage.getItem('username') || '';
+        if (!userId) {
+            alert('請先登入');
+            navigate('/login');
+            return;
+        }
+
+        if (!props.productID) {
+            alert('商品ID無效');
+            return;
+        }
+
+        try {
+            if (isFavorite) {
+                await removeFromFavoritesMutation.mutateAsync({
+                    userId,
+                    productId: props.productID
+                });
+            } else {
+                await addToFavoritesMutation.mutateAsync({
+                    userId,
+                    productId: props.productID
+                });
+            }
+            refetchFavorited();
+        } catch (error) {
+            console.error('收藏操作失敗:', error);
+            alert('收藏操作失敗，請稍後再試');
         }
     };
 
@@ -149,6 +191,15 @@ function DirectProduct(props: DirectProps) {
                 >
                   <span>⚡</span>
                   立即購買
+                </button>
+                <button
+                  type="button"
+                  className="favorite-button"
+                  onClick={handleToggleFavorite}
+                  disabled={addToFavoritesMutation.isPending || removeFromFavoritesMutation.isPending}
+                >
+                  <span>{isFavorite ? '❤️' : '🤍'}</span>
+                  {isFavorite ? '移除收藏' : '加入收藏'}
                 </button>
               </div>
             </div>

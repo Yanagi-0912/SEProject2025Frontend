@@ -2,7 +2,7 @@ import Header from '../Main/Header'
 import ProductList from './ProductList'
 import Search from './Search'
 import './FavoriteList.css'
-import { useGetCurrentUser, useGetUserFavorites } from '../../api/generated'
+import { useGetCurrentUser, useGetUserFavorites, useGetFavoritesCount, useClearFavorites } from '../../api/generated'
 import type { FavoriteItemDTO } from '../../api/generated'
 import { useState, useMemo } from 'react'
 
@@ -10,8 +10,13 @@ export default function FavoriteList() {
 	const { data: userResp } = useGetCurrentUser()
 	const currentUserId = userResp?.data?.id
 
-	const favoritesQuery = useGetUserFavorites(currentUserId ?? '')
-
+	const favoritesQuery = useGetUserFavorites(currentUserId ?? '', {
+		query: { enabled: !!currentUserId }
+	})
+	const favoritesCountQuery = useGetFavoritesCount(currentUserId ?? '', {
+		query: { enabled: !!currentUserId }
+	})
+	const clearFavoritesMutation = useClearFavorites()
 
 	const [keyword, setKeyword] = useState('')
 	const [sort, setSort] = useState<'priceAsc' | 'priceDesc' | 'addedAt'>('addedAt')
@@ -35,11 +40,43 @@ export default function FavoriteList() {
 		return list
 	}, [favoritesQuery.data, keyword, sort, filter])
 
+	const handleClearAll = async () => {
+		if (!currentUserId) {
+			alert('請先登入')
+			return
+		}
+
+		if (!confirm('確定要清除所有收藏嗎？')) {
+			return
+		}
+
+		try {
+			await clearFavoritesMutation.mutateAsync({
+				userId: currentUserId
+			})
+			alert('已清除所有收藏')
+			favoritesQuery.refetch()
+			favoritesCountQuery.refetch()
+		} catch (error) {
+			console.error('清除收藏失敗:', error)
+			alert('清除收藏失敗，請稍後再試')
+		}
+	}
+
 	return (
 		<div>
 			<Header />
 			<div className="fav-container">
-				<h2>我的最愛</h2>
+				<div className="fav-header">
+					<h2>我的最愛 ({String(favoritesCountQuery.data?.data ?? 0)})</h2>
+					<button 
+						onClick={handleClearAll}
+						disabled={clearFavoritesMutation.isPending || (filtered.length === 0)}
+						className="clear-all-btn"
+					>
+						{clearFavoritesMutation.isPending ? '清除中...' : '清除全部'}
+					</button>
+				</div>
 				<Search
 					onSearch={(k) => setKeyword(k)}
 					onSort={(s) => setSort(s)}
