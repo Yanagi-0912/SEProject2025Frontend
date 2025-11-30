@@ -1,47 +1,21 @@
 import { useState } from 'react';
 import axios from 'axios';
 import type { Product } from '../../../../api/generated';
-import { useCreateProduct } from '../../../../api/generated';
+import { useCreateProduct, useDeleteProduct, useEditProduct } from '../../../../api/generated';
 import './ProductManage.css';
 
 interface ProductManageProps {
   viewMode: 'list' | 'create' | 'edit';
   searchQuery: string;
+  productList: Product[];
   onModeChange: (mode: 'list' | 'create' | 'edit') => void;
 }
 
 
-const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManageProps) => {
+const ProductManage = ({ viewMode, searchQuery, productList, onModeChange }: ProductManageProps) => {
   const createProductMutation = useCreateProduct();
-  
-  // TODO: 使用實際的 API 獲取賣家的商品列表
-  // const { data: userData } = useGetCurrentUser();
-  // const sellerId = userData?.data?.id;
-
-  // TODO: 使用實際的 API 獲取商品
-  const [products] = useState<Product[]>([
-    {
-        productID: '無效的商品ID',
-	    sellerID: '無效的賣家ID',
-	    productName: '無效的商品名稱',
-	    productDescription: '無效的商品描述',
-	    productPrice: 404,
-	    productImage: `https://picsum.photos/300/300?random=100`,
-	    productType: 'DIRECT',
-	    productCategory: '{資料遺失}',
-	    productStatus: 'ACTIVE',
-	    createdTime: '{資料遺失}',
-	    updatedTime: '{資料遺失}',
-        productStock: 404,
-	    auctionEndTime: '{資料遺失}',
-	    nowHighestBid: 404,
-	    highestBidderID: '無效的出價者ID',
-	    viewCount: 404,
-	    averageRating: 4.04,
-	    reviewCount: 404,
-	    totalSales: 404,
-    },
-  ]);
+  const deleteProductMutation = useDeleteProduct();
+  const editProductMutation = useEditProduct();
 
   // 商品表單狀態 - 使用完整的 Product 結構
   const [newProduct, setNewProduct] = useState<Product>({
@@ -61,7 +35,7 @@ const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManagePro
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   // 過濾商品
-  const filteredProducts = products.filter(product =>
+  const filteredProducts = productList.filter(product =>
     product.productName?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -123,15 +97,47 @@ const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManagePro
     }
   };
 
-  const handleUpdateProduct = (e: React.FormEvent) => {
+  const handleUpdateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingProduct) return;
-    
-    // TODO: 調用 API 更新商品
-    console.log('更新商品:', editingProduct);
-    alert('商品更新功能開發中...');
-    setEditingProduct(null);
-    onModeChange('list');
+    if (!editingProduct || !editingProduct.productID) {
+      alert('商品資訊無效');
+      return;
+    }
+
+    // 前端驗證
+    if (!editingProduct.productName || editingProduct.productName.trim() === '') {
+      alert('請輸入商品名稱');
+      return;
+    }
+
+    if (editingProduct.productType === 'AUCTION' && (!editingProduct.auctionEndTime || editingProduct.auctionEndTime === '')) {
+      alert('競標商品請設定競標結束時間');
+      return;
+    }
+
+    console.debug('Update product payload:', editingProduct);
+
+    try {
+      await editProductMutation.mutateAsync({
+        productID: editingProduct.productID,
+        data: editingProduct
+      });
+
+      alert('商品更新成功！');
+      setEditingProduct(null);
+      onModeChange('list');
+      // 可以在這裡重新查詢商品清單或重整頁面
+      window.location.reload();
+    } catch (error: unknown) {
+      console.error('更新商品失敗:', error);
+      if (axios.isAxiosError(error) && error.response) {
+        console.error('Server response status:', error.response.status);
+        console.error('Server response data:', error.response.data);
+        alert(`更新商品失敗：${error.response.status} ${JSON.stringify(error.response.data)}`);
+      } else {
+        alert('更新商品失敗，請稍後再試');
+      }
+    }
   };
 
   const handleEditInputChange = (field: keyof Product, value: string | number) => {
@@ -143,17 +149,38 @@ const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManagePro
   };
 
   const handleEdit = (productId: string) => {
-    const product = products.find(p => p.productID === productId);
+    const product = productList.find(p => p.productID === productId);
     if (product) {
       setEditingProduct(product);
       onModeChange('edit');
     }
   };
 
-  const handleDelete = (productId: string) => {
-    if (confirm('確定要刪除此商品嗎？')) {
-      console.log('刪除商品:', productId);
-      alert('刪除功能開發中...');
+  const handleDelete = async (productId: string) => {
+    if (!productId) {
+      alert('商品ID無效');
+      return;
+    }
+
+    if (!confirm('確定要刪除此商品嗎？')) {
+      return;
+    }
+
+    try {
+      await deleteProductMutation.mutateAsync({
+        productID: productId
+      });
+      alert('商品刪除成功！');
+      // 可以在這裡重新查詢商品清單或重整頁面
+      window.location.reload();
+    } catch (error) {
+      console.error('刪除商品失敗:', error);
+      if (axios.isAxiosError(error) && error.response) {
+        console.error('Server response:', error.response.data);
+        alert(`刪除商品失敗：${error.response.status} ${JSON.stringify(error.response.data)}`);
+      } else {
+        alert('刪除商品失敗，請稍後再試');
+      }
     }
   };
 
@@ -227,6 +254,33 @@ const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManagePro
           </div>
 
           <div className="form-group">
+            <label className="form-label">商品狀態 *</label>
+            <select
+              value={editingProduct.productStatus || 'ACTIVE'}
+              onChange={(e) => handleEditInputChange('productStatus', e.target.value)}
+              className="form-input"
+            >
+              <option value="ACTIVE">上架</option>
+              <option value="INACTIVE">下架</option>
+              <option value="SOLD">已售出</option>
+              <option value="BANNED">已禁用</option>
+            </select>
+          </div>
+
+          {editingProduct.productType === 'AUCTION' && (
+            <div className="form-group">
+              <label className="form-label">競標結束時間 {editingProduct.productType === 'AUCTION' ? '*' : ''}</label>
+              <input
+                type="datetime-local"
+                value={editingProduct.auctionEndTime || ''}
+                onChange={(e) => handleEditInputChange('auctionEndTime', e.target.value)}
+                className="form-input"
+                required={editingProduct.productType === 'AUCTION'}
+              />
+            </div>
+          )}
+
+          <div className="form-group">
             <label className="form-label">圖片網址</label>
             <input
               type="url"
@@ -254,8 +308,12 @@ const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManagePro
           </div>
 
           <div className="form-actions">
-            <button type="submit" className="form-btn submit-btn">
-              更新商品
+            <button 
+              type="submit" 
+              className="form-btn submit-btn"
+              disabled={editProductMutation.isPending}
+            >
+              {editProductMutation.isPending ? '更新中...' : '更新商品'}
             </button>
             <button 
               type="button" 
@@ -264,6 +322,7 @@ const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManagePro
                 onModeChange('list');
               }}
               className="form-btn cancel-btn"
+              disabled={editProductMutation.isPending}
             >
               取消
             </button>
@@ -351,6 +410,8 @@ const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManagePro
             >
               <option value="ACTIVE">上架</option>
               <option value="INACTIVE">下架</option>
+              <option value="SOLD">已售出</option>
+              <option value="BANNED">已禁用</option>
             </select>
           </div>
 
@@ -464,8 +525,9 @@ const ProductManage = ({ viewMode, searchQuery, onModeChange }: ProductManagePro
                 <button 
                   onClick={() => handleDelete(product.productID ?? '')}
                   className="action-btn delete-btn"
+                  disabled={deleteProductMutation.isPending}
                 >
-                  刪除
+                  {deleteProductMutation.isPending ? '刪除中...' : '刪除'}
                 </button>
               </div>
             </div>
