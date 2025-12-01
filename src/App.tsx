@@ -13,6 +13,7 @@ import Coupons from './pages/MyProfilePage/Coupons'
 import SellerDashboard from './pages/MyProfilePage/SellerDashboard'
 import UserProfilePage from './pages/UserProfilePage'
 import CheckoutPage from './pages/CheckoutPage'
+import ChatRoomPage from './pages/ChatRoomPage'
 import FavoriteList from './pages/FavoriteList'
 
 function App() {
@@ -22,6 +23,9 @@ function App() {
         <Routes>
           {/* 主頁 */}
           <Route path="/" element={<Main />} />
+
+          {/* 聊天室 */}
+          <Route path="/chat" element={<ChatRoomPage onBack={() => navigate('/')} />} />
           
           {/* 購物車 */}
           <Route path="/cart" element={<CartPage onBack={() => navigate('/')} />} />

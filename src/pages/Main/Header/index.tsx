@@ -17,6 +17,9 @@ function Header() {
         navigate('/cart');
     };
 
+    const handleChat = () => {
+        navigate('/chat');
+    };
     const handleFavorite = () => {
         navigate('/favorites/me');
     }

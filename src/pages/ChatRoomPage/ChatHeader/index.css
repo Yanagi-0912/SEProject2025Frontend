@@ -1,0 +1,56 @@
+/* chatroom/ChatHeader/index.css */
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+}
+
+.chat-header-back-btn {
+  padding: 8px 16px;
+  background-color: #444;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.chat-header-back-btn:hover {
+  background-color: #555;
+}
+
+.chat-header-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.chat-header-title {
+  color: white;
+  margin: 0;
+}
+
+.chat-header-status {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.chat-header-status.online {
+  color: #4caf50;
+}
+
+.chat-header-status.offline {
+  color: #888;
+}
+
+.chat-header-spacer {
+  width: 100px;
+}

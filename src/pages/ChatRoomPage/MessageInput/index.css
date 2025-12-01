@@ -1,0 +1,53 @@
+/* chatroom/MessageInput/index.css */
+
+.message-input {
+  display: flex;
+  gap: 10px;
+  padding: 15px;
+  background-color: #333;
+  border-top: 1px solid #444;
+}
+
+.message-textarea {
+  flex: 1;
+  padding: 12px;
+  background-color: #2a2a2a;
+  border: 1px solid #555;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  resize: none;
+  font-family: inherit;
+}
+
+.message-textarea:focus {
+  outline: none;
+  border-color: #5227FF;
+}
+
+.message-textarea::placeholder {
+  color: #888;
+}
+
+.send-button {
+  padding: 12px 30px;
+  background-color: #5227FF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  align-self: flex-end;
+}
+
+.send-button:hover:not(:disabled) {
+  background-color: #6b3dff;
+}
+
+.send-button:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
