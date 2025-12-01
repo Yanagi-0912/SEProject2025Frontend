@@ -50,9 +50,6 @@ const CartItemComponent: React.FC<CartItemProps> = ({
             <div className="cart-item-name">
               {item.product.productName}
             </div>
-            <div className="cart-item-stock">
-              庫存: {item.product.ProductStock}
-            </div>
           </div>
         </div>
       </td>

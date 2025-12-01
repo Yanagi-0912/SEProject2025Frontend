@@ -15,6 +15,7 @@ import UserProfilePage from './pages/UserProfilePage'
 import CheckoutPage from './pages/CheckoutPage'
 import ChatRoomPage from './pages/ChatRoomPage'
 import FavoriteList from './pages/FavoriteList'
+import OrderSuccessPage from './pages/OrderSuccessPage'
 
 function App() {
   const navigate = useNavigate()
@@ -32,6 +33,9 @@ function App() {
 
           {/* 結帳頁面 */}
           <Route path="/checkout" element={<CheckoutPage onBack={() => navigate('/cart')} />} />
+
+          {/* 訂單成功頁面 */}
+          <Route path="/order-success" element={<OrderSuccessPage />} />
           
           {/* 商品詳情 */}
           <Route path="/product/:id" element={<ProductPage />} />

@@ -5,15 +5,24 @@ interface ChatHeaderProps {
   onBack?: () => void;
   otherUserName?: string;
   isOnline?: boolean;
+  onContinueCheckout?: () => void; // 新增：繼續結帳的 callback
 }
 
-const ChatHeader: React.FC<ChatHeaderProps> = ({ onBack, otherUserName, isOnline }) => {
+const ChatHeader: React.FC<ChatHeaderProps> = ({
+  onBack,
+  otherUserName,
+  isOnline,
+  onContinueCheckout
+}) => {
   return (
     <div className="chat-header">
-      <button onClick={onBack} className="chat-header-back-btn">
-        ← 返回
-      </button>
-      <div className="chat-header-info">
+      <div className="chat-header-left">
+        <button onClick={onBack} className="chat-header-back-btn">
+          <span className="icon">⌂</span> 返回首頁
+        </button>
+      </div>
+
+      <div className="chat-header-center">
         <h2 className="chat-header-title">
           {otherUserName || "聊天室"}
         </h2>
@@ -23,7 +32,14 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ onBack, otherUserName, isOnline
           </span>
         )}
       </div>
-      <div className="chat-header-spacer"></div>
+
+      <div className="chat-header-right">
+        {onContinueCheckout && (
+          <button onClick={onContinueCheckout} className="chat-header-checkout-btn">
+            繼續結帳 →
+          </button>
+        )}
+      </div>
     </div>
   );
 };

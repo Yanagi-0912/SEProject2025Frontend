@@ -1,21 +1,20 @@
-// CheckoutPage/index.tsx
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
 import { useLocation, useNavigate } from "react-router-dom";
 import CheckoutHeader from "./CheckoutHeader";
 import OrderSummary from "./OrderSummary";
 import ShippingForm from "./ShippingForm";
 import PaymentForm from "./PaymentForm";
 import { useCreateOrder, useRemoveFromCart } from "../../api/generated";
+import type { Order, OrderItem } from "../../api/generated";
 import "./index.css";
 
 interface CartItem {
-  id: string;          // 購物車項目 ID
-  productId?: string;  // 商品 ID
+  id: string;
+  productId?: string;
   name?: string;
   price: number;
   quantity: number;
-  stock?: number;      // 📦 庫存數量
+  stock?: number;
 }
 
 interface SellerGroup {
@@ -24,42 +23,57 @@ interface SellerGroup {
   items: CartItem[];
 }
 
+interface ShippingAddress {
+  recipientName: string;
+  phone: string;
+  address: string;
+  city: string;
+  postalCode: string;
+}
+
+// 定義 location.state 的結構
+interface CheckoutLocationState {
+  orderItems?: SellerGroup[];
+  shippingAddress?: ShippingAddress;
+}
+
 interface CheckoutPageProps {
   onBack?: () => void;
   onSuccess?: (orderId: string) => void;
-  orderItems?: SellerGroup[];
 }
 
 const CheckoutPage: React.FC<CheckoutPageProps> = ({
   onBack,
-  onSuccess,
-  orderItems: orderItemsProp
+  onSuccess
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // 優先從 props 接收，否則從 location.state 接收購物車傳來的資料
-  const orderItems: SellerGroup[] = orderItemsProp || location.state?.orderItems || [];
+  // 使用型別斷言確保型別安全
+  const state = location.state as CheckoutLocationState | null;
+  const orderItems: SellerGroup[] = state?.orderItems || [];
+  const savedShippingAddress = state?.shippingAddress;
 
-  // 如果沒有商品,跳轉回購物車
   useEffect(() => {
     if (orderItems.length === 0) {
-      alert("購物車是空的,請先選擇商品");
+      alert("購物車是空的，請先選擇商品");
       navigate('/cart');
     }
   }, [orderItems, navigate]);
 
-  const [shippingAddress, setShippingAddress] = useState({
-    recipientName: "",
-    phone: "",
-    address: "",
-    city: "",
-    postalCode: ""
-  });
+  // 如果有保存的地址，使用它來初始化
+  const [shippingAddress, setShippingAddress] = useState<ShippingAddress>(
+    savedShippingAddress || {
+      recipientName: "",
+      phone: "",
+      address: "",
+      city: "",
+      postalCode: ""
+    }
+  );
 
-  const [paymentMethod, setPaymentMethod] = useState("CREDIT_CARD");
+  const [isContactingSellerMode, setIsContactingSellerMode] = useState(false);
 
-  // 使用 generated mutations
   const createOrderMutation = useCreateOrder();
   const removeFromCartMutation = useRemoveFromCart();
 
@@ -69,7 +83,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     );
   }, 0);
 
-  // 檢查是否有庫存不足的商品
   const hasStockIssue = orderItems.some(seller =>
     seller.items.some(item => {
       const stock = item.stock;
@@ -84,7 +97,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     })
   );
 
-  const validateForm = () => {
+  const validateForm = (): boolean => {
     if (!shippingAddress.recipientName.trim()) {
       alert("請輸入收件人姓名");
       return false;
@@ -104,23 +117,38 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     return true;
   };
 
+  const handleContactSeller = () => {
+    setIsContactingSellerMode(true);
+
+    const firstSeller = orderItems[0];
+    if (firstSeller) {
+      navigate('/chat', {
+        state: {
+          sellerId: firstSeller.sellerId,
+          sellerName: firstSeller.sellerName,
+          returnToCheckout: true,
+          checkoutData: {
+            orderItems,
+            shippingAddress // 保存當前填寫的地址
+          }
+        }
+      });
+    }
+  };
+
   const handleSubmitOrder = async () => {
-    // 1. 前端驗證表單
     if (!validateForm()) {
       return;
     }
 
-    // 2. 檢查是否有商品
     if (orderItems.length === 0) {
       alert("購物車是空的");
       return;
     }
 
-    // 3. 檢查商品庫存 (如果有庫存資訊)
     const outOfStockItems = orderItems.flatMap(seller =>
       seller.items.filter(item => {
-        // 如果商品有庫存資訊,檢查是否足夠
-        const stock = (item as any).stock;
+        const stock = item.stock;
         if (stock !== undefined && stock !== null) {
           return item.quantity > stock;
         }
@@ -130,22 +158,20 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
     if (outOfStockItems.length > 0) {
       const itemNames = outOfStockItems.map(item => item.name).join(', ');
-      alert(`以下商品庫存不足,無法結帳:\n${itemNames}\n\n請調整數量或移除商品後再試`);
+      alert(`以下商品庫存不足，無法結帳:\n${itemNames}\n\n請調整數量或移除商品後再試`);
       return;
     }
 
     try {
-      // 3. 準備 Cart 物件 (用於 order.cart)
       const cartItems = orderItems.flatMap(seller =>
         seller.items.map((item: CartItem) => ({
-          itemId: item.id,                    // 購物車項目 ID
-          productId: item.productId || item.id,  // 商品 ID
+          itemId: item.id,
+          productId: item.productId || item.id,
           quantity: item.quantity
         }))
       );
 
-      // 4. 準備 OrderItems 陣列
-      const orderItemsPayload = orderItems.flatMap(seller =>
+      const orderItemsPayload: OrderItem[] = orderItems.flatMap(seller =>
         seller.items.map((item: CartItem) => ({
           productID: item.productId || item.id,
           quantity: item.quantity,
@@ -155,10 +181,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         }))
       );
 
-      // 5. 組合完整的 Order payload
-      const orderPayload = {
-        orderType: "DIRECT" as const,
-        orderStatus: "PENDING" as const,
+      const orderPayload: Order = {
+        orderType: "DIRECT",
+        orderStatus: "PENDING",
         cart: {
           items: cartItems
         },
@@ -167,91 +192,101 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
       console.log("=== 送出訂單資料 ===");
       console.log(JSON.stringify(orderPayload, null, 2));
-      console.log("配送資訊:", shippingAddress);
-      console.log("付款方式:", paymentMethod);
 
-      // 6. 📡 呼叫後端 API 建立訂單
       const response = await createOrderMutation.mutateAsync({
         data: orderPayload
       });
 
       console.log("✅ 訂單建立成功:", response.data);
 
-      const orderId: string = (response.data as any)?.orderID || `ORD${Date.now()}`;
+      const orderId = response.data?.orderID || `ORD${Date.now()}`;
 
-      // 7. 訂單建立成功後,從購物車移除已結帳的商品
       try {
         const itemIdsToRemove = orderItems.flatMap(seller =>
           seller.items.map(item => item.id)
         );
 
-        console.log("準備從購物車移除的商品:", itemIdsToRemove);
-
-        // 🔧 改用循序刪除,避免競態條件
         for (const itemId of itemIdsToRemove) {
           try {
             await removeFromCartMutation.mutateAsync({ itemId });
             console.log(`✅ 已刪除商品: ${itemId}`);
           } catch (err) {
             console.error(`⚠️ 刪除商品 ${itemId} 失敗:`, err);
-            // 繼續刪除其他商品
           }
         }
 
         console.log("✅ 已從購物車移除所有已結帳的商品");
       } catch (removeError) {
         console.error("⚠️ 從購物車移除商品失敗:", removeError);
-        // 不阻止後續流程,因為訂單已經建立成功
       }
 
-      // 8. 成功後跳轉或顯示成功訊息
-      alert(`訂單建立成功!\n訂單編號: ${orderId}\n總金額: $${totalAmount}`);
+      navigate('/order-success', {
+        state: {
+          orderData: {
+            orderID: orderId,
+            totalAmount: totalAmount,
+            orderItems: orderItemsPayload,
+            orderTime: new Date().toISOString(),
+            orderStatus: 'PENDING'
+          }
+        }
+      });
 
       if (onSuccess) {
         onSuccess(orderId);
-      } else {
-        navigate('/');
       }
 
     } catch (error: unknown) {
       console.error("❌ 建立訂單失敗:", error);
 
-      // 更詳細的錯誤訊息 (僅在為 axios 錯誤時讀取 response)
-      if (axios.isAxiosError(error) && error.response) {
-        console.error("後端回應:", error.response.data);
-        console.error("狀態碼:", error.response.status);
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as {
+          response?: {
+            data?: string | { message?: string; error?: string };
+            status?: number;
+          };
+          request?: unknown;
+          message?: string;
+        };
 
-        const errorData = error.response.data as unknown;
-        let errorMsg = "訂單建立失敗";
+        if (axiosError.response) {
+          console.error("後端回應:", axiosError.response.data);
+          console.error("狀態碼:", axiosError.response.status);
 
-        // 處理各種錯誤類型
-        if (typeof errorData === 'string') {
-          errorMsg = errorData;
-        } else if (errorData && typeof errorData === 'object' && 'message' in (errorData as any) && typeof (errorData as any).message === 'string') {
-          errorMsg = (errorData as any).message;
-        } else if (errorData && typeof errorData === 'object' && 'error' in (errorData as any) && typeof (errorData as any).error === 'string') {
-          errorMsg = (errorData as any).error;
+          const errorData = axiosError.response.data;
+          let errorMsg = "訂單建立失敗";
+
+          if (typeof errorData === 'string') {
+            errorMsg = errorData;
+          } else if (errorData && typeof errorData === 'object') {
+            if ('message' in errorData && errorData.message) {
+              errorMsg = errorData.message;
+            } else if ('error' in errorData && errorData.error) {
+              errorMsg = errorData.error;
+            }
+          }
+
+          if (errorMsg.includes("Out of stock") || errorMsg.includes("庫存不足")) {
+            const productMatch = errorMsg.match(/product: (.+?)(?:$|,|\n)/);
+            const productName = productMatch ? productMatch[1] : "某商品";
+
+            alert(
+              `⚠️ 庫存不足\n\n` +
+              `商品「${productName}」的庫存不足，無法完成訂單。\n\n` +
+              `請返回購物車調整數量或移除該商品後再試。`
+            );
+          } else {
+            alert(`訂單建立失敗:\n${errorMsg}`);
+          }
+        } else if (axiosError.request) {
+          console.error("請求已發送但無回應:", axiosError.request);
+          alert("訂單建立失敗: 伺服器無回應，請檢查網路連線");
+        } else if (axiosError.message) {
+          console.error("錯誤訊息:", axiosError.message);
+          alert(`訂單建立失敗: ${axiosError.message}`);
         }
-
-        // 特別處理庫存不足的錯誤
-        if (errorMsg.includes("Out of stock") || errorMsg.includes("庫存不足")) {
-          const productMatch = errorMsg.match(/product: (.+?)(?:$|,|\n)/);
-          const productName = productMatch ? productMatch[1] : "某商品";
-
-          alert(
-            `⚠️ 庫存不足\n\n` +
-            `商品「${productName}」的庫存不足,無法完成訂單。\n\n` +
-            `請返回購物車調整數量或移除該商品後再試。`
-          );
-        } else {
-          alert(`訂單建立失敗:\n${errorMsg}`);
-        }
-      } else if (error.request) {
-        console.error("請求已發送但無回應:", error.request);
-        alert("訂單建立失敗: 伺服器無回應,請檢查網路連線");
       } else {
-        console.error("錯誤訊息:", error.message);
-        alert(`訂單建立失敗: ${error.message}`);
+        alert("訂單建立失敗: 未知錯誤");
       }
     }
   };
@@ -270,17 +305,13 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               address={shippingAddress}
               onChange={setShippingAddress}
             />
-            <PaymentForm
-              selectedMethod={paymentMethod}
-              onChange={setPaymentMethod}
-            />
+            <PaymentForm onContactSeller={handleContactSeller} />
           </div>
 
           <div>
             <div className="checkout-summary-sidebar">
               <h3 className="checkout-summary-title">訂單摘要</h3>
 
-              {/* 庫存警告 */}
               {hasStockIssue && (
                 <div style={{
                   padding: '12px',
@@ -296,7 +327,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   <div style={{ fontSize: '14px' }}>
                     {stockIssueItems.map((item, idx) => (
                       <div key={idx}>
-                        • {item.name}: 需要 {item.quantity} 個,庫存僅剩 {item.stock} 個
+                        • {item.name}: 需要 {item.quantity} 個，庫存僅剩 {item.stock} 個
                       </div>
                     ))}
                   </div>
