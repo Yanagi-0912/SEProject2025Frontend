@@ -105,7 +105,7 @@ function Header() {
         <button type="button" onClick={handleAccount} className="action-button">我的帳號</button>
         <button type="button" onClick={handleCart} className="action-button">購物車</button>
         <button type="button" onClick={handleFavorite} className="action-button">我的最愛</button>
-        <button className="action-button">訊息</button>
+        <button type="button" onClick={handleChat} className="action-button">訊息</button>
       </div>
     </div>
   );

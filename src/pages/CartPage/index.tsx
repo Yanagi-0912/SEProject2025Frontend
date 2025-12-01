@@ -10,6 +10,19 @@ import {
   useRemoveFromCart,
 } from "../../api/generated";
 
+// API 回傳的單一商品結構定義
+interface CartItemResponse {
+  itemId: string;
+  sellerId: string;
+  sellerName: string;
+  productId: string;
+  productName: string;
+  price: number;
+  imageUrl: string;
+  ProductStock: number;
+  quantity: number;
+}
+
 interface Product {
   productID: string;
   productName: string;
@@ -51,10 +64,10 @@ const CartPage: React.FC<CartPageProps> = ({ onBack, onCheckout }) => {
       console.log("API 回應:", data);
 
       if (data.items && Array.isArray(data.items)) {
-        // 按賣家 ID 分組
-        const sellerMap = new Map<string, any[]>();
+        // 按賣家 ID 分組，使用明確的型別取代 any
+        const sellerMap = new Map<string, CartItemResponse[]>();
 
-        data.items.forEach((item: any) => {
+        data.items.forEach((item: CartItemResponse) => {
           const sellerId = item.sellerId;
           if (!sellerMap.has(sellerId)) {
             sellerMap.set(sellerId, []);
@@ -158,12 +171,10 @@ const CartPage: React.FC<CartPageProps> = ({ onBack, onCheckout }) => {
         .find(i => i.id === itemId);
 
       if (cartItem) {
-        // 使用 generated mutation
         await updateQuantityMutation.mutateAsync({
           itemId: itemId,
           data: { quantity: cartItem.quantity }
         });
-
         console.log(`已更新商品 ${itemId} 數量為 ${cartItem.quantity}`);
       }
     } catch (error) {
@@ -176,7 +187,6 @@ const CartPage: React.FC<CartPageProps> = ({ onBack, onCheckout }) => {
   const handleDeleteItem = async (sellerId: string, itemId: string) => {
     if (!confirm("確定要刪除此商品?")) return;
 
-    // 先樂觀更新 UI
     const newCartData = cartData.map(seller => {
       if (seller.sellerId === sellerId) {
         return {
@@ -190,7 +200,6 @@ const CartPage: React.FC<CartPageProps> = ({ onBack, onCheckout }) => {
     setCartData(newCartData);
 
     try {
-      // 使用 generated mutation
       await removeFromCartMutation.mutateAsync({ itemId });
       console.log(`已刪除商品 ${itemId}`);
     } catch (error) {
@@ -232,19 +241,18 @@ const CartPage: React.FC<CartPageProps> = ({ onBack, onCheckout }) => {
         items: seller.items
           .filter(item => item.selected)
           .map(item => ({
-            id: item.id,  // 購物車項目 ID (用於後續刪除)
-            productId: item.product.productID,  // 商品 ID
+            id: item.id,
+            productId: item.product.productID,
             name: item.product.productName,
             price: item.product.ProductPrice,
             quantity: item.quantity,
-            stock: item.product.ProductStock  // 📦 傳遞庫存資訊
+            stock: item.product.ProductStock
           }))
       }))
       .filter(seller => seller.items.length > 0);
 
     console.log("準備結帳的商品:", checkoutData);
 
-    // 如果有 onCheckout 回調就呼叫
     if (onCheckout) {
       onCheckout(cartData
         .map(seller => ({
@@ -255,7 +263,6 @@ const CartPage: React.FC<CartPageProps> = ({ onBack, onCheckout }) => {
         .filter(seller => seller.items.length > 0));
     }
 
-    // 跳轉到結帳頁面,並將商品資料透過 state 傳遞
     navigate('/checkout', {
       state: { orderItems: checkoutData }
     });

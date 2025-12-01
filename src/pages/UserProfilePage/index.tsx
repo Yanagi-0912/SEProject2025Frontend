@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import Header from '../Main/Header';
 import UserProfile from './UserProfile';
 import './UserProfilePage.css';
-import { useGetUserById, type Product } from '../../api/generated';
+import { useGetUserById, type Product } from '../../api/generated/index';
 
 interface UserProps {
   id: string;               // 使用者ID

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import ChatHeader from "./ChatHeader";
 import ChatSidebar from "./ChatSidebar";
 import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
 import "./index.css";
 
-// ========== 聊天室需要的型別定義 ==========
 interface User {
   userId: string;
   userName: string;
@@ -23,42 +23,60 @@ interface Message {
 
 interface ChatRoom {
   roomId: string;
-  otherUser: User;  // 對方（賣家或買家）
+  otherUser: User;
   lastMessage?: Message;
   unreadCount: number;
 }
 
-interface ChatRoomPageProps {
-  onBack?: () => void;
-  currentUserId?: string;  // 當前登入的使用者ID
-  userRole?: "BUYER" | "SELLER";  // 當前使用者角色
+// 引用 CheckoutPage 定義的資料結構
+interface CheckoutData {
+  orderItems: any[]; // 若需嚴格檢查可複製 SellerGroup[] 定義，或設為 any
+  shippingAddress: any; // 若需嚴格檢查可複製 ShippingAddress 定義
 }
 
-// ========== 聊天室主組件 ==========
+interface ChatLocationState {
+  returnToCheckout?: boolean;
+  checkoutData?: CheckoutData;
+  sellerId?: string;
+  sellerName?: string;
+}
+
+interface ChatRoomPageProps {
+  onBack?: () => void;
+  currentUserId?: string;
+  userRole?: "BUYER" | "SELLER";
+}
+
 const ChatRoomPage: React.FC<ChatRoomPageProps> = ({
   onBack,
   currentUserId = "user_123",
   userRole = "BUYER"
 }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // 使用型別斷言
+  const state = location.state as ChatLocationState | null;
+  const returnToCheckout = state?.returnToCheckout || false;
+  const checkoutData = state?.checkoutData;
+  const targetSellerId = state?.sellerId;
+
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<ChatRoom | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // 載入聊天室列表
   useEffect(() => {
     fetchChatRooms();
   }, []);
 
-  // 選擇聊天室時載入訊息
   useEffect(() => {
     if (selectedRoom) {
       fetchMessages(selectedRoom.roomId);
     }
   }, [selectedRoom]);
 
-  // 自動滾動到最新訊息
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -67,15 +85,8 @@ const ChatRoomPage: React.FC<ChatRoomPageProps> = ({
     try {
       setLoading(true);
 
-      // TODO: 等 Orval 生成 API 後使用
-      // import { useChatRooms } from '../api/chat';
-      // const { data } = await getChatRooms();
-      // setChatRooms(data);
-
-      // 模擬資料
       const mockRooms: ChatRoom[] = userRole === "BUYER"
         ? [
-            // 買家看到的是賣家列表
             {
               roomId: "room_1",
               otherUser: {
@@ -109,27 +120,9 @@ const ChatRoomPage: React.FC<ChatRoomPageProps> = ({
                 isRead: true
               },
               unreadCount: 0
-            },
-            {
-              roomId: "room_3",
-              otherUser: {
-                userId: "seller_c",
-                userName: "美食專賣",
-                isOnline: true
-              },
-              lastMessage: {
-                messageId: "msg_3",
-                senderId: "seller_c",
-                senderName: "美食專賣",
-                content: "感謝您的購買！",
-                timestamp: new Date(Date.now() - 86400000).toISOString(),
-                isRead: true
-              },
-              unreadCount: 0
             }
           ]
         : [
-            // 賣家看到的是買家列表
             {
               roomId: "room_1",
               otherUser: {
@@ -146,28 +139,22 @@ const ChatRoomPage: React.FC<ChatRoomPageProps> = ({
                 isRead: false
               },
               unreadCount: 1
-            },
-            {
-              roomId: "room_2",
-              otherUser: {
-                userId: "buyer_b",
-                userName: "買家 李小華",
-                isOnline: false
-              },
-              lastMessage: {
-                messageId: "msg_2",
-                senderId: currentUserId,
-                senderName: "我",
-                content: "好的，我會盡快處理！",
-                timestamp: new Date(Date.now() - 3600000).toISOString(),
-                isRead: true
-              },
-              unreadCount: 0
             }
           ];
 
       setChatRooms(mockRooms);
-      if (mockRooms.length > 0) {
+
+      // 如果從結帳頁跳轉過來，自動選擇對應的賣家
+      if (targetSellerId) {
+        const targetRoom = mockRooms.find(
+          room => room.otherUser.userId === targetSellerId
+        );
+        if (targetRoom) {
+          setSelectedRoom(targetRoom);
+        } else if (mockRooms.length > 0) {
+          setSelectedRoom(mockRooms[0]);
+        }
+      } else if (mockRooms.length > 0) {
         setSelectedRoom(mockRooms[0]);
       }
     } catch (error) {
@@ -179,12 +166,6 @@ const ChatRoomPage: React.FC<ChatRoomPageProps> = ({
 
   const fetchMessages = async (roomId: string) => {
     try {
-      // TODO: 等 Orval 生成 API 後使用
-      // import { useMessages } from '../api/chat';
-      // const { data } = await getMessages(roomId);
-      // setMessages(data);
-
-      // 模擬訊息
       const mockMessages: Message[] = [
         {
           messageId: "msg_1",
@@ -209,20 +190,10 @@ const ChatRoomPage: React.FC<ChatRoomPageProps> = ({
           content: "有的！目前還有庫存",
           timestamp: "2024-01-15T10:06:00",
           isRead: true
-        },
-        {
-          messageId: "msg_4",
-          senderId: selectedRoom?.otherUser.userId || "other",
-          senderName: selectedRoom?.otherUser.userName || "對方",
-          content: "您好，商品已經出貨囉！",
-          timestamp: "2024-01-15T14:30:00",
-          isRead: false
         }
       ];
 
       setMessages(mockMessages);
-
-      // 標記已讀
       markAsRead(roomId);
     } catch (error) {
       console.error("載入訊息失敗:", error);
@@ -230,11 +201,6 @@ const ChatRoomPage: React.FC<ChatRoomPageProps> = ({
   };
 
   const markAsRead = async (roomId: string) => {
-    // TODO: 等 Orval 生成 API 後使用
-    // import { markMessagesAsRead } from '../api/chat';
-    // await markMessagesAsRead(roomId);
-
-    // 更新未讀數
     setChatRooms(chatRooms.map(room =>
       room.roomId === roomId ? { ...room, unreadCount: 0 } : room
     ));
@@ -252,20 +218,11 @@ const ChatRoomPage: React.FC<ChatRoomPageProps> = ({
       isRead: false
     };
 
-    // 立即更新 UI
     setMessages([...messages, newMessage]);
 
     try {
-      // TODO: 等 Orval 生成 API 後使用
-      // import { sendMessage } from '../api/chat';
-      // await sendMessage({
-      //   roomId: selectedRoom.roomId,
-      //   content: content.trim()
-      // });
-
       console.log("發送訊息:", content);
 
-      // 更新聊天室列表的最後訊息
       setChatRooms(chatRooms.map(room =>
         room.roomId === selectedRoom.roomId
           ? { ...room, lastMessage: newMessage }
@@ -274,7 +231,6 @@ const ChatRoomPage: React.FC<ChatRoomPageProps> = ({
     } catch (error) {
       console.error("發送訊息失敗:", error);
       alert("發送失敗，請重試");
-      // 移除失敗的訊息
       setMessages(messages);
     }
   };
@@ -285,6 +241,25 @@ const ChatRoomPage: React.FC<ChatRoomPageProps> = ({
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleBackHome = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      navigate('/');
+    }
+  };
+
+  const handleContinueCheckout = () => {
+    if (checkoutData) {
+      navigate('/checkout', {
+        state: {
+          orderItems: checkoutData.orderItems,
+          shippingAddress: checkoutData.shippingAddress
+        }
+      });
+    }
   };
 
   if (loading) {
@@ -298,13 +273,13 @@ const ChatRoomPage: React.FC<ChatRoomPageProps> = ({
   return (
     <div className="chatroom-container">
       <ChatHeader
-        onBack={onBack}
+        onBack={handleBackHome}
         otherUserName={selectedRoom?.otherUser.userName}
         isOnline={selectedRoom?.otherUser.isOnline}
+        onContinueCheckout={returnToCheckout ? handleContinueCheckout : undefined}
       />
 
       <div className="chatroom-content">
-        {/* 左側：聊天室列表 */}
         <ChatSidebar
           chatRooms={chatRooms}
           selectedRoomId={selectedRoom?.roomId}
@@ -312,7 +287,6 @@ const ChatRoomPage: React.FC<ChatRoomPageProps> = ({
           userRole={userRole}
         />
 
-        {/* 右側：聊天區域 */}
         <div className="chat-main">
           {selectedRoom ? (
             <>
@@ -327,7 +301,7 @@ const ChatRoomPage: React.FC<ChatRoomPageProps> = ({
             </>
           ) : (
             <div className="no-chat-selected">
-              請選擇一個對話
+              請從左側選擇一個對話開始聊天
             </div>
           )}
         </div>
