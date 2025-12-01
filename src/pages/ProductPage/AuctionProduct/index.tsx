@@ -1,6 +1,7 @@
-
 import './AuctionProduct.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { placeBid, terminateAuction, useGetCurrentUser, useIsFavorited, useAddToFavorites, useRemoveFromFavorites } from '../../../api/generated';
+import { useNavigate } from 'react-router-dom';
 
 interface AuctionProps {
     productName?: string;
@@ -20,7 +21,16 @@ interface AuctionProps {
 type ProductStatuses = 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'BANNED';
 
 function AuctionProduct(props: AuctionProps) {
-    const [countdown, setCountdown] = useState<string>('');
+  const navigator = useRef(useNavigate()).current;
+  const [countdown, setCountdown] = useState<string>('');
+  const [bidAmount, setBidAmount] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [currentBid, setCurrentBid] = useState<number | undefined>(props.nowHighestBid);
+  const [terminated, setTerminated] = useState<boolean>(false);
+  const terminatedRef = useRef<boolean>(false);
+  const addToFavoritesMutation = useAddToFavorites();
+  const removeFromFavoritesMutation = useRemoveFromFavorites();
 
     useEffect(() => {
         const calculateCountdown = () => {
@@ -35,6 +45,23 @@ function AuctionProduct(props: AuctionProps) {
 
             if (diff <= 0) {
                 setCountdown('已結束');
+
+                // 如果還沒呼叫過 terminate，則呼叫一次
+                if (!terminatedRef.current && props.productID) {
+                  terminatedRef.current = true;
+                  setTerminated(true);
+                  const pid = props.productID;
+                  (async () => {
+                    try {
+                      await terminateAuction(pid);
+                      setMessage('競標已結束，伺服器已處理終止。');
+                    } catch (err) {
+                      console.error('terminateAuction error', err);
+                      setMessage('競標已結束，但終止 API 發生錯誤');
+                    }
+                  })();
+                }
+
                 return;
             }
 
@@ -57,7 +84,7 @@ function AuctionProduct(props: AuctionProps) {
             const seconds = totalSeconds % 60;
 
             setCountdown(
-                `${String(days).padStart(2, '0')}:${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+                `${String(days).padStart(2, '0')}天${String(hours).padStart(2, '0')}時${String(minutes).padStart(2, '0')}分${String(seconds).padStart(2, '0')}秒`
             );
         };
 
@@ -65,12 +92,113 @@ function AuctionProduct(props: AuctionProps) {
         const timer = setInterval(calculateCountdown, 1000);
 
         return () => clearInterval(timer);
-    }, [props.auctionEndTime]);
+    }, [props.auctionEndTime, props.productID]);
+
+    // keep local currentBid in sync with prop changes
+    useEffect(() => {
+      setCurrentBid(props.nowHighestBid);
+    }, [props.nowHighestBid]);
+
+    // 取得目前使用者（若已登入）
+    const { data: currentUserResp } = useGetCurrentUser();
+    const currentUserId = currentUserResp?.data?.id;
+
+    // 檢查是否已收藏
+    const { data: isFavoritedResp, refetch: refetchFavorited } = useIsFavorited(
+        currentUserId || '',
+        props.productID || '',
+        { query: { enabled: !!currentUserId && !!props.productID } }
+    );
+    const isFavorite = isFavoritedResp?.data === true;
+
+    const handleToggleFavorite = async () => {
+        const userId = currentUserId || localStorage.getItem('userId') || localStorage.getItem('username') || '';
+        if (!userId) {
+            alert('請先登入');
+            navigator('/login');
+            return;
+        }
+
+        if (!props.productID) {
+            alert('商品ID無效');
+            return;
+        }
+
+        try {
+            if (isFavorite) {
+                await removeFromFavoritesMutation.mutateAsync({
+                    userId,
+                    productId: props.productID
+                });
+            } else {
+                await addToFavoritesMutation.mutateAsync({
+                    userId,
+                    productId: props.productID
+                });
+            }
+            refetchFavorited();
+        } catch (error) {
+            console.error('收藏操作失敗:', error);
+            alert('收藏操作失敗，請稍後再試');
+        }
+    };
+
+    const handlePlaceBid = async () => {
+      setMessage(null);
+      if (props.productID == null) {
+        setMessage('商品ID缺失，無法出價');
+        return;
+      }
+
+      const price = Number(bidAmount);
+      if (!bidAmount || isNaN(price) || price <= 0) {
+        setMessage('請輸入有效的出價金額');
+        return;
+      }
+
+      const base = currentBid ?? props.nowHighestBid ?? 0;
+      if (price <= base) {
+        setMessage('出價需高於目前最高價');
+        return;
+      }
+
+      const top = props.productPrice ?? Infinity;
+      if (price > top) {
+        setMessage(`出價不可高於直購價格 $${top.toLocaleString()}`);
+        return;
+      }
+
+      // 先使用從 hook 取得的 user id，若沒有則退回到 localStorage 的 username 或 userId
+      const bidderId = currentUserId || localStorage.getItem('userId') || localStorage.getItem('username') || '';
+      if (!bidderId) {
+        setMessage('請先登入以出價');
+        alert('請先登入以出價');
+        navigator('/login');
+        return;
+      }
+
+      setLoading(true);
+      try {
+        await placeBid(props.productID, { price, bidderId });
+        setMessage('出價成功');
+        setCurrentBid(price);
+        setBidAmount('');
+      } catch (err) {
+        console.error('placeBid error', err);
+        setMessage('出價失敗，請稍後再試');
+      } finally {
+        setLoading(false);
+      }
+    };
 
     return (
       <div className="auction-card">
         <div className="auction-image-container">
-          <img src={props.productImage} alt={props.productName} />
+          {props.productImage ? (
+            <img src={props.productImage} alt={props.productName} />
+          ) : (
+            <div className="image-placeholder" aria-hidden>沒有圖片</div>
+          )}
           <div className={`status-badge ${props.productStatus?.toLowerCase()}`}>
             {props.productStatus === 'ACTIVE' ? '競標中' : props.productStatus === 'INACTIVE' ? '已下架' : props.productStatus === 'SOLD' ? '已售出' : '已禁用'}
           </div>
@@ -90,14 +218,7 @@ function AuctionProduct(props: AuctionProps) {
               {countdown}
             </div>
             <div className="countdown-units">
-              {!countdown.includes('年以上') && !countdown.includes('已結束') && !countdown.includes('未設定') && (
-                <div className="time-units">
-                  <span>天</span>
-                  <span>時</span>
-                  <span>分</span>
-                  <span>秒</span>
-                </div>
-              )}
+              {!countdown.includes('年以上') && !countdown.includes('已結束') && !countdown.includes('未設定')}
             </div>
           </div>
 
@@ -108,21 +229,35 @@ function AuctionProduct(props: AuctionProps) {
             </div>
             <div className="price-item highlight">
               <span className="price-label">目前最高出價</span>
-              <span className="price-value current-bid">${props.nowHighestBid?.toLocaleString()}</span>
+              <span className="price-value current-bid">${currentBid !== undefined ? currentBid.toLocaleString() : (props.nowHighestBid ? props.nowHighestBid.toLocaleString() : '0')}</span>
             </div>
           </div>
 
-          {props.productStatus === 'ACTIVE' ? (
+          {props.productStatus === 'ACTIVE' && !terminated ? (
             <div className="bid-section">
-              <input 
-                type="number" 
-                placeholder="輸入出價金額" 
+              <input
+                type="number"
+                placeholder="輸入出價金額"
                 className="bid-input"
-                min={props.nowHighestBid ? props.nowHighestBid + 1 : 0}
+                min={(currentBid ?? 0) + 1}
+                value={bidAmount}
+                onChange={(e) => setBidAmount(e.target.value)}
+                disabled={loading || terminated}
               />
-              <button className="bid-button">
-                <span>🔨</span> 立即出價
-              </button>
+              <div className="bid-actions">
+                <button className="bid-button" onClick={handlePlaceBid} disabled={loading || terminated}>
+                  {loading ? '出價中...' : (<><span>🔨</span> 立即出價</>)}
+                </button>
+                <button 
+                  className="favorite-button-auction" 
+                  onClick={handleToggleFavorite}
+                  disabled={addToFavoritesMutation.isPending || removeFromFavoritesMutation.isPending}
+                >
+                  <span>{isFavorite ? '❤️' : '🤍'}</span>
+                  {isFavorite ? '移除收藏' : '加入收藏'}
+                </button>
+              </div>
+              {message && <div className="bid-message">{message}</div>}
             </div>
           ) : (
             <div className="warning-message">

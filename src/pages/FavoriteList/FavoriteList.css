@@ -1,0 +1,125 @@
+/* Minimal styling for FavoriteList components */
+.fav-container {
+  max-width: 1100px;
+  margin: 16px auto;
+  padding: 12px;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  color: #222;
+  border: 1px solid #dcdcdc; /* 灰色外框 */
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.fav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.fav-header h2 {
+  margin: 0;
+  flex: 1;
+}
+
+.clear-all-btn {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+  white-space: nowrap;
+}
+
+.clear-all-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ee5a6f 0%, #d63031 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+}
+
+.clear-all-btn:disabled {
+  background: #bdbdbd;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.clear-all-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.fav-search-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.fav-search-input {
+  padding: 8px 10px;
+  flex: 1;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+}
+
+.fav-btn {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: #1976d2;
+  color: white;
+  cursor: pointer;
+}
+.fav-btn.secondary {
+  background: #fff;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.fav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.fav-card {
+  border: 1px solid #dcdcdc;
+  padding: 12px;
+  border-radius: 8px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.fav-image {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.fav-image-placeholder {
+  width: 100%;
+  height: 140px;
+  background: #f5f5f5;
+  display:flex; align-items:center; justify-content:center; border-radius:6px; color:#888;
+}
+
+.fav-title { margin: 8px 0 4px; font-size: 16px }
+.fav-seller { color: #666; margin-bottom: 8px }
+.fav-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px }
+.fav-price { font-weight:700 }
+.fav-status { font-size:12px; color:#888 }
+
+.fav-actions { display:flex; gap:8px }
+
+/* Responsive tweaks */
+@media (max-width: 480px) {
+  .fav-search-row { flex-direction: column; align-items: stretch }
+  .fav-actions { flex-direction: column }
+}

@@ -17,6 +17,8 @@ const SellerDashboard = () => {
   const { data: userData } = useGetCurrentUser();
   const user = userData?.data;
 
+  const productList = user?.sellingProducts || [];
+
   const handleCreateNew = () => {
     setViewMode('create');
   };
@@ -54,6 +56,7 @@ const SellerDashboard = () => {
         <ProductManage 
           viewMode={viewMode}
           searchQuery={searchQuery}
+          productList={productList}
           onModeChange={setViewMode}
         />
       </div>

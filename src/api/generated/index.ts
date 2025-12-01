@@ -76,78 +76,6 @@ export interface UpdateUserRequest {
   phoneNumber?: string;
 }
 
-/**
- * 使用者資訊回應
- */
-export interface UserInfoResponse {
-  /** 使用者 ID */
-  id?: string;
-  /** 使用者名稱 */
-  username?: string;
-  /** 電子郵件 */
-  email?: string;
-  /** 使用者暱稱 */
-  nickname?: string;
-  /** 地址 */
-  address?: string;
-  /** 電話號碼 */
-  phoneNumber?: string;
-  /** 平均評分 */
-  averageRating?: number;
-  /** 評分次數 */
-  ratingCount?: number;
-  /** 是否被封鎖 */
-  isBanned?: boolean;
-}
-
-export type EditProductRequestProductType = typeof EditProductRequestProductType[keyof typeof EditProductRequestProductType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const EditProductRequestProductType = {
-  DIRECT: 'DIRECT',
-  AUCTION: 'AUCTION',
-} as const;
-
-export type EditProductRequestProductStatus = typeof EditProductRequestProductStatus[keyof typeof EditProductRequestProductStatus];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const EditProductRequestProductStatus = {
-  ACTIVE: 'ACTIVE',
-  INACTIVE: 'INACTIVE',
-  SOLD: 'SOLD',
-  BANNED: 'BANNED',
-} as const;
-
-export interface EditProductRequest {
-  productName?: string;
-  productDescription?: string;
-  productImage?: string;
-  productType?: EditProductRequestProductType;
-  productStock?: number;
-  productPrice?: number;
-  productCategory?: string;
-  productStatus?: EditProductRequestProductStatus;
-}
-
-export interface UpdateCartQuantityRequest {
-  /** @minimum 0 */
-  quantity?: number;
-}
-
-export interface Review {
-  userName?: string;
-  userID?: string;
-  reviewID?: string;
-  productID?: string;
-  comment?: string;
-  createdTime?: string;
-  updatedTime?: string;
-  imgURL?: string;
-  startCount?: number;
-}
-
 export type ProductProductType = typeof ProductProductType[keyof typeof ProductProductType];
 
 
@@ -188,6 +116,49 @@ export interface Product {
   averageRating?: number;
   reviewCount?: number;
   totalSales?: number;
+}
+
+/**
+ * 使用者資訊回應
+ */
+export interface UserInfoResponse {
+  /** 使用者 ID */
+  id?: string;
+  /** 使用者名稱 */
+  username?: string;
+  /** 電子郵件 */
+  email?: string;
+  /** 使用者暱稱 */
+  nickname?: string;
+  /** 地址 */
+  address?: string;
+  /** 電話號碼 */
+  phoneNumber?: string;
+  /** 平均評分 */
+  averageRating?: number;
+  /** 評分次數 */
+  ratingCount?: number;
+  /** 是否被封鎖 */
+  isBanned?: boolean;
+  /** 正在販售的商品列表 */
+  sellingProducts?: Product[];
+}
+
+export interface Review {
+  userName?: string;
+  userID?: string;
+  reviewID?: string;
+  productID?: string;
+  comment?: string;
+  createdTime?: string;
+  updatedTime?: string;
+  imgURL?: string;
+  starCount?: number;
+}
+
+export interface UpdateCartQuantityRequest {
+  /** @minimum 0 */
+  quantity?: number;
 }
 
 export interface Cart {
@@ -287,6 +258,8 @@ export interface PublicUserInfoResponse {
   id?: string;
   /** 使用者名稱 */
   username?: string;
+  /** 電子郵件 */
+  email?: string;
   /** 使用者暱稱 */
   nickname?: string;
   /** 地址 */
@@ -299,6 +272,44 @@ export interface PublicUserInfoResponse {
   ratingCount?: number;
   /** 是否被封鎖 */
   isBanned?: boolean;
+  /** 正在販售的商品列表 */
+  sellingProducts?: Product[];
+}
+
+/**
+ * 收藏項目詳細資訊
+ */
+export interface FavoriteItemDTO {
+  /** 商品 ID */
+  productId?: string;
+  /** 商品名稱 */
+  productName?: string;
+  /** 商品價格 */
+  productPrice?: number;
+  /** 商品圖片 URL */
+  productImage?: string;
+  /** 商品類型 */
+  productType?: string;
+  /** 商品狀態 */
+  productStatus?: string;
+  /** 賣家 ID */
+  sellerId?: string;
+  /** 賣家名稱 */
+  sellerName?: string;
+  /** 加入收藏的時間 */
+  addedAt?: string;
+}
+
+/**
+ * 收藏清單完整回應
+ */
+export interface FavoriteResponseDTO {
+  /** 使用者 ID */
+  userId?: string;
+  /** 收藏項目列表 */
+  items?: FavoriteItemDTO[];
+  /** 總收藏數 */
+  totalItems?: number;
 }
 
 /**
@@ -344,20 +355,19 @@ export type UpdatePassword401 = { [key: string]: unknown };
 export type UpdateUser401 = { [key: string]: unknown };
 
 export type EditReviewParams = {
+/**
+ * 星等
+ */
 starCount: number;
-content: string;
+/**
+ * 評論內容
+ */
+comment: string;
+/**
+ * 圖片 URL（可選）
+ */
 imgURL?: string;
 };
-
-export type EditReview200 = { [key: string]: unknown };
-
-export type CreateReview201 = { [key: string]: unknown };
-
-export type CreateReview400 = { [key: string]: unknown };
-
-export type CreateReview500 = { [key: string]: unknown };
-
-export type CreateOrder200 = { [key: string]: unknown };
 
 export type CreateAuctionParams = {
 /**
@@ -390,8 +400,6 @@ export type SearchByKeywordParams = {
 keyword: string;
 };
 
-export type GetAllReviewHistory200Item = { [key: string]: unknown };
-
 export type GetAllProductParams = {
 /**
  * 頁碼（從1開始）
@@ -403,7 +411,22 @@ page?: number;
 pageSize?: number;
 };
 
-export type GetOrderById200 = { [key: string]: unknown };
+export type GetAllProduct404 = { [key: string]: unknown };
+
+export type GetAllProductsSortedParams = {
+/**
+ * 輸入商品屬性並針對其作排序，輸入不存在的屬性預設依照名稱排序
+ */
+sortBy?: string;
+/**
+ * 輸入desc為降序排序，輸入其他值就用升序排序
+ */
+order?: string;
+};
+
+export type GetAllProductsSorted200 = { [key: string]: unknown };
+
+export type GetAllProductsSorted404 = { [key: string]: unknown };
 
 export type BlursearchParams = {
 /**
@@ -538,7 +561,7 @@ export const useUpdatePassword = <TError = AxiosError<UpdatePassword401>,
     }
     
 /**
- * 取得當前登入使用者的詳細資訊
+ * 取得當前登入使用者的詳細資訊，包含正在販售的商品列表
  * @summary 取得當前使用者資訊
  */
 export const getCurrentUser = (
@@ -692,10 +715,14 @@ export const useUpdateUser = <TError = AxiosError<UpdateUser401>,
       return useMutation(mutationOptions, queryClient);
     }
     
+/**
+ * 依據 reviewId 修改評論內容、星等與圖片（圖片可選）
+ * @summary 修改評論
+ */
 export const editReview = (
     reviewId: string,
     params: EditReviewParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<EditReview200>> => {
+ ): Promise<AxiosResponse<Review>> => {
     
     
     return axios.default.put(
@@ -736,7 +763,10 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
     
     export type EditReviewMutationError = AxiosError<unknown>
 
-    export const useEditReview = <TError = AxiosError<unknown>,
+    /**
+ * @summary 修改評論
+ */
+export const useEditReview = <TError = AxiosError<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof editReview>>, TError,{reviewId: string;params: EditReviewParams}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof editReview>>,
@@ -880,21 +910,21 @@ export const usePublishProduct = <TError = AxiosError<unknown>,
  */
 export const editProduct = (
     productID: string,
-    editProductRequest: EditProductRequest, options?: AxiosRequestConfig
+    product: Product, options?: AxiosRequestConfig
  ): Promise<AxiosResponse<unknown>> => {
     
     
     return axios.default.put(
       `/api/products/edit/${productID}`,
-      editProductRequest,options
+      product,options
     );
   }
 
 
 
 export const getEditProductMutationOptions = <TError = AxiosError<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof editProduct>>, TError,{productID: string;data: EditProductRequest}, TContext>, axios?: AxiosRequestConfig}
-): UseMutationOptions<Awaited<ReturnType<typeof editProduct>>, TError,{productID: string;data: EditProductRequest}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof editProduct>>, TError,{productID: string;data: Product}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof editProduct>>, TError,{productID: string;data: Product}, TContext> => {
 
 const mutationKey = ['editProduct'];
 const {mutation: mutationOptions, axios: axiosOptions} = options ?
@@ -906,7 +936,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof editProduct>>, {productID: string;data: EditProductRequest}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof editProduct>>, {productID: string;data: Product}> = (props) => {
           const {productID,data} = props ?? {};
 
           return  editProduct(productID,data,axiosOptions)
@@ -918,22 +948,83 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type EditProductMutationResult = NonNullable<Awaited<ReturnType<typeof editProduct>>>
-    export type EditProductMutationBody = EditProductRequest
+    export type EditProductMutationBody = Product
     export type EditProductMutationError = AxiosError<unknown>
 
     /**
  * @summary 修改商品資訊
  */
 export const useEditProduct = <TError = AxiosError<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof editProduct>>, TError,{productID: string;data: EditProductRequest}, TContext>, axios?: AxiosRequestConfig}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof editProduct>>, TError,{productID: string;data: Product}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof editProduct>>,
         TError,
-        {productID: string;data: EditProductRequest},
+        {productID: string;data: Product},
         TContext
       > => {
 
       const mutationOptions = getEditProductMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+/**
+ * @summary 依照訂單ID結帳
+ */
+export const payOrder = (
+    orderID: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<unknown>> => {
+    
+    
+    return axios.default.put(
+      `/api/orders/pay/${orderID}`,undefined,options
+    );
+  }
+
+
+
+export const getPayOrderMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof payOrder>>, TError,{orderID: string}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof payOrder>>, TError,{orderID: string}, TContext> => {
+
+const mutationKey = ['payOrder'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof payOrder>>, {orderID: string}> = (props) => {
+          const {orderID} = props ?? {};
+
+          return  payOrder(orderID,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PayOrderMutationResult = NonNullable<Awaited<ReturnType<typeof payOrder>>>
+    
+    export type PayOrderMutationError = AxiosError<unknown>
+
+    /**
+ * @summary 依照訂單ID結帳
+ */
+export const usePayOrder = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof payOrder>>, TError,{orderID: string}, TContext>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof payOrder>>,
+        TError,
+        {orderID: string},
+        TContext
+      > => {
+
+      const mutationOptions = getPayOrderMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -1066,9 +1157,13 @@ export const useRemoveFromCart = <TError = AxiosError<string>,
       return useMutation(mutationOptions, queryClient);
     }
     
+/**
+ * 建立新的商品評論，需確認使用者已購買該商品且未評論過
+ * @summary 新增評論
+ */
 export const createReview = (
     review: Review, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<CreateReview201>> => {
+ ): Promise<AxiosResponse<Review>> => {
     
     
     return axios.default.post(
@@ -1079,7 +1174,7 @@ export const createReview = (
 
 
 
-export const getCreateReviewMutationOptions = <TError = AxiosError<CreateReview400 | CreateReview500>,
+export const getCreateReviewMutationOptions = <TError = AxiosError<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createReview>>, TError,{data: Review}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof createReview>>, TError,{data: Review}, TContext> => {
 
@@ -1106,9 +1201,12 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type CreateReviewMutationResult = NonNullable<Awaited<ReturnType<typeof createReview>>>
     export type CreateReviewMutationBody = Review
-    export type CreateReviewMutationError = AxiosError<CreateReview400 | CreateReview500>
+    export type CreateReviewMutationError = AxiosError<unknown>
 
-    export const useCreateReview = <TError = AxiosError<CreateReview400 | CreateReview500>,
+    /**
+ * @summary 新增評論
+ */
+export const useCreateReview = <TError = AxiosError<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createReview>>, TError,{data: Review}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createReview>>,
@@ -1185,9 +1283,12 @@ export const useCreateProduct = <TError = AxiosError<unknown>,
       return useMutation(mutationOptions, queryClient);
     }
     
+/**
+ * @summary 建立訂單
+ */
 export const createOrder = (
     order: Order, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<CreateOrder200>> => {
+ ): Promise<AxiosResponse<unknown>> => {
     
     
     return axios.default.post(
@@ -1227,7 +1328,10 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
     export type CreateOrderMutationBody = Order
     export type CreateOrderMutationError = AxiosError<unknown>
 
-    export const useCreateOrder = <TError = AxiosError<unknown>,
+    /**
+ * @summary 建立訂單
+ */
+export const useCreateOrder = <TError = AxiosError<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createOrder>>, TError,{data: Order}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createOrder>>,
@@ -1242,17 +1346,143 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
     }
     
 /**
+ * 將指定商品加入使用者的收藏清單（無收藏上限），會自動記錄加入時間
+ * @summary 【CREATE】加入收藏清單
+ */
+export const addToFavorites = (
+    userId: string,
+    productId: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<unknown>> => {
+    
+    
+    return axios.default.post(
+      `/api/favorites/${userId}/items/${productId}`,undefined,options
+    );
+  }
+
+
+
+export const getAddToFavoritesMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addToFavorites>>, TError,{userId: string;productId: string}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof addToFavorites>>, TError,{userId: string;productId: string}, TContext> => {
+
+const mutationKey = ['addToFavorites'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof addToFavorites>>, {userId: string;productId: string}> = (props) => {
+          const {userId,productId} = props ?? {};
+
+          return  addToFavorites(userId,productId,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AddToFavoritesMutationResult = NonNullable<Awaited<ReturnType<typeof addToFavorites>>>
+    
+    export type AddToFavoritesMutationError = AxiosError<unknown>
+
+    /**
+ * @summary 【CREATE】加入收藏清單
+ */
+export const useAddToFavorites = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addToFavorites>>, TError,{userId: string;productId: string}, TContext>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof addToFavorites>>,
+        TError,
+        {userId: string;productId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getAddToFavoritesMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+/**
+ * 從收藏清單中移除指定商品
+ * @summary 【DELETE】移除收藏
+ */
+export const removeFromFavorites = (
+    userId: string,
+    productId: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<unknown>> => {
+    
+    
+    return axios.default.delete(
+      `/api/favorites/${userId}/items/${productId}`,options
+    );
+  }
+
+
+
+export const getRemoveFromFavoritesMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeFromFavorites>>, TError,{userId: string;productId: string}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof removeFromFavorites>>, TError,{userId: string;productId: string}, TContext> => {
+
+const mutationKey = ['removeFromFavorites'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof removeFromFavorites>>, {userId: string;productId: string}> = (props) => {
+          const {userId,productId} = props ?? {};
+
+          return  removeFromFavorites(userId,productId,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RemoveFromFavoritesMutationResult = NonNullable<Awaited<ReturnType<typeof removeFromFavorites>>>
+    
+    export type RemoveFromFavoritesMutationError = AxiosError<unknown>
+
+    /**
+ * @summary 【DELETE】移除收藏
+ */
+export const useRemoveFromFavorites = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeFromFavorites>>, TError,{userId: string;productId: string}, TContext>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof removeFromFavorites>>,
+        TError,
+        {userId: string;productId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getRemoveFromFavoritesMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+/**
  * 將商品設定為拍賣模式，需指定起標價和結束時間。時間格式為 ISO 8601 (yyyy-MM-ddTHH:mm:ss)
  * @summary 建立拍賣商品
  */
 export const createAuction = (
-    id: string,
+    productID: string,
     params: CreateAuctionParams, options?: AxiosRequestConfig
  ): Promise<AxiosResponse<unknown>> => {
     
     
     return axios.default.post(
-      `/api/createAucs/${id}`,undefined,{
+      `/api/createAucs/${productID}`,undefined,{
     ...options,
         params: {...params, ...options?.params},}
     );
@@ -1261,8 +1491,8 @@ export const createAuction = (
 
 
 export const getCreateAuctionMutationOptions = <TError = AxiosError<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAuction>>, TError,{id: string;params: CreateAuctionParams}, TContext>, axios?: AxiosRequestConfig}
-): UseMutationOptions<Awaited<ReturnType<typeof createAuction>>, TError,{id: string;params: CreateAuctionParams}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAuction>>, TError,{productID: string;params: CreateAuctionParams}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof createAuction>>, TError,{productID: string;params: CreateAuctionParams}, TContext> => {
 
 const mutationKey = ['createAuction'];
 const {mutation: mutationOptions, axios: axiosOptions} = options ?
@@ -1274,10 +1504,10 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createAuction>>, {id: string;params: CreateAuctionParams}> = (props) => {
-          const {id,params} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createAuction>>, {productID: string;params: CreateAuctionParams}> = (props) => {
+          const {productID,params} = props ?? {};
 
-          return  createAuction(id,params,axiosOptions)
+          return  createAuction(productID,params,axiosOptions)
         }
 
         
@@ -1293,11 +1523,11 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
  * @summary 建立拍賣商品
  */
 export const useCreateAuction = <TError = AxiosError<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAuction>>, TError,{id: string;params: CreateAuctionParams}, TContext>, axios?: AxiosRequestConfig}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAuction>>, TError,{productID: string;params: CreateAuctionParams}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createAuction>>,
         TError,
-        {id: string;params: CreateAuctionParams},
+        {productID: string;params: CreateAuctionParams},
         TContext
       > => {
 
@@ -1371,7 +1601,7 @@ export const useAddToCart = <TError = AxiosError<string>,
     }
     
 /**
- * 對指定商品進行出價，出價金額必須高於當前最高出價
+ * 對指定商品進行出價，出價金額必須高於當前最高出價，注意下方範例ID已經對應到測試用的商品，可以放心測試
  * @summary 競標出價
  */
 export const placeBid = (
@@ -1624,12 +1854,13 @@ export const useLogin = <TError = AxiosError<unknown>,
     }
     
 /**
- * 根據使用者 ID 取得該使用者的公開資訊。
+ * 根據使用者 ID 取得該使用者的公開資訊，包含正在販售的商品列表。
 
 **用途**：
 - 查看其他使用者的基本資料
 - 聊天功能顯示對方資訊
 - 商品頁面顯示賣家資訊
+- 查看賣家正在販售的所有商品
 
 **注意**：此 API 不需要登入，且不會返回敏感資訊（如 email）
 
@@ -1817,9 +2048,13 @@ export function useSearchByKeyword<TData = Awaited<ReturnType<typeof searchByKey
 
 
 
+/**
+ * 回傳系統中所有商品的評論紀錄
+ * @summary 取得所有評論歷史
+ */
 export const getAllReviewHistory = (
      options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetAllReviewHistory200Item[]>> => {
+ ): Promise<AxiosResponse<Review>> => {
     
     
     return axios.default.get(
@@ -1883,6 +2118,9 @@ export function useGetAllReviewHistory<TData = Awaited<ReturnType<typeof getAllR
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllReviewHistory>>, TError, TData>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 取得所有評論歷史
+ */
 
 export function useGetAllReviewHistory<TData = Awaited<ReturnType<typeof getAllReviewHistory>>, TError = AxiosError<unknown>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllReviewHistory>>, TError, TData>>, axios?: AxiosRequestConfig}
@@ -1890,6 +2128,190 @@ export function useGetAllReviewHistory<TData = Awaited<ReturnType<typeof getAllR
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getGetAllReviewHistoryQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
+ * 回傳指定使用者的所有評論
+ * @summary 依使用者ID取得評論
+ */
+export const getReviewsByUserId = (
+    userID: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<Review>> => {
+    
+    
+    return axios.default.get(
+      `/api/reviews/byUser/${userID}`,options
+    );
+  }
+
+
+
+
+export const getGetReviewsByUserIdQueryKey = (userID?: string,) => {
+    return [
+    `/api/reviews/byUser/${userID}`
+    ] as const;
+    }
+
+    
+export const getGetReviewsByUserIdQueryOptions = <TData = Awaited<ReturnType<typeof getReviewsByUserId>>, TError = AxiosError<unknown>>(userID: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getReviewsByUserId>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetReviewsByUserIdQueryKey(userID);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getReviewsByUserId>>> = ({ signal }) => getReviewsByUserId(userID, { signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(userID), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getReviewsByUserId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetReviewsByUserIdQueryResult = NonNullable<Awaited<ReturnType<typeof getReviewsByUserId>>>
+export type GetReviewsByUserIdQueryError = AxiosError<unknown>
+
+
+export function useGetReviewsByUserId<TData = Awaited<ReturnType<typeof getReviewsByUserId>>, TError = AxiosError<unknown>>(
+ userID: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getReviewsByUserId>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getReviewsByUserId>>,
+          TError,
+          Awaited<ReturnType<typeof getReviewsByUserId>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetReviewsByUserId<TData = Awaited<ReturnType<typeof getReviewsByUserId>>, TError = AxiosError<unknown>>(
+ userID: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getReviewsByUserId>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getReviewsByUserId>>,
+          TError,
+          Awaited<ReturnType<typeof getReviewsByUserId>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetReviewsByUserId<TData = Awaited<ReturnType<typeof getReviewsByUserId>>, TError = AxiosError<unknown>>(
+ userID: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getReviewsByUserId>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 依使用者ID取得評論
+ */
+
+export function useGetReviewsByUserId<TData = Awaited<ReturnType<typeof getReviewsByUserId>>, TError = AxiosError<unknown>>(
+ userID: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getReviewsByUserId>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetReviewsByUserIdQueryOptions(userID,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
+ * 回傳指定商品的所有評論
+ * @summary 依商品ID取得評論
+ */
+export const getReviewsByProductId = (
+    productID: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<Review>> => {
+    
+    
+    return axios.default.get(
+      `/api/reviews/byProduct/${productID}`,options
+    );
+  }
+
+
+
+
+export const getGetReviewsByProductIdQueryKey = (productID?: string,) => {
+    return [
+    `/api/reviews/byProduct/${productID}`
+    ] as const;
+    }
+
+    
+export const getGetReviewsByProductIdQueryOptions = <TData = Awaited<ReturnType<typeof getReviewsByProductId>>, TError = AxiosError<unknown>>(productID: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getReviewsByProductId>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetReviewsByProductIdQueryKey(productID);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getReviewsByProductId>>> = ({ signal }) => getReviewsByProductId(productID, { signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(productID), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getReviewsByProductId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetReviewsByProductIdQueryResult = NonNullable<Awaited<ReturnType<typeof getReviewsByProductId>>>
+export type GetReviewsByProductIdQueryError = AxiosError<unknown>
+
+
+export function useGetReviewsByProductId<TData = Awaited<ReturnType<typeof getReviewsByProductId>>, TError = AxiosError<unknown>>(
+ productID: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getReviewsByProductId>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getReviewsByProductId>>,
+          TError,
+          Awaited<ReturnType<typeof getReviewsByProductId>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetReviewsByProductId<TData = Awaited<ReturnType<typeof getReviewsByProductId>>, TError = AxiosError<unknown>>(
+ productID: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getReviewsByProductId>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getReviewsByProductId>>,
+          TError,
+          Awaited<ReturnType<typeof getReviewsByProductId>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetReviewsByProductId<TData = Awaited<ReturnType<typeof getReviewsByProductId>>, TError = AxiosError<unknown>>(
+ productID: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getReviewsByProductId>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 依商品ID取得評論
+ */
+
+export function useGetReviewsByProductId<TData = Awaited<ReturnType<typeof getReviewsByProductId>>, TError = AxiosError<unknown>>(
+ productID: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getReviewsByProductId>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetReviewsByProductIdQueryOptions(productID,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1928,7 +2350,7 @@ export const getGetAllProductQueryKey = (params?: GetAllProductParams,) => {
     }
 
     
-export const getGetAllProductQueryOptions = <TData = Awaited<ReturnType<typeof getAllProduct>>, TError = AxiosError<unknown>>(params?: GetAllProductParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllProduct>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getGetAllProductQueryOptions = <TData = Awaited<ReturnType<typeof getAllProduct>>, TError = AxiosError<GetAllProduct404>>(params?: GetAllProductParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllProduct>>, TError, TData>>, axios?: AxiosRequestConfig}
 ) => {
 
 const {query: queryOptions, axios: axiosOptions} = options ?? {};
@@ -1947,10 +2369,10 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type GetAllProductQueryResult = NonNullable<Awaited<ReturnType<typeof getAllProduct>>>
-export type GetAllProductQueryError = AxiosError<unknown>
+export type GetAllProductQueryError = AxiosError<GetAllProduct404>
 
 
-export function useGetAllProduct<TData = Awaited<ReturnType<typeof getAllProduct>>, TError = AxiosError<unknown>>(
+export function useGetAllProduct<TData = Awaited<ReturnType<typeof getAllProduct>>, TError = AxiosError<GetAllProduct404>>(
  params: undefined |  GetAllProductParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllProduct>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getAllProduct>>,
@@ -1960,7 +2382,7 @@ export function useGetAllProduct<TData = Awaited<ReturnType<typeof getAllProduct
       >, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAllProduct<TData = Awaited<ReturnType<typeof getAllProduct>>, TError = AxiosError<unknown>>(
+export function useGetAllProduct<TData = Awaited<ReturnType<typeof getAllProduct>>, TError = AxiosError<GetAllProduct404>>(
  params?: GetAllProductParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllProduct>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getAllProduct>>,
@@ -1970,7 +2392,7 @@ export function useGetAllProduct<TData = Awaited<ReturnType<typeof getAllProduct
       >, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAllProduct<TData = Awaited<ReturnType<typeof getAllProduct>>, TError = AxiosError<unknown>>(
+export function useGetAllProduct<TData = Awaited<ReturnType<typeof getAllProduct>>, TError = AxiosError<GetAllProduct404>>(
  params?: GetAllProductParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllProduct>>, TError, TData>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -1978,7 +2400,7 @@ export function useGetAllProduct<TData = Awaited<ReturnType<typeof getAllProduct
  * @summary 取得商品列表（分頁）
  */
 
-export function useGetAllProduct<TData = Awaited<ReturnType<typeof getAllProduct>>, TError = AxiosError<unknown>>(
+export function useGetAllProduct<TData = Awaited<ReturnType<typeof getAllProduct>>, TError = AxiosError<GetAllProduct404>>(
  params?: GetAllProductParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllProduct>>, TError, TData>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -2088,9 +2510,198 @@ export function useGetProductById<TData = Awaited<ReturnType<typeof getProductBy
 
 
 
+/**
+ * @summary 取得所有商品（可排序）
+ */
+export const getAllProductsSorted = (
+    params?: GetAllProductsSortedParams, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<GetAllProductsSorted200>> => {
+    
+    
+    return axios.default.get(
+      `/api/products/sorted`,{
+    ...options,
+        params: {...params, ...options?.params},}
+    );
+  }
+
+
+
+
+export const getGetAllProductsSortedQueryKey = (params?: GetAllProductsSortedParams,) => {
+    return [
+    `/api/products/sorted`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getGetAllProductsSortedQueryOptions = <TData = Awaited<ReturnType<typeof getAllProductsSorted>>, TError = AxiosError<GetAllProductsSorted404>>(params?: GetAllProductsSortedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllProductsSorted>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAllProductsSortedQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAllProductsSorted>>> = ({ signal }) => getAllProductsSorted(params, { signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAllProductsSorted>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAllProductsSortedQueryResult = NonNullable<Awaited<ReturnType<typeof getAllProductsSorted>>>
+export type GetAllProductsSortedQueryError = AxiosError<GetAllProductsSorted404>
+
+
+export function useGetAllProductsSorted<TData = Awaited<ReturnType<typeof getAllProductsSorted>>, TError = AxiosError<GetAllProductsSorted404>>(
+ params: undefined |  GetAllProductsSortedParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllProductsSorted>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAllProductsSorted>>,
+          TError,
+          Awaited<ReturnType<typeof getAllProductsSorted>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAllProductsSorted<TData = Awaited<ReturnType<typeof getAllProductsSorted>>, TError = AxiosError<GetAllProductsSorted404>>(
+ params?: GetAllProductsSortedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllProductsSorted>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAllProductsSorted>>,
+          TError,
+          Awaited<ReturnType<typeof getAllProductsSorted>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAllProductsSorted<TData = Awaited<ReturnType<typeof getAllProductsSorted>>, TError = AxiosError<GetAllProductsSorted404>>(
+ params?: GetAllProductsSortedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllProductsSorted>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 取得所有商品（可排序）
+ */
+
+export function useGetAllProductsSorted<TData = Awaited<ReturnType<typeof getAllProductsSorted>>, TError = AxiosError<GetAllProductsSorted404>>(
+ params?: GetAllProductsSortedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllProductsSorted>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAllProductsSortedQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
+ * 回傳系統內所有商品的分類列表
+ * @summary 取得所有商品分類
+ */
+export const getAllCategory = (
+     options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<string>> => {
+    
+    
+    return axios.default.get(
+      `/api/products/Category`,{
+    ...options,}
+    );
+  }
+
+
+
+
+export const getGetAllCategoryQueryKey = () => {
+    return [
+    `/api/products/Category`
+    ] as const;
+    }
+
+    
+export const getGetAllCategoryQueryOptions = <TData = Awaited<ReturnType<typeof getAllCategory>>, TError = AxiosError<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllCategory>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAllCategoryQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAllCategory>>> = ({ signal }) => getAllCategory({ signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAllCategory>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAllCategoryQueryResult = NonNullable<Awaited<ReturnType<typeof getAllCategory>>>
+export type GetAllCategoryQueryError = AxiosError<unknown>
+
+
+export function useGetAllCategory<TData = Awaited<ReturnType<typeof getAllCategory>>, TError = AxiosError<unknown>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllCategory>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAllCategory>>,
+          TError,
+          Awaited<ReturnType<typeof getAllCategory>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAllCategory<TData = Awaited<ReturnType<typeof getAllCategory>>, TError = AxiosError<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllCategory>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAllCategory>>,
+          TError,
+          Awaited<ReturnType<typeof getAllCategory>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAllCategory<TData = Awaited<ReturnType<typeof getAllCategory>>, TError = AxiosError<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllCategory>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 取得所有商品分類
+ */
+
+export function useGetAllCategory<TData = Awaited<ReturnType<typeof getAllCategory>>, TError = AxiosError<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllCategory>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAllCategoryQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
+ * @summary 依照訂單ID搜尋
+ */
 export const getOrderById = (
     orderID: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetOrderById200>> => {
+ ): Promise<AxiosResponse<unknown>> => {
     
     
     return axios.default.get(
@@ -2154,6 +2765,9 @@ export function useGetOrderById<TData = Awaited<ReturnType<typeof getOrderById>>
  orderID: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrderById>>, TError, TData>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 依照訂單ID搜尋
+ */
 
 export function useGetOrderById<TData = Awaited<ReturnType<typeof getOrderById>>, TError = AxiosError<unknown>>(
  orderID: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrderById>>, TError, TData>>, axios?: AxiosRequestConfig}
@@ -2161,6 +2775,351 @@ export function useGetOrderById<TData = Awaited<ReturnType<typeof getOrderById>>
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getGetOrderByIdQueryOptions(orderID,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
+ * 取得指定使用者的完整收藏清單（包含商品詳細資訊、賣家資訊），自動過濾已刪除的商品
+ * @summary 【READ】取得使用者收藏清單
+ */
+export const getUserFavorites = (
+    userId: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<FavoriteResponseDTO>> => {
+    
+    
+    return axios.default.get(
+      `/api/favorites/${userId}`,options
+    );
+  }
+
+
+
+
+export const getGetUserFavoritesQueryKey = (userId?: string,) => {
+    return [
+    `/api/favorites/${userId}`
+    ] as const;
+    }
+
+    
+export const getGetUserFavoritesQueryOptions = <TData = Awaited<ReturnType<typeof getUserFavorites>>, TError = AxiosError<FavoriteResponseDTO>>(userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserFavorites>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetUserFavoritesQueryKey(userId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUserFavorites>>> = ({ signal }) => getUserFavorites(userId, { signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(userId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUserFavorites>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetUserFavoritesQueryResult = NonNullable<Awaited<ReturnType<typeof getUserFavorites>>>
+export type GetUserFavoritesQueryError = AxiosError<FavoriteResponseDTO>
+
+
+export function useGetUserFavorites<TData = Awaited<ReturnType<typeof getUserFavorites>>, TError = AxiosError<FavoriteResponseDTO>>(
+ userId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserFavorites>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUserFavorites>>,
+          TError,
+          Awaited<ReturnType<typeof getUserFavorites>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUserFavorites<TData = Awaited<ReturnType<typeof getUserFavorites>>, TError = AxiosError<FavoriteResponseDTO>>(
+ userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserFavorites>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUserFavorites>>,
+          TError,
+          Awaited<ReturnType<typeof getUserFavorites>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUserFavorites<TData = Awaited<ReturnType<typeof getUserFavorites>>, TError = AxiosError<FavoriteResponseDTO>>(
+ userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserFavorites>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 【READ】取得使用者收藏清單
+ */
+
+export function useGetUserFavorites<TData = Awaited<ReturnType<typeof getUserFavorites>>, TError = AxiosError<FavoriteResponseDTO>>(
+ userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserFavorites>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetUserFavoritesQueryOptions(userId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
+ * 清空使用者的所有收藏
+ * @summary 【DELETE】清空收藏清單
+ */
+export const clearFavorites = (
+    userId: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<unknown>> => {
+    
+    
+    return axios.default.delete(
+      `/api/favorites/${userId}`,options
+    );
+  }
+
+
+
+export const getClearFavoritesMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof clearFavorites>>, TError,{userId: string}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof clearFavorites>>, TError,{userId: string}, TContext> => {
+
+const mutationKey = ['clearFavorites'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof clearFavorites>>, {userId: string}> = (props) => {
+          const {userId} = props ?? {};
+
+          return  clearFavorites(userId,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ClearFavoritesMutationResult = NonNullable<Awaited<ReturnType<typeof clearFavorites>>>
+    
+    export type ClearFavoritesMutationError = AxiosError<unknown>
+
+    /**
+ * @summary 【DELETE】清空收藏清單
+ */
+export const useClearFavorites = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof clearFavorites>>, TError,{userId: string}, TContext>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof clearFavorites>>,
+        TError,
+        {userId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getClearFavoritesMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+/**
+ * 取得使用者的收藏商品總數，可用於顯示收藏徽章
+ * @summary 【READ】取得收藏數量
+ */
+export const getFavoritesCount = (
+    userId: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<unknown>> => {
+    
+    
+    return axios.default.get(
+      `/api/favorites/${userId}/count`,options
+    );
+  }
+
+
+
+
+export const getGetFavoritesCountQueryKey = (userId?: string,) => {
+    return [
+    `/api/favorites/${userId}/count`
+    ] as const;
+    }
+
+    
+export const getGetFavoritesCountQueryOptions = <TData = Awaited<ReturnType<typeof getFavoritesCount>>, TError = AxiosError<unknown>>(userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getFavoritesCount>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetFavoritesCountQueryKey(userId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getFavoritesCount>>> = ({ signal }) => getFavoritesCount(userId, { signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(userId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getFavoritesCount>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetFavoritesCountQueryResult = NonNullable<Awaited<ReturnType<typeof getFavoritesCount>>>
+export type GetFavoritesCountQueryError = AxiosError<unknown>
+
+
+export function useGetFavoritesCount<TData = Awaited<ReturnType<typeof getFavoritesCount>>, TError = AxiosError<unknown>>(
+ userId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getFavoritesCount>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getFavoritesCount>>,
+          TError,
+          Awaited<ReturnType<typeof getFavoritesCount>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetFavoritesCount<TData = Awaited<ReturnType<typeof getFavoritesCount>>, TError = AxiosError<unknown>>(
+ userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getFavoritesCount>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getFavoritesCount>>,
+          TError,
+          Awaited<ReturnType<typeof getFavoritesCount>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetFavoritesCount<TData = Awaited<ReturnType<typeof getFavoritesCount>>, TError = AxiosError<unknown>>(
+ userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getFavoritesCount>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 【READ】取得收藏數量
+ */
+
+export function useGetFavoritesCount<TData = Awaited<ReturnType<typeof getFavoritesCount>>, TError = AxiosError<unknown>>(
+ userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getFavoritesCount>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetFavoritesCountQueryOptions(userId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
+ * 檢查指定商品是否在使用者的收藏清單中，常用於商品頁面顯示「已收藏」狀態
+ * @summary 【READ】檢查是否已收藏
+ */
+export const isFavorited = (
+    userId: string,
+    productId: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<unknown>> => {
+    
+    
+    return axios.default.get(
+      `/api/favorites/${userId}/check/${productId}`,options
+    );
+  }
+
+
+
+
+export const getIsFavoritedQueryKey = (userId?: string,
+    productId?: string,) => {
+    return [
+    `/api/favorites/${userId}/check/${productId}`
+    ] as const;
+    }
+
+    
+export const getIsFavoritedQueryOptions = <TData = Awaited<ReturnType<typeof isFavorited>>, TError = AxiosError<unknown>>(userId: string,
+    productId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isFavorited>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getIsFavoritedQueryKey(userId,productId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof isFavorited>>> = ({ signal }) => isFavorited(userId,productId, { signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(userId && productId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof isFavorited>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type IsFavoritedQueryResult = NonNullable<Awaited<ReturnType<typeof isFavorited>>>
+export type IsFavoritedQueryError = AxiosError<unknown>
+
+
+export function useIsFavorited<TData = Awaited<ReturnType<typeof isFavorited>>, TError = AxiosError<unknown>>(
+ userId: string,
+    productId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof isFavorited>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isFavorited>>,
+          TError,
+          Awaited<ReturnType<typeof isFavorited>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsFavorited<TData = Awaited<ReturnType<typeof isFavorited>>, TError = AxiosError<unknown>>(
+ userId: string,
+    productId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isFavorited>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isFavorited>>,
+          TError,
+          Awaited<ReturnType<typeof isFavorited>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsFavorited<TData = Awaited<ReturnType<typeof isFavorited>>, TError = AxiosError<unknown>>(
+ userId: string,
+    productId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isFavorited>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 【READ】檢查是否已收藏
+ */
+
+export function useIsFavorited<TData = Awaited<ReturnType<typeof isFavorited>>, TError = AxiosError<unknown>>(
+ userId: string,
+    productId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isFavorited>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getIsFavoritedQueryOptions(userId,productId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

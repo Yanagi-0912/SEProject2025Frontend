@@ -1,23 +1,21 @@
 import axios from 'axios';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueries } from '@tanstack/react-query';
 import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 import type { Product } from './generated';
-
-// 建立一個獨立的 axios 實例，並且完全不設定任何 interceptor
-// 確保這是一個純淨的請求，不會帶上任何 Token
-const searchAxios = axios.create();
+import { getProductById } from './generated';
+import { PRODUCT_API, RAG_API } from '../config/api';
 
 /**
  * 模糊搜尋 API
- * GET http://localhost:8080/api/blursearch?keyword=...
+ * GET {PRODUCT_API}/api/blursearch?keyword=...
  */
 export const blurSearch = (
     keyword: string,
     options?: AxiosRequestConfig
 ): Promise<AxiosResponse<Product[]>> => {
-    return searchAxios.get(
-        `http://localhost:8080/api/blursearch`,
+    return axios.get(
+        `${PRODUCT_API}/api/blursearch`,
         {
             ...options,
             params: { keyword, ...options?.params }
@@ -50,5 +48,32 @@ export const useBlurSearch = <TData = AxiosResponse<Product[]>, TError = unknown
         queryFn,
         enabled: !!keyword, // Only run if keyword is not empty
         ...queryOptions
+    });
+};
+
+/**
+ * RAG 搜尋 API
+ * POST {RAG_API}/api/search
+ */
+export const ragSearch = async (
+    query: string
+): Promise<string[]> => {
+    const response = await axios.post<string[]>(
+        `${RAG_API}/api/search`,
+        { query }
+    );
+    return response.data;
+};
+
+/**
+ * 根據 ID 列表取得商品 Hook
+ */
+export const useGetProductsByIds = (ids: string[]) => {
+    return useQueries({
+        queries: ids.map(id => ({
+            queryKey: ['/api/products', id],
+            queryFn: () => getProductById(id),
+            enabled: !!id
+        }))
     });
 };

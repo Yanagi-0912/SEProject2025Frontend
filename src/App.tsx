@@ -8,11 +8,13 @@ import Register from './pages/Auth/Register'
 import Main from './pages/Main'
 import CartPage from './pages/CartPage'
 import ProductPage from './pages/ProductPage'
+import MyProfilePage from './pages/MyProfilePage'
+import Coupons from './pages/MyProfilePage/Coupons'
+import SellerDashboard from './pages/MyProfilePage/SellerDashboard'
 import UserProfilePage from './pages/UserProfilePage'
-import Coupons from './pages/UserProfilePage/Coupons'
-import SellerDashboard from './pages/UserProfilePage/SellerDashboard'
 import CheckoutPage from './pages/CheckoutPage'
 import ChatRoomPage from './pages/ChatRoomPage'
+import FavoriteList from './pages/FavoriteList'
 
 function App() {
   const navigate = useNavigate()
@@ -34,15 +36,19 @@ function App() {
           {/* 商品詳情 */}
           <Route path="/product/:id" element={<ProductPage />} />
 
-          {/* 使用者頁 */}
-          <Route path="/user/me" element={<UserProfilePage />} />
-          
-          {/* 優惠券 */}
-          <Route path="/profile/coupons" element={<Coupons />} />
-          
-          {/* 賣家後台 */}
-          <Route path="/seller/dashboard" element={<SellerDashboard />} />
-          
+          {/* 使用者個人頁 */}
+          <Route path="/user/me" element={<MyProfilePage />} />
+              {/* 優惠券 */}
+              <Route path="/profile/coupons" element={<Coupons />} />
+              {/* 賣家後台 */}
+              <Route path="/seller/dashboard" element={<SellerDashboard />} />
+          {/* 其他使用者頁 */}
+          <Route path="/user/:id" element={<UserProfilePage />} />
+
+          {/* 最愛清單頁面 */}
+          <Route path="/favorites/:id" element={<FavoriteList/>} />
+          <Route path="/favorites/me" element={<FavoriteList/>} />
+
           {/* 登入 */}
           <Route path="/login" element={
             <div className="app-container">

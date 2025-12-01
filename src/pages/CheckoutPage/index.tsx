@@ -1,5 +1,6 @@
 // CheckoutPage/index.tsx
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import { useLocation, useNavigate } from "react-router-dom";
 import CheckoutHeader from "./CheckoutHeader";
 import OrderSummary from "./OrderSummary";
@@ -26,17 +27,19 @@ interface SellerGroup {
 interface CheckoutPageProps {
   onBack?: () => void;
   onSuccess?: (orderId: string) => void;
+  orderItems?: SellerGroup[];
 }
 
 const CheckoutPage: React.FC<CheckoutPageProps> = ({
   onBack,
-  onSuccess
+  onSuccess,
+  orderItems: orderItemsProp
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // 從 location.state 接收購物車傳來的資料
-  const orderItems: SellerGroup[] = location.state?.orderItems || [];
+  // 優先從 props 接收，否則從 location.state 接收購物車傳來的資料
+  const orderItems: SellerGroup[] = orderItemsProp || location.state?.orderItems || [];
 
   // 如果沒有商品,跳轉回購物車
   useEffect(() => {
@@ -174,7 +177,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
       console.log("✅ 訂單建立成功:", response.data);
 
-      const orderId = response.data?.orderID || `ORD${Date.now()}`;
+      const orderId: string = (response.data as any)?.orderID || `ORD${Date.now()}`;
 
       // 7. 訂單建立成功後,從購物車移除已結帳的商品
       try {
@@ -210,24 +213,24 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         navigate('/');
       }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("❌ 建立訂單失敗:", error);
 
-      // 更詳細的錯誤訊息
-      if (error.response) {
+      // 更詳細的錯誤訊息 (僅在為 axios 錯誤時讀取 response)
+      if (axios.isAxiosError(error) && error.response) {
         console.error("後端回應:", error.response.data);
         console.error("狀態碼:", error.response.status);
 
-        const errorData = error.response.data;
+        const errorData = error.response.data as unknown;
         let errorMsg = "訂單建立失敗";
 
         // 處理各種錯誤類型
         if (typeof errorData === 'string') {
           errorMsg = errorData;
-        } else if (errorData?.message) {
-          errorMsg = errorData.message;
-        } else if (errorData?.error) {
-          errorMsg = errorData.error;
+        } else if (errorData && typeof errorData === 'object' && 'message' in (errorData as any) && typeof (errorData as any).message === 'string') {
+          errorMsg = (errorData as any).message;
+        } else if (errorData && typeof errorData === 'object' && 'error' in (errorData as any) && typeof (errorData as any).error === 'string') {
+          errorMsg = (errorData as any).error;
         }
 
         // 特別處理庫存不足的錯誤

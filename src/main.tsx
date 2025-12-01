@@ -4,9 +4,10 @@ import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import axios from 'axios'
 import App from './App.tsx'
+import { PRODUCT_API } from './config/api'
 
 // 設定 axios baseURL
-axios.defaults.baseURL = 'http://localhost:8080'
+axios.defaults.baseURL = PRODUCT_API
 
 // 設定 axios interceptor 自動攜帶 token
 axios.interceptors.request.use(
