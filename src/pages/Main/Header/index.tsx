@@ -15,6 +15,10 @@ function Header() {
     const handleCart = () => {
         navigate('/cart');
     };
+
+    const handleChat = () => {
+        navigate('/chat');
+    };
     
     const handleAccount = () => {
         navigate('/user/me'); 
@@ -72,7 +76,7 @@ function Header() {
         )}
         <button type="button" onClick={handleAccount} className="action-button">我的帳號</button>
         <button type="button" onClick={handleCart} className="action-button">購物車</button>
-        <button className="action-button">訊息</button>
+        <button type="button" onClick={handleChat} className="action-button">訊息</button>
       </div>
     </div>
   );

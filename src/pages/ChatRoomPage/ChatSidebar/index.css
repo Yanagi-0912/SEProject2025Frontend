@@ -1,0 +1,130 @@
+/* chatroom/ChatSidebar/index.css */
+
+.chat-sidebar {
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-sidebar-header {
+  padding: 15px;
+  border-bottom: 1px solid #444;
+}
+
+.chat-sidebar-header h3 {
+  color: white;
+  margin: 0;
+  font-size: 18px;
+}
+
+.chat-room-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.empty-chat-list {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  color: #888;
+  font-size: 14px;
+}
+
+.chat-room-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid #333;
+}
+
+.chat-room-item:hover {
+  background-color: #333;
+}
+
+.chat-room-item.active {
+  background-color: #3a3a3a;
+  border-left: 3px solid #5227FF;
+}
+
+.chat-room-avatar {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #5227FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.online-indicator {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  background-color: #4caf50;
+  border: 2px solid #2a2a2a;
+  border-radius: 50%;
+}
+
+.chat-room-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-room-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.chat-room-name {
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.chat-room-time {
+  color: #888;
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-left: 10px;
+}
+
+.chat-room-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-room-last-message {
+  color: #aaa;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.chat-room-unread-badge {
+  background-color: #5227FF;
+  color: white;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-left: 10px;
+  flex-shrink: 0;
+}

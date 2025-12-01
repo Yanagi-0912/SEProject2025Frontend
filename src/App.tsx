@@ -12,6 +12,7 @@ import UserProfilePage from './pages/UserProfilePage'
 import Coupons from './pages/UserProfilePage/Coupons'
 import SellerDashboard from './pages/UserProfilePage/SellerDashboard'
 import CheckoutPage from './pages/CheckoutPage'
+import ChatRoomPage from './pages/ChatRoomPage'
 
 function App() {
   const navigate = useNavigate()
@@ -20,6 +21,9 @@ function App() {
         <Routes>
           {/* 主頁 */}
           <Route path="/" element={<Main />} />
+
+          {/* 聊天室 */}
+          <Route path="/chat" element={<ChatRoomPage onBack={() => navigate('/')} />} />
           
           {/* 購物車 */}
           <Route path="/cart" element={<CartPage onBack={() => navigate('/')} />} />

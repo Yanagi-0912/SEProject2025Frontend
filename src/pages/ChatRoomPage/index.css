@@ -1,0 +1,45 @@
+/* chatroom/index.css */
+
+.chatroom-container {
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #1a1a1a;
+}
+
+.chat-loading {
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #1a1a1a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-text {
+  color: white;
+  font-size: 18px;
+}
+
+.chatroom-content {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 20px;
+  height: calc(100vh - 120px);
+}
+
+.chat-main {
+  display: flex;
+  flex-direction: column;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.no-chat-selected {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #888;
+  font-size: 18px;
+}
