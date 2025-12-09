@@ -1,14 +1,22 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useGetCategories } from '../../../api/category'
 import './Filter.css'
 
 function Filter() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedDepartment, setSelectedDepartment] = useState('all')
+  
+  // 從 URL 讀取分類參數
+  const categoryFromUrl = searchParams.get('category');
+  const [selectedDepartment, setSelectedDepartment] = useState(categoryFromUrl || 'all')
+  
   const [selectedBrands, setSelectedBrands] = useState<string[]>([])
   const [selectedReview, setSelectedReview] = useState('all')
   const [showAllDepartments, setShowAllDepartments] = useState(false)
   const [showAllBrands, setShowAllBrands] = useState(false)
+  
+  // 從 API 取得分類列表
+  const { data: categories = [] } = useGetCategories<string[]>();
   
   // 從 URL 讀取價格參數
   const minPriceFromUrl = searchParams.get('minPrice');
@@ -16,6 +24,18 @@ function Filter() {
   
   const [minPrice, setMinPrice] = useState<string>(minPriceFromUrl || '')
   const [maxPrice, setMaxPrice] = useState<string>(maxPriceFromUrl || '')
+
+  // 當分類改變時，更新 URL 參數
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    if (selectedDepartment && selectedDepartment !== 'all') {
+      params.set('category', selectedDepartment);
+    } else {
+      params.delete('category');
+    }
+    setSearchParams(params, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDepartment]);
 
   // 當價格改變時，更新 URL 參數
   useEffect(() => {
@@ -34,15 +54,13 @@ function Filter() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [minPrice, maxPrice]);
 
+  // 將 API 回傳的分類轉換為元件需要的格式
   const departments = [
     { id: 'all', label: '全部' },
-    { id: 'devices', label: '電子裝置與配件' },
-    { id: 'baby', label: '嬰兒用品' },
-    { id: 'bags', label: '包包、錢包與行李箱' },
-    { id: 'beauty', label: '美妝保養' },
-    { id: 'books', label: '書籍' },
-    { id: 'electronics', label: '電子產品' },
-    { id: 'fashion', label: '時尚服飾' }
+    ...categories.map(category => ({
+      id: category,
+      label: category
+    }))
   ]
 
   const brands = [
