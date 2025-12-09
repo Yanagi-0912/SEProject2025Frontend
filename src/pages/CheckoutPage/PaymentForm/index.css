@@ -1,18 +1,19 @@
 /* CheckoutPage/PaymentForm/index.css */
 
 .payment-form-container {
-  background-color: #2a2a2a;
-  border-radius: 8px;
+  background-color: white;
+  border-radius: 12px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: none; /* 移除原本的陰影，保持扁平風格或自訂 */
+  border: 1px solid #FFDEE9;
+  box-shadow: 0 2px 8px rgba(255, 183, 197, 0.1);
 }
 
 .payment-form-title {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 15px;
-  color: white; /* 標題改為白色 */
+  color: #5D4037;
 }
 
 .payment-form-options {
@@ -22,11 +23,11 @@
 }
 
 .payment-form-contact-seller {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #FF9EAA 0%, #FF5E78 100%);
   border-radius: 12px;
   padding: 24px;
   text-align: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 10px rgba(255, 94, 120, 0.2);
 }
 
 .payment-form-description {
@@ -34,14 +35,15 @@
   font-size: 15px;
   margin-bottom: 16px;
   line-height: 1.5;
+  font-weight: 500;
 }
 
 .payment-form-contact-button {
   background: white;
-  color: #667eea;
+  color: #FF5E78;
   border: none;
   padding: 12px 32px;
-  border-radius: 8px;
+  border-radius: 25px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
@@ -51,8 +53,8 @@
 
 .payment-form-contact-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  background: #f0f0f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: #FFF0F5;
 }
 
 .payment-form-contact-button:active {

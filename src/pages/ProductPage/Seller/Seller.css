@@ -2,12 +2,18 @@
 .seller-card {
   max-width: 900px;
   margin: 12px auto;
-  padding: 12px 16px;
-  border-radius: 8px;
-  background: #fafafa;
-  border: 1px solid #eee;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: white;
+  border: 1px solid #FFDEE9;
+  box-shadow: 0 2px 8px rgba(255, 183, 197, 0.1);
 }
+
 .seller-row { display:flex; align-items:center; gap:12px; }
-.seller-nickname { font-weight:600; font-size:1.1rem; }
-.seller-meta { color:#666; font-size:0.95rem; }
-.btn { padding:8px 12px; border-radius:6px; background:#1976d2; color:#fff; border:none; cursor:pointer; }
+.seller-nickname { font-weight:600; font-size:1.1rem; color: #5D4037; }
+.seller-meta { color:#8D6E63; font-size:0.95rem; }
+
+h3 {
+  color: #5D4037;
+  margin-bottom: 10px;
+}

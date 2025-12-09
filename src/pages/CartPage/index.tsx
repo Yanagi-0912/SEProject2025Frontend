@@ -10,19 +10,20 @@ import {
   useRemoveFromCart,
 } from "../../api/generated";
 
-// API 回傳的單一商品結構定義
-interface CartItemResponse {
+// 1. 定義符合 API 真實回傳的介面 (不包含 ProductStock)
+interface CartItemAPIResponse {
   itemId: string;
-  sellerId: string;
-  sellerName: string;
   productId: string;
   productName: string;
   price: number;
   imageUrl: string;
-  ProductStock: number;
+  sellerId: string;
+  sellerName: string;
   quantity: number;
+  subtotal: number;
 }
 
+// 本地使用的商品介面 (UI 仍需要 ProductStock 來判斷是否 disable 按鈕)
 interface Product {
   productID: string;
   productName: string;
@@ -53,21 +54,22 @@ const CartPage: React.FC<CartPageProps> = ({ onBack, onCheckout }) => {
   const [cartData, setCartData] = useState<Seller[]>([]);
   const navigate = useNavigate();
 
-  // 使用 generated hooks
   const { data: cartResponse, isLoading, isError, error, refetch } = useGetCart();
   const updateQuantityMutation = useUpdateQuantity();
   const removeFromCartMutation = useRemoveFromCart();
 
   useEffect(() => {
     if (cartResponse?.data) {
-      const data = cartResponse.data;
+      // 這裡使用型別斷言將資料轉為我們定義的 API 結構
+      // 注意：這假設 generated hook 的回傳型別較寬鬆，我們將其限縮為已知結構
+      const data = cartResponse.data as unknown as { items: CartItemAPIResponse[] };
       console.log("API 回應:", data);
 
       if (data.items && Array.isArray(data.items)) {
-        // 按賣家 ID 分組，使用明確的型別取代 any
-        const sellerMap = new Map<string, CartItemResponse[]>();
+        const sellerMap = new Map<string, CartItemAPIResponse[]>();
 
-        data.items.forEach((item: CartItemResponse) => {
+        // 2. 直接使用正確的型別遍歷，不使用 any
+        data.items.forEach((item) => {
           const sellerId = item.sellerId;
           if (!sellerMap.has(sellerId)) {
             sellerMap.set(sellerId, []);
@@ -75,7 +77,7 @@ const CartPage: React.FC<CartPageProps> = ({ onBack, onCheckout }) => {
           sellerMap.get(sellerId)!.push(item);
         });
 
-        // 轉換成 Seller[] 格式
+        // 3. 轉換資料結構
         const cartWithSelection: Seller[] = Array.from(sellerMap.entries()).map(([sellerId, items]) => ({
           sellerId: sellerId,
           sellerName: items[0].sellerName,
@@ -86,7 +88,9 @@ const CartPage: React.FC<CartPageProps> = ({ onBack, onCheckout }) => {
               productName: item.productName,
               ProductPrice: item.price,
               ProductImage: item.imageUrl,
-              ProductStock: item.ProductStock
+              // 4. 因為 API 沒給 ProductStock，我們不讀取它，直接給預設值
+              // 這樣就不需要用 any 去讀取不存在的欄位
+              ProductStock: 99
             },
             quantity: item.quantity,
             selected: false
@@ -145,7 +149,6 @@ const CartPage: React.FC<CartPageProps> = ({ onBack, onCheckout }) => {
   };
 
   const handleUpdateQuantity = async (sellerId: string, itemId: string, delta: number) => {
-    // 先樂觀更新 UI
     const updatedCart = cartData.map(seller => {
       if (seller.sellerId === sellerId) {
         return {
@@ -233,7 +236,6 @@ const CartPage: React.FC<CartPageProps> = ({ onBack, onCheckout }) => {
       return;
     }
 
-    // 準備跳轉到結帳頁面的資料
     const checkoutData = cartData
       .map(seller => ({
         sellerId: seller.sellerId,

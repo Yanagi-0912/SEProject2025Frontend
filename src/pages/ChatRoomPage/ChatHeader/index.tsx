@@ -5,7 +5,7 @@ interface ChatHeaderProps {
   onBack?: () => void;
   otherUserName?: string;
   isOnline?: boolean;
-  onContinueCheckout?: () => void; // 新增：繼續結帳的 callback
+  onContinueCheckout?: () => void;
 }
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({
@@ -18,13 +18,13 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
     <div className="chat-header">
       <div className="chat-header-left">
         <button onClick={onBack} className="chat-header-back-btn">
-          <span className="icon">⌂</span> 返回首頁
+          <img src="/home-icon.png" alt="返回" className="home-icon-img" />
         </button>
       </div>
 
       <div className="chat-header-center">
         <h2 className="chat-header-title">
-          {otherUserName || "聊天室"}
+          {otherUserName || " 聊天室"}
         </h2>
         {otherUserName && (
           <span className={`chat-header-status ${isOnline ? 'online' : 'offline'}`}>

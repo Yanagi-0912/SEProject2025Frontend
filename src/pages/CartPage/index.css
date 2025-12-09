@@ -3,32 +3,34 @@
 .cart-container {
   padding: 20px;
   min-height: 100vh;
-  background-color: #1a1a1a;
+  background-color: #FFF0F5; /* 淺粉色背景 LavenderBlush */
 }
 
 .cart-loading {
   padding: 20px;
   min-height: 100vh;
-  background-color: #1a1a1a;
+  background-color: #FFF0F5;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .loading-text {
-  color: white;
+  color: #FF5E78;
   font-size: 18px;
+  font-weight: bold;
 }
 
 .cart-content {
-  background-color: #2a2a2a;
-  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.8); /* 半透明白 */
+  border-radius: 16px;
   padding: 20px;
+  border: 1px solid #FFDEE9;
 }
 
 .empty-cart {
   text-align: center;
   padding: 60px 20px;
-  color: #888;
+  color: #8D6E63;
   font-size: 18px;
 }

@@ -1,9 +1,10 @@
-/* 個人資料卡片容器 - 移除外層背景 */
+/* 個人資料卡片容器 */
 .user-profile-page {
   background: white;
   border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 40px rgba(255, 183, 197, 0.2);
   overflow: hidden;
+  border: 1px solid #FFDEE9;
 }
 
 .profile-container {
@@ -12,7 +13,8 @@
 
 /* 個人資料頭部 */
 .profile-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* 櫻花漸層頭部 */
+  background: linear-gradient(135deg, #FF9EAA 0%, #FF5E78 100%);
   color: white;
   padding: 40px;
   display: flex;
@@ -38,6 +40,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 .profile-avatar img {
@@ -54,14 +57,15 @@
   justify-content: center;
   font-size: 40px;
   font-weight: bold;
-  color: #667eea;
-  background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+  color: #FF5E78;
+  background: linear-gradient(135deg, #FFF0F5 0%, #FFDEE9 100%);
 }
 
 .profile-basic-info h1 {
   margin: 0 0 5px 0;
   font-size: 28px;
-  font-weight: 600;
+  font-weight: 700;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 .profile-username {
@@ -70,7 +74,7 @@
 
 .profile-email {
   margin: 5px 0 0 0;
-  opacity: 0.9;
+  opacity: 0.95;
   font-size: 14px;
 }
 
@@ -114,7 +118,7 @@
 .btn {
   padding: 10px 24px;
   border: none;
-  border-radius: 8px;
+  border-radius: 20px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -124,34 +128,36 @@
 
 .btn-primary {
   background: white;
-  color: #667eea;
+  color: #FF5E78;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  background: #FFF0F5;
 }
 
 .btn-success {
-  background: #4CAF50;
+  background: #95D7A4; /* 柔和綠 */
   color: white;
 }
 
 .btn-success:hover {
-  background: #45a049;
+  background: #7BC58C;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .btn-secondary {
-  background: #6c757d;
-  color: white;
+  background: #FFC5D0;
+  color: #5D4037;
 }
 
 .btn-secondary:hover {
-  background: #5a6268;
+  background: #FF9EAA;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 /* 內容區域 */
@@ -171,9 +177,9 @@
   font-size: 22px;
   font-weight: 600;
   margin: 0 0 20px 0;
-  color: #333;
+  color: #5D4037;
   padding-bottom: 10px;
-  border-bottom: 2px solid #667eea;
+  border-bottom: 2px solid #FFC5D0;
 }
 
 /* 顯示模式 */
@@ -195,7 +201,7 @@
 
 .info-label {
   font-size: 14px;
-  color: #666;
+  color: #8D6E63;
   font-weight: 500;
 }
 
@@ -203,19 +209,21 @@
   font-size: 16px;
   color: #333;
   padding: 10px;
-  background: #f8f9fa;
-  border-radius: 8px;
+  background: #FFFDFE;
+  border-radius: 12px;
   min-height: 20px;
+  border: 1px solid #FFF0F5;
 }
 
 .bio-display {
   padding: 20px;
-  background: #f8f9fa;
-  border-radius: 8px;
+  background: #FFFDFE;
+  border-radius: 12px;
   line-height: 1.6;
   color: #333;
   white-space: pre-wrap;
   word-wrap: break-word;
+  border: 1px solid #FFF0F5;
 }
 
 /* 編輯模式 */
@@ -237,19 +245,19 @@
 
 .form-label {
   font-size: 14px;
-  color: #333;
+  color: #5D4037;
   font-weight: 600;
 }
 
 .required {
-  color: #e53e3e;
+  color: #FF5E78;
   margin-left: 2px;
 }
 
 .form-input {
   padding: 12px;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
+  border: 2px solid #FFDEE9;
+  border-radius: 12px;
   font-size: 14px;
   transition: all 0.2s ease;
   width: 100%;
@@ -258,26 +266,28 @@
 
 .form-input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #FF9EAA;
+  box-shadow: 0 0 0 3px rgba(255, 158, 170, 0.1);
+  background: white;
 }
 
 .form-input.disabled {
-  background: #f8f9fa;
-  color: #6c757d;
+  background: #F8F8F8;
+  color: #999;
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: 0.8;
+  border-color: #eee;
 }
 
 .form-input.disabled:focus {
-  border-color: #e2e8f0;
+  border-color: #eee;
   box-shadow: none;
 }
 
 .form-textarea {
   padding: 12px;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
+  border: 2px solid #FFDEE9;
+  border-radius: 12px;
   font-size: 14px;
   transition: all 0.2s ease;
   resize: vertical;
@@ -288,8 +298,8 @@
 
 .form-textarea:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #FF9EAA;
+  box-shadow: 0 0 0 3px rgba(255, 158, 170, 0.1);
 }
 
 .validation-hint {
@@ -297,7 +307,7 @@
 }
 
 .validation-hint .error {
-  color: #e53e3e;
+  color: #FF5E78;
   font-size: 12px;
   display: block;
   margin-top: 2px;

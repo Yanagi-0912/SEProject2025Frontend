@@ -1,18 +1,21 @@
 /* OrderSummary/index.css */
 .order-summary-container {
-  background-color: #2a2a2a;
-  border-radius: 8px;
+  background-color: white;
+  border-radius: 12px;
   padding: 20px;
   margin-bottom: 20px;
+  border: 1px solid #FFDEE9;
+  box-shadow: 0 2px 8px rgba(255, 183, 197, 0.1);
 }
 
 .order-summary-title {
-  color: white;
+  color: #5D4037;
   margin-bottom: 15px;
+  font-size: 18px;
 }
 
 .order-summary-scroll {
-  border: 2px solid #444;
+  border: 2px solid #FFF0F5;
   border-radius: 8px;
   overflow: hidden;
   max-height: 400px;
@@ -20,36 +23,37 @@
 }
 
 .order-summary-seller-header {
-  background-color: #333;
-  color: white;
+  background-color: #FFF0F5;
+  color: #5D4037;
   padding: 10px 15px;
   font-weight: bold;
-  border-bottom: 1px solid #444;
+  border-bottom: 1px solid #FFC5D0;
 }
 
 .order-summary-item {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
   padding: 12px 15px;
-  border-bottom: 1px solid #444;
-  color: white;
+  border-bottom: 1px solid #FFF0F5;
+  color: #5D4037;
   align-items: center;
 }
 
 .order-summary-item:nth-child(even) {
-  background-color: #2a2a2a;
+  background-color: white;
 }
 
 .order-summary-item:nth-child(odd) {
-  background-color: #252525;
+  background-color: #FFFDFE;
 }
 
 .order-summary-item-quantity {
   text-align: center;
+  color: #888;
 }
 
 .order-summary-item-price {
   text-align: right;
-  color: #5227FF;
+  color: #FF5E78;
   font-weight: bold;
 }

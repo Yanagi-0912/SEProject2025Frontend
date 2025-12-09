@@ -11,14 +11,14 @@ function Main() {
   const total = 10
 
   return (
-    <div style={{ border: '2px solid yellowgreen', backgroundColor: 'rgb(62, 64, 68)', color: 'white'}}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#FFF0F5' }}>
       <Header />
 
-      <div style={{ display: 'flex', alignItems: 'stretch' }}>
-        <div style={{ flex: 1, backgroundColor: 'white'}}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', maxWidth: '1600px', margin: '0 auto' }}>
+        <div style={{ width: '280px', flexShrink: 0 }}>
           <Filter />
         </div>
-        <div style={{ flex: 5 }}>
+        <div style={{ flex: 1 }}>
           <Products
             page={page}
             onProductClick={(p: { id?: string | number; productID?: string | number }) => {
@@ -26,10 +26,9 @@ function Main() {
               if (id) navigate(`/product/${id}`)
             }}
           />
+          <Pagination page={page} total={total} setPage={setPage} />
         </div>
       </div>
-
-      <Pagination page={page} total={total} setPage={setPage} />
     </div>
   )
 }

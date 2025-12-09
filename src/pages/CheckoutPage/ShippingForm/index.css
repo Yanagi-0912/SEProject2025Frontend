@@ -1,13 +1,15 @@
 /* ShippingForm/index.css */
 .shipping-form-container {
-  background-color: #2a2a2a;
-  border-radius: 8px;
+  background-color: white;
+  border-radius: 12px;
   padding: 20px;
   margin-bottom: 20px;
+  border: 1px solid #FFDEE9;
+  box-shadow: 0 2px 8px rgba(255, 183, 197, 0.1);
 }
 
 .shipping-form-title {
-  color: white;
+  color: #5D4037;
   margin-bottom: 15px;
 }
 
@@ -19,17 +21,18 @@
 
 .shipping-form-input {
   width: 100%;
-  padding: 10px;
-  background-color: #333;
-  border: 1px solid #555;
-  border-radius: 5px;
-  color: white;
+  padding: 12px;
+  background-color: #FFFDFE;
+  border: 1px solid #FFC5D0;
+  border-radius: 8px;
+  color: #333;
   font-size: 14px;
 }
 
 .shipping-form-input:focus {
   outline: none;
-  border-color: #5227FF;
+  border-color: #FF5E78;
+  box-shadow: 0 0 0 3px rgba(255, 94, 120, 0.1);
 }
 
 .shipping-form-row {

@@ -3,17 +3,18 @@
   background: white;
   border-radius: 16px;
   padding: 30px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(255, 183, 197, 0.2);
   margin-top: 20px;
+  border: 1px solid #FFDEE9;
 }
 
 .control-panel-title {
   font-size: 24px;
   font-weight: 600;
-  color: #333;
+  color: #5D4037;
   margin: 0 0 25px 0;
   padding-bottom: 15px;
-  border-bottom: 2px solid #667eea;
+  border-bottom: 2px solid #FFC5D0;
 }
 
 /* 按鈕網格佈局 */
@@ -29,42 +30,43 @@
   align-items: center;
   gap: 15px;
   padding: 20px;
-  border: 2px solid #e2e8f0;
+  border: 2px solid #FFF0F5;
   border-radius: 12px;
   background: white;
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: left;
   font-family: inherit;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
 }
 
 .control-panel-button:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border-color: transparent;
+  box-shadow: 0 8px 24px rgba(255, 183, 197, 0.25);
+  border-color: #FFC5D0;
 }
 
 /* 優惠券按鈕 */
 .control-panel-button.coupons:hover {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #FF9EAA 0%, #FF5E78 100%);
   color: white;
 }
 
 /* 修改密碼按鈕 */
 .control-panel-button.password:hover {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  color: white;
+  background: linear-gradient(135deg, #A8E6CF 0%, #DCEDC1 100%); /* 柔和薄荷色 */
+  color: #5D4037;
 }
 
 /* 賣家後台按鈕 */
 .control-panel-button.seller:hover {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  background: linear-gradient(135deg, #FFD3B6 0%, #FFAAA5 100%); /* 柔和珊瑚色 */
   color: white;
 }
 
 /* 歷史紀錄按鈕 */
 .control-panel-button.history:hover {
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  background: linear-gradient(135deg, #D4A5A5 0%, #FFC5D0 100%);
   color: white;
 }
 
@@ -94,12 +96,15 @@
 .button-text p {
   margin: 0;
   font-size: 13px;
-  color: #666;
+  color: #8D6E63;
   transition: color 0.3s ease;
 }
 
 .control-panel-button:hover .button-text p {
   color: rgba(255, 255, 255, 0.9);
+}
+.control-panel-button.password:hover .button-text p {
+  color: rgba(93, 64, 55, 0.8);
 }
 
 /* 響應式設計 */

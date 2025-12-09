@@ -1,11 +1,16 @@
 .filter-container {
   padding: 20px;
   font-family: Arial, sans-serif;
+  background-color: white;
+  border-radius: 12px;
+  margin: 20px;
+  box-shadow: 0 4px 15px rgba(255, 183, 197, 0.2);
+  border: 1px solid #FFDEE9;
 }
 
 .filter-section {
   margin-bottom: 30px;
-  border-bottom: 1px solid #e7e7e7;
+  border-bottom: 1px dashed #FFC5D0;
   padding-bottom: 20px;
 }
 
@@ -14,10 +19,10 @@
 }
 
 .filter-title {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 700;
   margin-bottom: 15px;
-  color: #0F1111;
+  color: #FF5E78; /* 標題改為櫻花深粉 */
 }
 
 .filter-option {
@@ -33,24 +38,25 @@
   height: 18px;
   margin-right: 10px;
   cursor: pointer;
-  accent-color: #007185;
+  accent-color: #FF5E78; /* 選項顏色改為粉色 */
 }
 
 .filter-option label {
   font-size: 0.95rem;
-  color: #0F1111;
+  color: #5D4037;
   cursor: pointer;
   user-select: none;
+  transition: color 0.2s;
 }
 
 .filter-option:hover label {
-  color: #C7511F;
+  color: #FF9EAA;
 }
 
 .see-more-button {
   background: none;
   border: none;
-  color: #007185;
+  color: #FF5E78;
   font-size: 0.9rem;
   cursor: pointer;
   padding: 5px 0;
@@ -58,10 +64,11 @@
   display: flex;
   align-items: center;
   gap: 5px;
+  font-weight: 600;
 }
 
 .see-more-button:hover {
-  color: #C7511F;
+  color: #FF9EAA;
   text-decoration: underline;
 }
 
@@ -69,111 +76,54 @@
   font-size: 0.7rem;
 }
 
-.price-range-display {
-  font-size: 0.95rem;
-  color: #565959;
-  margin-bottom: 15px;
-}
-
-.price-slider-container {
-  position: relative;
-  height: 40px;
-  margin: 20px 0;
-  padding: 0 10px;
+/* 價格輸入區 */
+.price-input-container {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
-.price-slider-track {
-  position: absolute;
-  width: calc(100% - 20px);
-  height: 8px;
-  background: #007185;
-  border-radius: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  z-index: 1;
+.price-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
-.price-range-input {
-  position: absolute;
-  width: calc(100% - 20px);
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  pointer-events: none;
-  -webkit-appearance: none;
-  appearance: none;
-  z-index: 2;
-  margin: 0;
+.price-input-group label {
+  font-size: 0.8rem;
+  color: #8D6E63;
 }
 
-.price-range-input::-webkit-slider-runnable-track {
-  height: 8px;
-  background: transparent;
+.price-input {
+  width: 80px;
+  padding: 8px;
+  border: 1px solid #FFC5D0;
+  border-radius: 8px;
+  outline: none;
+  color: #5D4037;
 }
 
-.price-range-input::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 28px;
-  height: 28px;
-  background: white;
-  border: 4px solid #007185;
-  border-radius: 50%;
-  cursor: pointer;
-  pointer-events: auto;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  margin-top: -10px;
+.price-input:focus {
+  border-color: #FF5E78;
+  box-shadow: 0 0 0 2px rgba(255, 94, 120, 0.1);
 }
 
-.price-range-input::-webkit-slider-thumb:hover {
-  border-width: 5px;
+.price-separator {
+  color: #8D6E63;
+  margin-top: 18px;
 }
 
-.price-range-input::-moz-range-track {
-  height: 8px;
-  background: transparent;
-}
-
-.price-range-input::-moz-range-thumb {
-  width: 28px;
-  height: 28px;
-  background: white;
-  border: 4px solid #007185;
-  border-radius: 50%;
-  cursor: pointer;
-  pointer-events: auto;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  border: none;
-}
-
-.price-range-input::-moz-range-thumb:hover {
-  border-width: 5px;
-}
-
-.price-range-input.max {
-  z-index: 3;
-}
-
-.star-rating {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-}
-
+/* 星星評價 */
 .star-rating .star {
-  color: #FFA41C;
+  color: #FFC107; /* 維持黃色星星，比較明顯 */
   font-size: 1rem;
 }
 
 .star-rating .star.empty {
-  color: #ddd;
+  color: #FFDEE9;
 }
 
 .and-up-text {
   margin-left: 8px;
-  color: #0F1111;
+  color: #8D6E63;
 }
-

@@ -2,12 +2,12 @@
 .checkout-container {
   padding: 20px;
   min-height: 100vh;
-  background-color: #1a1a1a;
+  background-color: #FFF0F5; /* Sakura Light */
 }
 
 .checkout-loading {
   text-align: center;
-  color: white;
+  color: #FF5E78;
   padding: 40px;
   font-size: 18px;
 }
@@ -21,14 +21,18 @@
 .checkout-summary-sidebar {
   position: sticky;
   top: 20px;
-  background-color: #2a2a2a;
-  border-radius: 8px;
+  background-color: white;
+  border-radius: 12px;
   padding: 20px;
+  border: 1px solid #FFDEE9;
+  box-shadow: 0 4px 15px rgba(255, 183, 197, 0.2);
 }
 
 .checkout-summary-title {
-  color: white;
+  color: #5D4037;
   margin-bottom: 20px;
+  border-bottom: 2px solid #FFC5D0;
+  padding-bottom: 10px;
 }
 
 .checkout-summary-content {
@@ -38,12 +42,12 @@
 .checkout-summary-row {
   display: flex;
   justify-content: space-between;
-  color: #aaa;
+  color: #8D6E63;
   margin-bottom: 10px;
 }
 
 .checkout-summary-divider {
-  border-top: 1px solid #555;
+  border-top: 1px dashed #FF9EAA;
   padding-top: 15px;
   margin-top: 15px;
 }
@@ -51,30 +55,37 @@
 .checkout-summary-total {
   display: flex;
   justify-content: space-between;
-  color: white;
+  color: #5D4037;
   font-size: 20px;
   font-weight: bold;
 }
 
 .checkout-summary-total-amount {
-  color: #5227FF;
+  color: #FF5E78;
 }
 
 .checkout-submit-button {
   width: 100%;
   padding: 15px;
-  background-color: #5227FF;
+  background: linear-gradient(135deg, #FF9EAA 0%, #FF5E78 100%);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 18px;
   font-weight: bold;
   cursor: pointer;
   margin-bottom: 10px;
+  box-shadow: 0 4px 12px rgba(255, 94, 120, 0.3);
+  transition: all 0.3s;
+}
+
+.checkout-submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(255, 94, 120, 0.5);
 }
 
 .checkout-submit-button:disabled {
-  background-color: #666;
+  background: #ccc;
   cursor: not-allowed;
 }
 

@@ -1,23 +1,23 @@
 /* OrderSuccessPage/index.css */
 .order-success-container {
   min-height: 100vh;
-  background-color: #1a1a1a;
+  background-color: #FFF0F5; /* Sakura Light */
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 40px 20px;
-  color: #e0e0e0;
+  color: #5D4037;
 }
 
 .order-success-card {
-  background-color: #2a2a2a;
+  background-color: white;
   border-radius: 16px;
   padding: 40px;
   width: 100%;
   max-width: 600px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 30px rgba(255, 183, 197, 0.3);
   text-align: center;
-  border: 1px solid #333;
+  border: 1px solid #FFDEE9;
   animation: slideUp 0.5s ease-out;
 }
 
@@ -34,7 +34,7 @@
 .success-checkmark {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  background: linear-gradient(135deg, #FF9EAA 0%, #FF5E78 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -42,29 +42,30 @@
   font-size: 40px;
   color: white;
   margin: 0 auto;
-  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+  box-shadow: 0 4px 15px rgba(255, 94, 120, 0.4);
 }
 
 .order-success-title {
-  color: white;
+  color: #FF5E78;
   font-size: 28px;
   margin-bottom: 8px;
   font-weight: 700;
 }
 
 .order-success-subtitle {
-  color: #aaa;
+  color: #8D6E63;
   margin-bottom: 32px;
   font-size: 16px;
 }
 
 /* 資訊區塊 */
 .order-info-section, .order-items-section, .order-total-section {
-  background-color: #222;
+  background-color: #FFFDFE;
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 20px;
   text-align: left;
+  border: 1px solid #FFF0F5;
 }
 
 .order-info-row {
@@ -79,26 +80,26 @@
 }
 
 .order-info-label {
-  color: #888;
+  color: #8D6E63;
 }
 
 .order-info-value {
-  color: white;
+  color: #5D4037;
   font-weight: 500;
 }
 
 .order-status {
-  color: #ff9800; /* 待處理狀態色 */
+  color: #FF9800; /* 待處理狀態維持橘色，或改用粉色 */
   font-weight: bold;
 }
 
 /* 商品明細 */
 .section-title {
   font-size: 16px;
-  color: #ddd;
+  color: #5D4037;
   margin-bottom: 15px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #333;
+  border-bottom: 2px dashed #FFC5D0;
 }
 
 .order-item {
@@ -115,18 +116,19 @@
 }
 
 .order-item-name {
-  color: white;
+  color: #333;
   margin-bottom: 4px;
+  font-weight: 500;
 }
 
 .order-item-quantity {
-  color: #888;
+  color: #999;
   font-size: 12px;
 }
 
 .order-item-price {
-  color: #fff;
-  font-weight: 500;
+  color: #5D4037;
+  font-weight: 600;
 }
 
 /* 總金額 */
@@ -138,26 +140,27 @@
 
 .order-total-label {
   font-size: 16px;
-  color: white;
+  color: #5D4037;
+  font-weight: bold;
 }
 
 .order-total-amount {
   font-size: 24px;
-  color: #5227FF;
+  color: #FF5E78;
   font-weight: bold;
 }
 
 /* 提示訊息 */
 .order-notice {
   font-size: 13px;
-  color: #888;
+  color: #8D6E63;
   margin-bottom: 30px;
   line-height: 1.6;
   text-align: left;
-  background-color: rgba(82, 39, 255, 0.05);
+  background-color: #FFF0F5;
   padding: 15px;
   border-radius: 8px;
-  border-left: 3px solid #5227FF;
+  border-left: 3px solid #FF9EAA;
 }
 
 .order-notice p {
@@ -173,7 +176,7 @@
 
 .order-actions button {
   padding: 14px;
-  border-radius: 8px;
+  border-radius: 25px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -182,22 +185,23 @@
 }
 
 .btn-view-orders {
-  background-color: #333;
-  color: white;
+  background-color: white;
+  color: #5D4037;
+  border: 1px solid #FFC5D0;
 }
 
 .btn-view-orders:hover {
-  background-color: #444;
+  background-color: #FFF0F5;
 }
 
 .btn-back-home {
-  background-color: #5227FF;
+  background: linear-gradient(135deg, #FF9EAA 0%, #FF5E78 100%);
   color: white;
 }
 
 .btn-back-home:hover {
-  background-color: #6b3dff;
-  box-shadow: 0 4px 12px rgba(82, 39, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 94, 120, 0.3);
 }
 
 /* 錯誤狀態 */
@@ -208,7 +212,7 @@
 .order-success-error button {
   margin-top: 20px;
   padding: 10px 24px;
-  background-color: #5227FF;
+  background-color: #FF5E78;
   color: white;
   border: none;
   border-radius: 6px;

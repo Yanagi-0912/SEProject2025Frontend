@@ -10,9 +10,9 @@ const CheckoutHeader: React.FC<CheckoutHeaderProps> = ({ onBack }) => {
   return (
     <div className="checkout-header">
       <button onClick={onBack} className="checkout-header-back-button">
-        ← 返回
+        <img src="/home-icon.png" alt="返回" className="home-icon-img" />
       </button>
-      <h2 className="checkout-header-title">結帳</h2>
+      <h2 className="checkout-header-title"> 結帳確認 </h2>
     </div>
   );
 };

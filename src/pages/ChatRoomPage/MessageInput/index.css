@@ -4,50 +4,56 @@
   display: flex;
   gap: 10px;
   padding: 15px;
-  background-color: #333;
-  border-top: 1px solid #444;
+  background-color: white;
+  border-top: 1px solid #FFDEE9;
 }
 
 .message-textarea {
   flex: 1;
   padding: 12px;
-  background-color: #2a2a2a;
-  border: 1px solid #555;
-  border-radius: 8px;
-  color: white;
+  background-color: #FFFDFE;
+  border: 2px solid #FFDEE9;
+  border-radius: 12px;
+  color: #333;
   font-size: 14px;
   resize: none;
   font-family: inherit;
+  transition: all 0.2s;
 }
 
 .message-textarea:focus {
   outline: none;
-  border-color: #5227FF;
+  border-color: #FF5E78;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(255, 94, 120, 0.1);
 }
 
 .message-textarea::placeholder {
-  color: #888;
+  color: #aaa;
 }
 
 .send-button {
   padding: 12px 30px;
-  background-color: #5227FF;
+  background: linear-gradient(135deg, #FF9EAA 0%, #FF5E78 100%);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
   align-self: flex-end;
+  box-shadow: 0 4px 10px rgba(255, 94, 120, 0.3);
 }
 
 .send-button:hover:not(:disabled) {
-  background-color: #6b3dff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(255, 94, 120, 0.4);
 }
 
 .send-button:disabled {
-  background-color: #666;
+  background: #ccc;
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: 0.7;
+  box-shadow: none;
 }
