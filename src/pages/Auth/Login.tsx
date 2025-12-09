@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import './Login.css'
-import { PRODUCT_API } from '../../config/api'
+import { login } from '../../api/login'
 
 interface LoginProps {
   onGuestLogin?: () => void
@@ -18,20 +18,8 @@ function Login({ onGuestLogin, loginSuccess, onGoToRegister }: LoginProps) {
     setLoading(true) //避免重複點擊
 
     try {
-      //呼叫api 登入
-      const response = await fetch(`${PRODUCT_API}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      })
-      
-      if (!response.ok) {
-        throw new Error('登入失敗')
-      }
-      
-      const data = await response.json()
+      // 呼叫 API 登入
+      const data = await login({ username, password })
       
       // 存 token 和 username 到 localStorage
       localStorage.setItem('token', data.token)

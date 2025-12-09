@@ -10,10 +10,8 @@ function Filter() {
   const categoryFromUrl = searchParams.get('category');
   const [selectedDepartment, setSelectedDepartment] = useState(categoryFromUrl || 'all')
   
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([])
   const [selectedReview, setSelectedReview] = useState('all')
   const [showAllDepartments, setShowAllDepartments] = useState(false)
-  const [showAllBrands, setShowAllBrands] = useState(false)
   
   // 從 API 取得分類列表
   const { data: categories = [] } = useGetCategories<string[]>();
@@ -63,25 +61,7 @@ function Filter() {
     }))
   ]
 
-  const brands = [
-    { id: 'brand1', label: '品牌一' },
-    { id: 'brand2', label: '品牌二' },
-    { id: 'brand3', label: '品牌三' },
-    { id: 'brand4', label: '品牌四' },
-    { id: 'brand5', label: '品牌五' },
-    { id: 'brand6', label: '品牌六' }
-  ]
-
   const displayedDepartments = showAllDepartments ? departments : departments.slice(0, 5)
-  const displayedBrands = showAllBrands ? brands : brands.slice(0, 4)
-
-  const handleBrandToggle = (brandId: string) => {
-    setSelectedBrands(prev => 
-      prev.includes(brandId) 
-        ? prev.filter(id => id !== brandId)
-        : [...prev, brandId]
-    )
-  }
 
 
   return (
@@ -108,31 +88,6 @@ function Filter() {
           >
             <span className="see-more-icon">▼</span>
             {showAllDepartments ? '顯示較少' : '顯示更多'}
-          </button>
-        )}
-      </div>
-
-      {/* Brands Section */}
-      <div className="filter-section">
-        <h3 className="filter-title">品牌</h3>
-        {displayedBrands.map(brand => (
-          <div key={brand.id} className="filter-option">
-            <input
-              type="checkbox"
-              id={brand.id}
-              checked={selectedBrands.includes(brand.id)}
-              onChange={() => handleBrandToggle(brand.id)}
-            />
-            <label htmlFor={brand.id}>{brand.label}</label>
-          </div>
-        ))}
-        {brands.length > 4 && (
-          <button 
-            className="see-more-button"
-            onClick={() => setShowAllBrands(!showAllBrands)}
-          >
-            <span className="see-more-icon">▼</span>
-            {showAllBrands ? '顯示較少' : '顯示更多'}
           </button>
         )}
       </div>

@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import './Register.css'
-import { PRODUCT_API } from '../../config/api'
+import { register } from '../../api/register'
 
 interface RegisterProps {
   onBackToLogin?: () => void
@@ -37,19 +37,7 @@ function Register({ onBackToLogin, registerSuccess }: RegisterProps) {
 
     try {
       // 呼叫 API 註冊
-      const response = await fetch(`${PRODUCT_API}/api/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password, email }),
-      })
-
-      if (!response.ok) {
-        // 🔧 修正：使用 text() 而不是 json()
-        const errorMessage = await response.text()
-        throw new Error(errorMessage || '註冊失敗')
-      }
+      await register({ username, password, email })
 
       // 註冊成功，儲存 email 到 localStorage（供買家資訊使用）
       localStorage.setItem('email', email)
