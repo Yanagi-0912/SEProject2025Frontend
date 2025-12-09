@@ -1,5 +1,4 @@
 import React from 'react';
-import './ControlPanel.css';
 
 interface ControlPanelProps {
   onCouponsClick?: () => void;

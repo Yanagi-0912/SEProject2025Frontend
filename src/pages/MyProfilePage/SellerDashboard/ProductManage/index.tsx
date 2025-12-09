@@ -2,7 +2,6 @@ import { useState } from 'react';
 import axios from 'axios';
 import type { Product } from '../../../../api/generated';
 import { useCreateProduct, useDeleteProduct, useEditProduct } from '../../../../api/generated';
-import './ProductManage.css';
 
 interface ProductManageProps {
   viewMode: 'list' | 'create' | 'edit';
