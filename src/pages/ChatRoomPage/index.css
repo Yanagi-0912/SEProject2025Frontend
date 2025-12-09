@@ -1,11 +1,11 @@
 /* ChatRoomPage/index.css */
 .chatroom-container {
   height: 100vh;
-  background-color: #1a1a1a;
-  color: white;
+  background-color: #FFF0F5; /* Sakura Light */
+  color: #5D4037;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* 防止整個頁面捲動 */
+  overflow: hidden;
 }
 
 .chat-loading {
@@ -13,30 +13,36 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #1a1a1a;
-  color: white;
+  background-color: #FFF0F5;
+  color: #FF5E78;
 }
 
 .loading-text {
   font-size: 18px;
-  color: #888;
+  color: #FF5E78;
+  font-weight: bold;
 }
 
 /* 新增：主要內容區域，包含側邊欄與聊天視窗 */
 .chatroom-content {
   display: flex;
   flex: 1;
-  overflow: hidden; /* 內容溢出時由內部元件處理捲動 */
+  overflow: hidden;
   position: relative;
+  background-color: white;
+  margin: 10px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(255, 183, 197, 0.3);
+  border: 1px solid #FFDEE9;
 }
 
 /* 側邊欄容器樣式覆寫/增強 */
 .chatroom-content .chat-sidebar {
-  width: 300px; /* 固定寬度 */
-  border-right: 1px solid #333;
+  width: 300px;
+  border-right: 1px solid #FFDEE9;
   display: flex;
   flex-direction: column;
-  background-color: #222;
+  background-color: #FFFDFE;
   flex-shrink: 0;
 }
 
@@ -45,9 +51,11 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: #1a1a1a;
+  background-color: white;
   position: relative;
-  min-width: 0; /* 防止 Flex 子元素溢出 */
+  min-width: 0;
+  background-image: radial-gradient(#FFF0F5 1px, transparent 1px);
+  background-size: 20px 20px; /* 點點背景 */
 }
 
 .no-chat-selected {
@@ -55,6 +63,7 @@
   justify-content: center;
   align-items: center;
   height: 100%;
-  color: #555;
+  color: #FF9EAA;
   font-size: 16px;
+  font-weight: 500;
 }

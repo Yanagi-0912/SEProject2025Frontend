@@ -7,18 +7,19 @@
 
 /* 評論輸入區 */
 .review-input-container {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  background: white;
   padding: 24px;
   border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(255, 183, 197, 0.2);
   margin-bottom: 24px;
+  border: 1px solid #FFDEE9;
 }
 
 .review-input-container h3 {
   margin: 0 0 20px 0;
   font-size: 24px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #5D4037;
 }
 
 /* 評分輸入 */
@@ -31,7 +32,7 @@
 
 .rating-input label {
   font-weight: 600;
-  color: #333;
+  color: #5D4037;
 }
 
 .star-rating {
@@ -41,18 +42,13 @@
 
 .star {
   font-size: 24px;
-  filter: grayscale(100%);
-  opacity: 0.3;
+  color: #FFDEE9;
+  cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .star.filled {
-  filter: grayscale(0%);
-  opacity: 1;
-}
-
-.star.interactive {
-  cursor: pointer;
+  color: #FFC107; /* 保持黃色星星 */
 }
 
 .star.interactive:hover {
@@ -61,7 +57,7 @@
 
 .rating-text {
   font-size: 14px;
-  color: #666;
+  color: #8D6E63;
   font-weight: 600;
 }
 
@@ -73,7 +69,7 @@
 .comment-input textarea {
   width: 100%;
   padding: 12px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid #FFDEE9;
   border-radius: 8px;
   font-size: 15px;
   font-family: inherit;
@@ -83,8 +79,8 @@
 
 .comment-input textarea:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  border-color: #FF5E78;
+  box-shadow: 0 0 0 4px rgba(255, 94, 120, 0.1);
 }
 
 /* 圖片輸入 */
@@ -95,7 +91,7 @@
 .image-input input {
   width: 100%;
   padding: 12px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid #FFDEE9;
   border-radius: 8px;
   font-size: 15px;
   transition: border-color 0.3s ease;
@@ -103,8 +99,8 @@
 
 .image-input input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  border-color: #FF5E78;
+  box-shadow: 0 0 0 4px rgba(255, 94, 120, 0.1);
 }
 
 /* 提交按鈕 */
@@ -115,139 +111,61 @@
 
 .submit-review-btn {
   padding: 12px 32px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #FF9EAA 0%, #FF5E78 100%);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 25px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 10px rgba(255, 94, 120, 0.3);
 }
 
 .submit-review-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 15px rgba(255, 94, 120, 0.4);
 }
 
 .submit-review-btn:disabled {
-  background: #bdbdbd;
+  background: #ccc;
   cursor: not-allowed;
   box-shadow: none;
 }
 
 /* 評論列表區 */
 .review-list-container {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  background: white;
   padding: 24px;
   border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(255, 183, 197, 0.2);
+  border: 1px solid #FFDEE9;
 }
 
 .review-list-container h3 {
   margin: 0 0 20px 0;
   font-size: 24px;
   font-weight: 700;
-  color: #1a1a1a;
-}
-
-.no-reviews {
-  text-align: center;
-  padding: 40px 20px;
-  color: #999;
-  font-size: 16px;
-}
-
-/* 評論項目 */
-.review-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  color: #5D4037;
 }
 
 .review-item {
-  background: white;
+  background: #FFFDFE;
   padding: 20px;
   border-radius: 12px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #FFDEE9;
   transition: all 0.3s ease;
 }
 
 .review-item:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
+  border-color: #FFC5D0;
 }
 
 .review-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.reviewer-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  border-bottom: 1px solid #FFF0F5;
 }
 
 .reviewer-name {
-  font-weight: 600;
-  font-size: 16px;
-  color: #1a1a1a;
-}
-
-.review-date {
-  font-size: 13px;
-  color: #999;
-}
-
-.review-content {
-  margin-top: 12px;
-}
-
-.review-content p {
-  margin: 0;
-  line-height: 1.6;
-  color: #333;
-  font-size: 15px;
-}
-
-.review-image {
-  margin-top: 12px;
-}
-
-.review-image img {
-  max-width: 300px;
-  width: 100%;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-}
-
-/* 響應式設計 */
-@media (max-width: 768px) {
-  .review-container {
-    margin: 16px;
-  }
-
-  .review-input-container,
-  .review-list-container {
-    padding: 16px;
-  }
-
-  .review-input-container h3,
-  .review-list-container h3 {
-    font-size: 20px;
-  }
-
-  .star {
-    font-size: 20px;
-  }
-
-  .submit-review-btn {
-    width: 100%;
-  }
+  color: #5D4037;
+  font-weight: bold;
 }

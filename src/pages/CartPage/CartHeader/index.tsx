@@ -9,9 +9,9 @@ const CartHeader: React.FC<CartHeaderProps> = ({ onBack }) => {
   return (
     <div className="cart-header">
       <button onClick={onBack} className="cart-header-back-btn">
-        ← 返回主頁
+        <img src="/home-icon.png" alt="返回主頁" className="home-icon-img" />
       </button>
-      <h2 className="cart-header-title">購物車</h2>
+      <h2 className="cart-header-title"> 購物車 </h2>
       <div className="cart-header-spacer"></div>
     </div>
   );

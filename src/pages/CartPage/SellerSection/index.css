@@ -1,18 +1,19 @@
 /* SellerSection/index.css */
 
 .seller-section {
-  border: 2px solid #444;
+  border: 2px solid #FFDEE9;
   margin-bottom: 20px;
   padding: 15px;
-  border-radius: 8px;
-  background-color: #333;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(255, 182, 193, 0.2);
 }
 
 .seller-section-header {
   display: flex;
   align-items: center;
   margin-bottom: 15px;
-  border-bottom: 1px solid #555;
+  border-bottom: 2px dashed #FFC5D0;
   padding-bottom: 10px;
 }
 
@@ -21,10 +22,11 @@
   width: 18px;
   height: 18px;
   cursor: pointer;
+  accent-color: #FF5E78; /* Checkbox 顏色 */
 }
 
 .seller-section-name {
-  color: white;
+  color: #5D4037;
   font-size: 18px;
   font-weight: bold;
 }
@@ -35,45 +37,46 @@
 }
 
 .seller-section-table-header {
-  border-bottom: 2px solid #555;
+  border-bottom: 2px solid #FFDEE9;
+  background-color: #FFF5F7;
 }
 
 .seller-table-th-checkbox {
   width: 50px;
   padding: 10px;
-  color: #aaa;
+  color: #8D6E63;
 }
 
 .seller-table-th-product {
   padding: 10px;
   text-align: left;
-  color: #aaa;
+  color: #8D6E63;
 }
 
 .seller-table-th-price {
   width: 120px;
   padding: 10px;
   text-align: center;
-  color: #aaa;
+  color: #8D6E63;
 }
 
 .seller-table-th-quantity {
   width: 150px;
   padding: 10px;
   text-align: center;
-  color: #aaa;
+  color: #8D6E63;
 }
 
 .seller-table-th-subtotal {
   width: 120px;
   padding: 10px;
   text-align: center;
-  color: #aaa;
+  color: #8D6E63;
 }
 
 .seller-table-th-action {
   width: 80px;
   padding: 10px;
   text-align: center;
-  color: #aaa;
+  color: #8D6E63;
 }

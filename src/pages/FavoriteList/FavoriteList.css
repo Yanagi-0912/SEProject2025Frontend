@@ -1,122 +1,153 @@
 /* Minimal styling for FavoriteList components */
 .fav-container {
   max-width: 1100px;
-  margin: 16px auto;
-  padding: 12px;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-  color: #222;
-  border: 1px solid #dcdcdc; /* 灰色外框 */
-  border-radius: 8px;
-  background: #fafafa;
+  margin: 20px auto;
+  padding: 20px;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #5D4037;
+  border: 1px solid #FFDEE9;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 4px 15px rgba(255, 183, 197, 0.2);
 }
 
 .fav-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   gap: 16px;
 }
 
 .fav-header h2 {
   margin: 0;
   flex: 1;
+  color: #FF5E78;
 }
 
 .clear-all-btn {
   padding: 10px 20px;
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
+  background: white;
+  color: #FF5E78;
+  border: 2px solid #FFC5D0;
+  border-radius: 20px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
   white-space: nowrap;
 }
 
 .clear-all-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #ee5a6f 0%, #d63031 100%);
+  background: #FFF0F5;
+  border-color: #FF5E78;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
-}
-
-.clear-all-btn:disabled {
-  background: #bdbdbd;
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
-}
-
-.clear-all-btn:active:not(:disabled) {
-  transform: translateY(0);
 }
 
 .fav-search-row {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .fav-search-input {
-  padding: 8px 10px;
+  padding: 10px 14px;
   flex: 1;
-  border: 1px solid #dcdcdc;
-  border-radius: 6px;
+  border: 2px solid #FFDEE9;
+  border-radius: 12px;
+  outline: none;
+  color: #5D4037;
 }
 
+.fav-search-input:focus {
+  border-color: #FF9EAA;
+}
+
+/* 一般按鈕 (搜尋) */
 .fav-btn {
-  padding: 8px 10px;
-  border-radius: 6px;
-  border: 1px solid transparent;
-  background: #1976d2;
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #FF9EAA 0%, #FF5E78 100%);
   color: white;
   cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  white-space: nowrap;
 }
+
+.fav-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(255, 94, 120, 0.3);
+}
+
+/* 次要按鈕 (移除) - 白色底 */
 .fav-btn.secondary {
-  background: #fff;
-  color: #333;
-  border: 1px solid #ccc;
+  background: white;
+  color: #5D4037;
+  border: 1px solid #FFC5D0;
+}
+
+.fav-btn.secondary:hover {
+  background: #FFF0F5;
+  border-color: #FF9EAA;
 }
 
 .fav-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
 }
 
 .fav-card {
-  border: 1px solid #dcdcdc;
-  padding: 12px;
-  border-radius: 8px;
-  background: #fff;
+  border: 1px solid #FFDEE9;
+  padding: 15px;
+  border-radius: 12px;
+  background: #FFFDFE;
   display: flex;
   flex-direction: column;
+  transition: transform 0.2s;
+}
+
+.fav-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(255, 183, 197, 0.2);
+  border-color: #FF9EAA;
 }
 
 .fav-image {
   width: 100%;
-  height: 140px;
+  height: 160px;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 8px;
+  background-color: #FFF0F5;
 }
+
 .fav-image-placeholder {
   width: 100%;
-  height: 140px;
-  background: #f5f5f5;
-  display:flex; align-items:center; justify-content:center; border-radius:6px; color:#888;
+  height: 160px;
+  background: #FFF0F5;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:8px;
+  color:#FF9EAA;
 }
 
-.fav-title { margin: 8px 0 4px; font-size: 16px }
-.fav-seller { color: #666; margin-bottom: 8px }
-.fav-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px }
-.fav-price { font-weight:700 }
-.fav-status { font-size:12px; color:#888 }
+.fav-title { margin: 10px 0 5px; font-size: 16px; color: #5D4037; font-weight: bold; }
+.fav-seller { color: #8D6E63; margin-bottom: 8px; font-size: 0.9rem; }
+.fav-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px }
+.fav-price { font-weight:700; color: #FF5E78; font-size: 1.1rem; }
+.fav-status { font-size:12px; color:#999 }
 
 .fav-actions { display:flex; gap:8px }
+
+.fav-actions .fav-btn {
+  flex: 1;
+  font-size: 0.9rem;
+  padding: 8px;
+}
 
 /* Responsive tweaks */
 @media (max-width: 480px) {

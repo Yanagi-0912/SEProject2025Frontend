@@ -3,26 +3,36 @@
   display: flex;
   align-items: center;
   margin-bottom: 20px;
-  padding: 10px;
-  background-color: #2a2a2a;
-  border-radius: 8px;
+  padding: 15px;
+  background-color: white;
+  border-radius: 12px;
+  border: 2px solid #FFC5D0;
+  box-shadow: 0 4px 15px rgba(255, 183, 197, 0.3);
 }
 
 .checkout-header-back-button {
-  padding: 8px 16px;
-  background-color: #444;
-  color: white;
+  padding: 0;
+  background-color: transparent;
   border: none;
-  border-radius: 5px;
   cursor: pointer;
   margin-right: 20px;
 }
 
 .checkout-header-back-button:hover {
-  background-color: #555;
+  transform: scale(1.05);
+}
+
+.home-icon-img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  border: 3px solid #FF9EAA;
+  border-radius: 50%;
+  background-color: white;
 }
 
 .checkout-header-title {
-  color: white;
+  color: #5D4037;
   margin: 0;
+  font-weight: bold;
 }

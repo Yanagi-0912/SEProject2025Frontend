@@ -1,8 +1,7 @@
 /* chatroom/ChatSidebar/index.css */
 
 .chat-sidebar {
-  background-color: #2a2a2a;
-  border-radius: 8px;
+  background-color: white;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -10,13 +9,15 @@
 
 .chat-sidebar-header {
   padding: 15px;
-  border-bottom: 1px solid #444;
+  border-bottom: 1px solid #FFDEE9;
+  background-color: #FFF0F5;
 }
 
 .chat-sidebar-header h3 {
-  color: white;
+  color: #5D4037;
   margin: 0;
   font-size: 18px;
+  font-weight: bold;
 }
 
 .chat-room-list {
@@ -29,7 +30,7 @@
   justify-content: center;
   align-items: center;
   padding: 40px 20px;
-  color: #888;
+  color: #999;
   font-size: 14px;
 }
 
@@ -39,16 +40,16 @@
   padding: 15px;
   cursor: pointer;
   transition: background-color 0.2s;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #FFF0F5;
 }
 
 .chat-room-item:hover {
-  background-color: #333;
+  background-color: #FFF0F5;
 }
 
 .chat-room-item.active {
-  background-color: #3a3a3a;
-  border-left: 3px solid #5227FF;
+  background-color: #FFF5F7;
+  border-left: 4px solid #FF5E78;
 }
 
 .chat-room-avatar {
@@ -56,7 +57,7 @@
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background-color: #5227FF;
+  background: linear-gradient(135deg, #FF9EAA 0%, #FF5E78 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -65,16 +66,18 @@
   font-weight: bold;
   margin-right: 12px;
   flex-shrink: 0;
+  border: 2px solid white;
+  box-shadow: 0 2px 5px rgba(255, 94, 120, 0.2);
 }
 
 .online-indicator {
   position: absolute;
-  bottom: 2px;
-  right: 2px;
+  bottom: 0px;
+  right: 0px;
   width: 12px;
   height: 12px;
   background-color: #4caf50;
-  border: 2px solid #2a2a2a;
+  border: 2px solid white;
   border-radius: 50%;
 }
 
@@ -91,13 +94,13 @@
 }
 
 .chat-room-name {
-  color: white;
+  color: #5D4037;
   font-weight: bold;
   font-size: 16px;
 }
 
 .chat-room-time {
-  color: #888;
+  color: #999;
   font-size: 12px;
   flex-shrink: 0;
   margin-left: 10px;
@@ -110,7 +113,7 @@
 }
 
 .chat-room-last-message {
-  color: #aaa;
+  color: #8D6E63;
   font-size: 14px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -119,7 +122,7 @@
 }
 
 .chat-room-unread-badge {
-  background-color: #5227FF;
+  background-color: #FF5E78;
   color: white;
   border-radius: 10px;
   padding: 2px 8px;
