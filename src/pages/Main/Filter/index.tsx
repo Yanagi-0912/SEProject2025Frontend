@@ -1,14 +1,20 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useGetCategories } from '../../../api/category'
 import './Filter.css'
 
 function Filter() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedDepartment, setSelectedDepartment] = useState('all')
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([])
+  
+  // 從 URL 讀取分類參數
+  const categoryFromUrl = searchParams.get('category');
+  const [selectedDepartment, setSelectedDepartment] = useState(categoryFromUrl || 'all')
+  
   const [selectedReview, setSelectedReview] = useState('all')
   const [showAllDepartments, setShowAllDepartments] = useState(false)
-  const [showAllBrands, setShowAllBrands] = useState(false)
+  
+  // 從 API 取得分類列表
+  const { data: categories = [] } = useGetCategories<string[]>();
   
   // 從 URL 讀取價格參數
   const minPriceFromUrl = searchParams.get('minPrice');
@@ -16,6 +22,18 @@ function Filter() {
   
   const [minPrice, setMinPrice] = useState<string>(minPriceFromUrl || '')
   const [maxPrice, setMaxPrice] = useState<string>(maxPriceFromUrl || '')
+
+  // 當分類改變時，更新 URL 參數
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    if (selectedDepartment && selectedDepartment !== 'all') {
+      params.set('category', selectedDepartment);
+    } else {
+      params.delete('category');
+    }
+    setSearchParams(params, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDepartment]);
 
   // 當價格改變時，更新 URL 參數
   useEffect(() => {
@@ -34,36 +52,16 @@ function Filter() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [minPrice, maxPrice]);
 
+  // 將 API 回傳的分類轉換為元件需要的格式
   const departments = [
     { id: 'all', label: '全部' },
-    { id: 'devices', label: '電子裝置與配件' },
-    { id: 'baby', label: '嬰兒用品' },
-    { id: 'bags', label: '包包、錢包與行李箱' },
-    { id: 'beauty', label: '美妝保養' },
-    { id: 'books', label: '書籍' },
-    { id: 'electronics', label: '電子產品' },
-    { id: 'fashion', label: '時尚服飾' }
-  ]
-
-  const brands = [
-    { id: 'brand1', label: '品牌一' },
-    { id: 'brand2', label: '品牌二' },
-    { id: 'brand3', label: '品牌三' },
-    { id: 'brand4', label: '品牌四' },
-    { id: 'brand5', label: '品牌五' },
-    { id: 'brand6', label: '品牌六' }
+    ...categories.map(category => ({
+      id: category,
+      label: category
+    }))
   ]
 
   const displayedDepartments = showAllDepartments ? departments : departments.slice(0, 5)
-  const displayedBrands = showAllBrands ? brands : brands.slice(0, 4)
-
-  const handleBrandToggle = (brandId: string) => {
-    setSelectedBrands(prev => 
-      prev.includes(brandId) 
-        ? prev.filter(id => id !== brandId)
-        : [...prev, brandId]
-    )
-  }
 
 
   return (
@@ -90,31 +88,6 @@ function Filter() {
           >
             <span className="see-more-icon">▼</span>
             {showAllDepartments ? '顯示較少' : '顯示更多'}
-          </button>
-        )}
-      </div>
-
-      {/* Brands Section */}
-      <div className="filter-section">
-        <h3 className="filter-title">品牌</h3>
-        {displayedBrands.map(brand => (
-          <div key={brand.id} className="filter-option">
-            <input
-              type="checkbox"
-              id={brand.id}
-              checked={selectedBrands.includes(brand.id)}
-              onChange={() => handleBrandToggle(brand.id)}
-            />
-            <label htmlFor={brand.id}>{brand.label}</label>
-          </div>
-        ))}
-        {brands.length > 4 && (
-          <button 
-            className="see-more-button"
-            onClick={() => setShowAllBrands(!showAllBrands)}
-          >
-            <span className="see-more-icon">▼</span>
-            {showAllBrands ? '顯示較少' : '顯示更多'}
           </button>
         )}
       </div>

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useUpdateUser } from '../../../api/generated';
-import './UserProfile.css';
 
 interface UserProps {
   id: string;               // 使用者ID

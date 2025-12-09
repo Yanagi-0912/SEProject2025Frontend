@@ -1,4 +1,3 @@
-import './SellerInfo.css';
 
 interface SellerInfoProps {
   averageRating: number;

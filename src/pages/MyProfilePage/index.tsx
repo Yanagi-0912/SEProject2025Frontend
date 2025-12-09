@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../Main/Header';
 import UserProfile from './UserProfile';
 import ControlPanel from './ControlPanel';
-import './MyProfilePage.css';
 import { useGetCurrentUser, useUpdatePassword, type Product } from '../../api/generated';
 
 interface UserProps {

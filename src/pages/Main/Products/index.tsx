@@ -12,6 +12,7 @@ interface ProductItem {
   nowHighestBid?: number;
   auctionEndTime?: string;
   averageRating?: number;
+  productCategory?: string;
 }
 
 interface ProductsProps {
@@ -23,11 +24,13 @@ function Products({ page, onProductClick }: ProductsProps) {
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get('keyword');
   const ragIdsParam = searchParams.get('ragIds');
+  const categoryParam = searchParams.get('category');
   const minPriceParam = searchParams.get('minPrice');
   const maxPriceParam = searchParams.get('maxPrice');
 
   // 簡化：有 ragIds 就用 RAG，有 keyword 就用模糊搜尋，都沒有就顯示全部
   const ragIds = ragIdsParam ? ragIdsParam.split(',') : [];
+  const selectedCategory = categoryParam && categoryParam !== 'all' ? categoryParam : undefined;
   const minPrice = minPriceParam ? Number(minPriceParam) : undefined;
   const maxPrice = maxPriceParam ? Number(maxPriceParam) : undefined;
 
@@ -82,6 +85,14 @@ function Products({ page, onProductClick }: ProductsProps) {
         ...p
       }))
     : [];
+
+  // 根據分類篩選商品（只在有選擇分類時才篩選）
+  if (selectedCategory) {
+    products = products.filter(product => {
+      // 檢查商品的分類是否符合選擇的分類
+      return product.productCategory === selectedCategory;
+    });
+  }
 
   // 根據價格區間篩選商品（只在有設定價格時才篩選）
   if (minPrice !== undefined || maxPrice !== undefined) {
