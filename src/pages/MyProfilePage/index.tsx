@@ -3,31 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../Main/Header';
 import UserProfile from './UserProfile';
 import ControlPanel from './ControlPanel';
-import { useGetCurrentUser, useUpdatePassword, type Product } from '../../api/generated';
-
-interface UserProps {
-  id: string;               // 使用者ID
-  username: string;         // 使用者名稱
-  email: string;            // 使用者電子郵件
-  nickname: string;         // 使用者暱稱
-  phoneNumber: string;      // 使用者電話
-  address: string;          // 使用者地址
-  averageRating?: number;   // 使用者平均評分
-  ratingCount?: number;     // 使用者評分數量
-  isBanned?: boolean;      // 使用者是否被封鎖
-  sellingProducts?: Product[]; // 使用者正在販售的商品
-}
-
-const SAMPLE_USER: UserProps = {
-    id: 'TestUser01',
-    username: 'testuser',
-    email: 'testuser@example.com',
-    nickname: '測試用戶',
-    phoneNumber: '0912345678',
-    address: '台北市中正區仁愛路一段1號',
-    averageRating: 4.5,
-    ratingCount: 120,
-};
+import { useGetCurrentUser, useUpdatePassword } from '../../api/generated';
+import { SAMPLE_USER, normalizeUserData, type UserProps } from '../UserProfilePage/types';
 
 const MyProfilePage: React.FC = () => {
 	const navigate = useNavigate();
@@ -43,27 +20,7 @@ const MyProfilePage: React.FC = () => {
 
 		if (userQuery.data && userQuery.data.data) {
 			const fetched = userQuery.data.data;
-			const normalize = (src: unknown): Partial<UserProps> => {
-				const s = src as Record<string, unknown>;
-				const asString = (v: unknown) => (typeof v === 'string' ? v : v == null ? undefined : String(v));
-				const asNumber = (v: unknown) => (typeof v === 'number' ? v : typeof v === 'string' && v.trim() !== '' ? Number(v) : undefined);
-				
-				const username = asString(s['username']);
-				const nickname = asString(s['nickname']);
-				
-				return {
-					id: asString(s['id']),
-					username: username,
-					email: asString(s['email']),
-					nickname: nickname || username, // 若暱稱為空則使用 username
-					phoneNumber: asString(s['phoneNumber']),
-					address: asString(s['address']),
-					averageRating: asNumber(s['averageRating']),
-					ratingCount: asNumber(s['ratingCount']),
-				};
-			};
-
-			setUser(prev => ({ ...prev, ...normalize(fetched) } as UserProps));
+			setUser(prev => ({ ...prev, ...normalizeUserData(fetched) } as UserProps));
 			setError(null);
 		} else if (userQuery.isError) {
 			const msg = userQuery.error ? String((userQuery.error as Error).message) : '取得使用者失敗';
@@ -136,15 +93,6 @@ const MyProfilePage: React.FC = () => {
 		// 重新獲取使用者資料
 		userQuery.refetch();
 	};
-
-	if (userQuery.isLoading) {
-		return (
-			<div className="user-profile-loading">
-				<div className="loading-spinner"></div>
-				<p>載入中...</p>
-			</div>
-		);
-	}
 
 	return (
 		<div className="user-profile-page-wrapper">

@@ -1,17 +1,6 @@
 import { useState } from 'react';
 import { useUpdateUser } from '../../../api/generated';
-
-interface UserProps {
-  id: string;               // 使用者ID
-  username: string;         // 使用者名稱
-  email: string;            // 使用者電子郵件
-  nickname: string;         // 使用者暱稱
-  phoneNumber: string;      // 使用者電話
-  address: string;          // 使用者地址
-  averageRating?: number;   // 使用者平均評分
-  ratingCount?: number;     // 使用者評分數量
-  onUpdateSuccess?: () => void; // 更新成功的回調
-}
+import type { UserProps } from '../../UserProfilePage/types';
 
 function UserProfile(profile: UserProps) {
   const [isEditing, setIsEditing] = useState(false);
@@ -80,167 +69,129 @@ function UserProfile(profile: UserProps) {
   };
 
   return (
-    <div className="user-profile-page">
-      <div className="profile-container">
-        <div className="profile-header">
-          <div className="profile-avatar-section">
-            <div className="profile-avatar">
-              <div className="avatar-placeholder">
-                {profile?.nickname?.charAt?.(0)?.toUpperCase() ?? '?'}
-              </div>
-            </div>
-            <div className="profile-basic-info">
-              <h1 className="profile-username">{profile.username}</h1>
-              <p className="profile-email">{profile.email}</p>
-            </div>
+    <div>
+      {/* 用戶基本資訊 */}
+      <h1>{profile.username}</h1>
+      <p>{profile.email}</p>
+      
+      {/* 評分資訊 */}
+      <div>
+        <span>平均評分</span>
+        <span>⭐ {profile.averageRating?.toFixed(1) ?? '尚無評分'}</span>
+      </div>
+      <div>
+        <span>評分次數</span>
+        <span>{profile.ratingCount ?? 0} 次</span>
+      </div>
+      
+      {/* 操作按鈕 */}
+      {!isEditing ? (
+        <button onClick={handleEdit}>
+          編輯個人資料
+        </button>
+      ) : (
+        <>
+          <button 
+            onClick={handleSave} 
+            disabled={updateUserMutation.isPending}
+          >
+            {updateUserMutation.isPending ? '儲存中...' : '儲存'}
+          </button>
+          <button 
+            onClick={handleCancel} 
+            disabled={updateUserMutation.isPending}
+          >
+            取消
+          </button>
+        </>
+      )}
+
+      {/* 內容區域 */}
+      <h2>基本資訊</h2>
+      
+      {!isEditing ? (
+        // 顯示模式
+        <>
+          <div>
+            <span>暱稱</span>
+            <span>{profile.nickname || '未設定'}</span>
           </div>
-          
-          <div className="profile-rating-section">
-            <div className="rating-item">
-              <span className="rating-label">平均評分</span>
-              <span className="rating-value">⭐ {profile.averageRating?.toFixed(1) ?? '尚無評分'}</span>
-            </div>
-            <div className="rating-item">
-              <span className="rating-label">評分次數</span>
-              <span className="rating-value">{profile.ratingCount ?? 0} 次</span>
-            </div>
+          <div>
+            <span>Email</span>
+            <span>{profile.email || '未設定'}</span>
           </div>
-          
-          <div className="profile-actions">
-            {!isEditing ? (
-              <button onClick={handleEdit} className="btn btn-primary">
-                編輯個人資料
-              </button>
-            ) : (
-              <div className="edit-actions">
-                <button 
-                  onClick={handleSave} 
-                  className="btn btn-success"
-                  disabled={updateUserMutation.isPending}
-                >
-                  {updateUserMutation.isPending ? '儲存中...' : '儲存'}
-                </button>
-                <button 
-                  onClick={handleCancel} 
-                  className="btn btn-secondary"
-                  disabled={updateUserMutation.isPending}
-                >
-                  取消
-                </button>
+          <div>
+            <span>電話</span>
+            <span>{profile.phoneNumber || '未填寫'}</span>
+          </div>
+          <div>
+            <span>地址</span>
+            <span>{profile.address || '未填寫'}</span>
+          </div>
+        </>
+      ) : (
+        // 編輯模式
+        <>
+          <div>
+            <label>使用者名稱</label>
+            <input
+              type="text"
+              value={editedProfile.username}
+              disabled
+            />
+          </div>
+
+          <div>
+            <label>Email</label>
+            <input
+              type="email"
+              value={editedProfile.email}
+              disabled
+            />
+          </div>
+
+          <div>
+            <label>暱稱 <span>*</span></label>
+            <input
+              type="text"
+              value={editedProfile.nickname}
+              onChange={(e) => handleChange('nickname', e.target.value)}
+              placeholder="請輸入暱稱"
+            />
+          </div>
+
+          <div>
+            <label>電話（09開頭10碼）</label>
+            <input
+              type="tel"
+              value={editedProfile.phoneNumber}
+              onChange={(e) => handleChange('phoneNumber', e.target.value)}
+              placeholder="0912345678"
+              maxLength={10}
+            />
+            {editedProfile.phoneNumber && editedProfile.phoneNumber.length > 0 && (
+              <div>
+                {editedProfile.phoneNumber.length !== 10 && (
+                  <span>目前 {editedProfile.phoneNumber.length} 位，需要 10 位數字</span>
+                )}
+                {editedProfile.phoneNumber.length >= 2 && !editedProfile.phoneNumber.startsWith('09') && (
+                  <span>電話號碼必須以 09 開頭</span>
+                )}
               </div>
             )}
           </div>
-        </div>
 
-        <div className="profile-content">
-          {!isEditing ? (
-            // 顯示模式
-            <div className="profile-display">
-              <div className="profile-section">
-                <h2 className="section-title">基本資訊</h2>
-                <div className="info-grid">
-                  <div className="info-item">
-                    <span className="info-label">暱稱</span>
-                    <span className="info-value">{profile.nickname || '未設定'}</span>
-                  </div>
-                  <div className="info-item">
-                    <span className="info-label">Email</span>
-                    <span className="info-value">{profile.email || '未設定'}</span>
-                  </div>
-                  <div className="info-item">
-                    <span className="info-label">電話</span>
-                    <span className="info-value">{profile.phoneNumber || '未填寫'}</span>
-                  </div>
-                  <div className="info-item">
-                    <span className="info-label">地址</span>
-                    <span className="info-value">{profile.address || '未填寫'}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            // 編輯模式
-            <div className="profile-edit">
-              <div className="profile-section">
-                <h2 className="section-title">基本資訊</h2>
-                <div className="form-grid">
-                  <div className="form-group">
-                    <label className="form-label">
-                      使用者名稱
-                    </label>
-                    <input
-                      type="text"
-                      value={editedProfile.username}
-                      disabled
-                      className="form-input disabled"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      value={editedProfile.email}
-                      disabled
-                      className="form-input disabled"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">
-                      暱稱 <span className="required">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={editedProfile.nickname}
-                      onChange={(e) => handleChange('nickname', e.target.value)}
-                      placeholder="請輸入暱稱"
-                      className="form-input"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">
-                      電話（09開頭10碼）
-                    </label>
-                    <input
-                      type="tel"
-                      value={editedProfile.phoneNumber}
-                      onChange={(e) => handleChange('phoneNumber', e.target.value)}
-                      placeholder="0912345678"
-                      className="form-input"
-                      maxLength={10}
-                    />
-                    {editedProfile.phoneNumber && editedProfile.phoneNumber.length > 0 && (
-                      <div className="validation-hint">
-                        {editedProfile.phoneNumber.length !== 10 && (
-                          <span className="error">目前 {editedProfile.phoneNumber.length} 位，需要 10 位數字</span>
-                        )}
-                        {editedProfile.phoneNumber.length >= 2 && !editedProfile.phoneNumber.startsWith('09') && (
-                          <span className="error">電話號碼必須以 09 開頭</span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">地址</label>
-                    <input
-                      type="text"
-                      value={editedProfile.address}
-                      onChange={(e) => handleChange('address', e.target.value)}
-                      placeholder="例：台北市"
-                      className="form-input"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+          <div>
+            <label>地址</label>
+            <input
+              type="text"
+              value={editedProfile.address}
+              onChange={(e) => handleChange('address', e.target.value)}
+              placeholder="例：台北市"
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };
