@@ -95,30 +95,27 @@ const MyProfilePage: React.FC = () => {
 	};
 
 	return (
-		<div className="user-profile-page-wrapper">
+		<div>
 			<Header />
 			{error && (
-				<div className="error-banner">
-					⚠️ 錯誤：{error} — 使用範例使用者顯示
+				<div>
+					{error} 請先登入
 				</div>
 			)}
 			
-			<div className="user-profile-content">
-				<div className="profile-main-container">
-					{/* 個人資料卡片 */}
-					<UserProfile 
-						{...user} 
-						onUpdateSuccess={handleUpdateSuccess}
-					/>
-					
-					{/* 控制面板 */}
-					<ControlPanel
-						onCouponsClick={handleCouponsClick}
-						onChangePasswordClick={handleChangePasswordClick}
-						onSellerDashboardClick={handleSellerDashboardClick}
-						onHistoryClick={handleHistoryClick}
-					/>
+			<div style={{ border: '1px solid red' }}>
+				<div style={{ border: '1px solid blue' }}>
+				<UserProfile 
+					{...user} 
+					onUpdateSuccess={handleUpdateSuccess}
+				/>
 				</div>
+				<ControlPanel
+					onCouponsClick={handleCouponsClick}
+					onChangePasswordClick={handleChangePasswordClick}
+					onSellerDashboardClick={handleSellerDashboardClick}
+					onHistoryClick={handleHistoryClick}
+				/>
 			</div>
 		</div>
 	);
