@@ -51,4 +51,3 @@ function MyCoupons({ coupons }: MyCouponsProps) {
 }
 
 export default MyCoupons
-

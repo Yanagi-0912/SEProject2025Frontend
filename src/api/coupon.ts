@@ -1,0 +1,86 @@
+import axios from 'axios';
+import { PRODUCT_API } from '../config/api';
+
+export interface CreateCouponRequest {
+  couponName: string;
+  description: string;
+  expireTime: string; // ISO 8601 format: "2025-12-31T23:59:59"
+  couponCount: number;
+  discountType: 'PERCENT' | 'FIXED' | 'FREESHIP' | 'BUY_ONE_GET_ONE';
+  discountValue: number;
+  minPurchaseAmount: number;
+  createdTime: string; // ISO 8601 format: "2025-01-01T12:00:00"
+  maxUsage: number;
+}
+
+export interface CreateCouponResponse {
+  couponID: string;
+  couponName: string;
+  description: string;
+  expireTime: string;
+  couponCount: number;
+  discountType: 'PERCENT' | 'FIXED' | 'FREESHIP' | 'BUY_ONE_GET_ONE';
+  discountValue: number;
+  minPurchaseAmount: number;
+  createdTime: string;
+  maxUsage: number;
+}
+
+/**
+ * 優惠券列表項目
+ */
+export interface CouponListItem {
+  couponID: string;
+  couponName: string;
+  discount: number;
+}
+
+/**
+ * 使用者優惠券項目
+ */
+export interface UserCouponItem {
+  couponID: string;
+  couponName: string;
+  description?: string;
+  discountType: 'PERCENT' | 'FIXED' | 'FREESHIP' | 'BUY_ONE_GET_ONE';
+  discountValue: number;
+  expireTime: string;
+  obtainedTime?: string;
+  isUsed?: boolean;
+}
+
+/**
+ * 取得所有優惠券 API
+ * GET /api/coupons
+ */
+export const getAllCoupons = async (): Promise<CouponListItem[]> => {
+  const response = await axios.get<CouponListItem[]>(
+    `${PRODUCT_API}/api/coupons`
+  );
+  return response.data;
+};
+
+/**
+ * 取得當前使用者的優惠券 API
+ * GET /api/userCoupon/me
+ */
+export const getUserCoupons = async (): Promise<UserCouponItem[]> => {
+  const response = await axios.get<UserCouponItem[]>(
+    `${PRODUCT_API}/api/userCoupon/me`
+  );
+  return response.data;
+};
+
+/**
+ * 建立優惠券 API
+ * POST /api/coupons
+ */
+export const createCoupon = async (
+  data: CreateCouponRequest
+): Promise<CreateCouponResponse> => {
+  const response = await axios.post<CreateCouponResponse>(
+    `${PRODUCT_API}/api/coupons`,
+    data
+  );
+  return response.data;
+};

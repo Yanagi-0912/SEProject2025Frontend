@@ -17,11 +17,9 @@ function Terms() {
         <div className="terms-content">
           <h3>使用條款</h3>
           <ul>
-            <li>元旦、情人節、國慶、聖誕節等重大節日自動發放優惠券</li>
-            <li>消費達 $1,000 自動獲得滿千折百優惠券</li>
-            <li>新會員首次登入自動獲得歡迎優惠券</li>
-            <li>轉輪盤可以無限次抽獎（開發階段）</li>
-            <li>優惠券數量上限：1000張</li>
+            <li>手動發放：透過 API (POST /api/userCoupon/issue)</li>
+            <li>自動發放：節日排程（HolidayCouponScheduler）</li>
+            <li>自動發放：首購優惠（issueCouponsAfterPay）</li>
             <li>所有優惠券有效期限：7天（過期自動刪除）</li>
           </ul>
         </div>
@@ -31,4 +29,3 @@ function Terms() {
 }
 
 export default Terms
-
