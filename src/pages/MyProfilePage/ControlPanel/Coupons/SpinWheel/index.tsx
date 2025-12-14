@@ -30,9 +30,10 @@ const coupons: Coupon[] = [
 
 interface SpinWheelProps {
   onWin?: (coupon: Coupon) => void
+  remainingTickets?: number
 }
 
-function SpinWheel({ onWin }: SpinWheelProps) {
+function SpinWheel({ onWin, remainingTickets = 0 }: SpinWheelProps) {
   const [spinning, setSpinning] = useState(false)
   const [winnerIndex, setWinnerIndex] = useState<number | null>(null)
   const [randomRotation, setRandomRotation] = useState(0)
@@ -186,10 +187,10 @@ function SpinWheel({ onWin }: SpinWheelProps) {
       <div className="spin-button-container">
         <button
           onClick={handleRotation}
-          disabled={spinning}
+          disabled={spinning || remainingTickets <= 0}
           className="spin-button"
         >
-          {spinning ? '旋轉中' : '開始抽獎'}
+          {spinning ? '旋轉中' : `開始抽獎${remainingTickets > 0 ? ` (剩餘 ${remainingTickets} 張)` : ' (無剩餘抽獎券)'}`}
         </button>
       </div>
     </div>

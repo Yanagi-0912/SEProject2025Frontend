@@ -61,6 +61,27 @@ export const getAllCoupons = async (): Promise<CouponListItem[]> => {
 };
 
 /**
+ * 抽獎優惠券回應
+ */
+export interface DrawCouponResponse {
+  userId: string;
+  couponID: string;
+  remainingUsage: number;
+  used: boolean;
+}
+
+/**
+ * 抽獎優惠券 API
+ * POST /api/userCoupon/draw?userId={userId}
+ */
+export const drawCoupon = async (userId: string): Promise<DrawCouponResponse> => {
+  const response = await axios.post<DrawCouponResponse>(
+    `${PRODUCT_API}/api/userCoupon/draw?userId=${userId}`
+  );
+  return response.data;
+};
+
+/**
  * 取得當前使用者的優惠券 API
  * GET /api/userCoupon/me
  */
@@ -69,6 +90,22 @@ export const getUserCoupons = async (): Promise<UserCouponItem[]> => {
     `${PRODUCT_API}/api/userCoupon/me`
   );
   return response.data;
+};
+
+/**
+ * 取得剩餘抽獎券數量 API
+ * GET /api/userCoupon/draw/remaining
+ */
+export const getRemainingDrawTickets = async (): Promise<number> => {
+  try {
+    const response = await axios.get<{ remainingTickets: number }>(
+      `${PRODUCT_API}/api/userCoupon/draw/remaining`
+    );
+    return response.data.remainingTickets;
+  } catch (error) {
+    console.error('取得剩餘抽獎券數量失敗:', error);
+    return 0;
+  }
 };
 
 /**

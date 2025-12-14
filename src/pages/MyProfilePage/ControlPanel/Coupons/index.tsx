@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import SpinWheel from './SpinWheel'
 import MyCoupons from './MyCoupons'
 import Terms from './Terms'
-import { createCoupon, getUserCoupons } from '../../../../api/coupon'
+import { createCoupon, getUserCoupons, getRemainingDrawTickets } from '../../../../api/coupon'
 
 interface Coupon {
   id: string
@@ -20,6 +20,7 @@ function Coupons() {
   const [myCoupons, setMyCoupons] = useState<Coupon[]>([])
   const [totalSpent, setTotalSpent] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [remainingTickets, setRemainingTickets] = useState(0)
 
   useEffect(() => {
     // 取得使用者名稱（如果有登入的話）
@@ -28,6 +29,9 @@ function Coupons() {
 
     // 從 API 載入使用者的優惠券
     loadUserCoupons()
+    
+    // 載入剩餘抽獎券數量
+    loadRemainingTickets()
 
     // 模擬總消費金額（實際應該從後端取得）
     const savedSpent = localStorage.getItem('totalSpent')
@@ -84,6 +88,16 @@ function Coupons() {
     }
   }
 
+  // 載入剩餘抽獎券數量
+  const loadRemainingTickets = async () => {
+    try {
+      const tickets = await getRemainingDrawTickets()
+      setRemainingTickets(tickets)
+    } catch (error) {
+      console.error('載入剩餘抽獎券數量失敗:', error)
+    }
+  }
+
 
   const handleWin = async (coupon: { 
     id: string
@@ -116,8 +130,9 @@ function Coupons() {
 
       alert(`恭喜獲得 ${coupon.name}！`)
       
-      // 重新載入優惠券列表
+      // 重新載入優惠券列表和剩餘抽獎券數量
       await loadUserCoupons()
+      await loadRemainingTickets()
     } catch (error) {
       console.error('創建優惠券失敗:', error)
       alert('創建優惠券失敗，請稍後再試')
@@ -146,7 +161,7 @@ function Coupons() {
 
       {/* 拉霸機 */}
       <div style={{ marginTop: '20px', marginBottom: '40px', border: '1px solid orange' }}>
-        <SpinWheel onWin={handleWin} />
+        <SpinWheel onWin={handleWin} remainingTickets={remainingTickets} />
       </div>
 
       {/* 使用條款 - 頁面底部 */}
