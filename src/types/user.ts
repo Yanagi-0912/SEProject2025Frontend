@@ -1,4 +1,4 @@
-import type { Product } from '../../api/generated';
+import type { Product } from '../api/generated';
 
 // 統一的 UserProps interface
 export interface UserProps {

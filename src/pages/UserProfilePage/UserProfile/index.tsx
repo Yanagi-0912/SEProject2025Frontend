@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import ProfileEditForm from './ProfileEditForm';
-import type { UserProps } from '../types';
+import type { UserProps } from '../../../types/user';
 
 function UserProfile(profile: UserProps) {
   const [isEditing, setIsEditing] = useState(false);

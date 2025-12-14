@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useUpdateUser } from '../../../api/generated';
-import type { UserProps } from '../types';
+import type { UserProps } from '../../../types/user';
 
 interface ProfileEditFormProps {
   profile: UserProps;

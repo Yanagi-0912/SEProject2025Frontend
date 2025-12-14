@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { UserProps } from '../../UserProfilePage/types';
+import type { UserProps } from '../../../types/user';
 import ProfileEditForm from './ProfileEditForm';
 
 function UserProfile(profile: UserProps) {

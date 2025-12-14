@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import Header from '../Main/Header';
 import UserProfile from './UserProfile';
 import { useGetUserById } from '../../api/generated/index';
-import { SAMPLE_USER, normalizeUserData, type UserProps } from './types';
+import { SAMPLE_USER, normalizeUserData, type UserProps } from '../../types/user';
 
 const UserProfilePage: React.FC = () => {
 	const params = useParams<{ id: string }>();
