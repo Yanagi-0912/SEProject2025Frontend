@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import './Login.css'
-import { login } from '../../api/login'
+import { login } from '../../../api/login'
 
 interface LoginProps {
   onGuestLogin?: () => void
@@ -100,4 +100,3 @@ function Login({ onGuestLogin, loginSuccess, onGoToRegister }: LoginProps) {
 }
 
 export default Login
-

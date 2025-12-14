@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import './Register.css'
-import { register } from '../../api/register'
+import { register } from '../../../api/register'
+import { login } from '../../../api/login'
+import { handlePostRegisterDraw } from './drawCoupons'
 
 interface RegisterProps {
   onBackToLogin?: () => void
@@ -36,12 +38,20 @@ function Register({ onBackToLogin, registerSuccess }: RegisterProps) {
     setLoading(true)
 
     try {
-      // 呼叫 API 註冊
+      // 1. 呼叫 API 註冊
       await register({ username, password, email })
 
-      // 註冊成功，儲存 email 到 localStorage（供買家資訊使用）
+      // 2. 註冊成功後自動登入，取得 token 和 username
+      const loginData = await login({ username, password })
+      localStorage.setItem('token', loginData.token)
+      localStorage.setItem('username', loginData.username)
       localStorage.setItem('email', email)
-      alert('註冊成功！請使用您的帳號密碼登入')
+
+      // 3. 抽獎十次（背景執行，不阻塞註冊流程）
+      handlePostRegisterDraw().catch(err => {
+        console.error('抽獎失敗:', err)
+      })
+
       registerSuccess?.()
       onBackToLogin?.()
       
