@@ -4,7 +4,7 @@ import Header from '../Main/Header';
 import UserProfile from './UserProfile';
 import ControlPanel from './ControlPanel';
 import { useGetCurrentUser, useUpdatePassword } from '../../api/generated';
-import { SAMPLE_USER, normalizeUserData, type UserProps } from '../UserProfilePage/types';
+import { SAMPLE_USER, normalizeUserData, type UserProps } from '../../types/user';
 
 const MyProfilePage: React.FC = () => {
 	const navigate = useNavigate();
