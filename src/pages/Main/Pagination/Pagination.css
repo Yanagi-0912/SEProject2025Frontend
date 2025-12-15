@@ -1,0 +1,68 @@
+/* Pagination.css */
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+  gap: 8px;
+}
+
+.pagination-btn {
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  border: 2px solid #FFC5D0; /* 淺粉邊框 */
+  border-radius: 12px;        /* 圓潤導角 */
+  background-color: white;
+  color: #5D4037;             /* 深褐文字 */
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(255, 183, 197, 0.1);
+}
+
+/* 滑鼠懸停效果 */
+.pagination-btn:hover:not(:disabled) {
+  background-color: #FFF0F5; /* 淺粉背景 */
+  border-color: #FF9EAA;     /* 深粉邊框 */
+  color: #FF5E78;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(255, 94, 120, 0.2);
+}
+
+/* 當前頁面樣式 (Active) */
+.pagination-btn.active {
+  background: linear-gradient(135deg, #FF9EAA 0%, #FF5E78 100%); /* 櫻花漸層 */
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(255, 94, 120, 0.3);
+}
+
+/* 禁用狀態 (Disabled) */
+.pagination-btn:disabled {
+  background-color: #F5F5F5;
+  border-color: #E0E0E0;
+  color: #BDBDBD;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* RWD 手機版微調 */
+@media (max-width: 480px) {
+  .pagination-container {
+    gap: 5px;
+  }
+
+  .pagination-btn {
+    min-width: 36px;
+    height: 36px;
+    font-size: 14px;
+    padding: 0 8px;
+  }
+}
