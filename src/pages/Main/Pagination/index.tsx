@@ -1,3 +1,4 @@
+import './Pagination.css';
 interface PaginationProps {
   page: number;
   total: number;
@@ -19,7 +20,7 @@ function Pagination({ page, total, setPage }: PaginationProps) {
 
   const getPages = () => {
     const p: number[] = [];
-    
+
     if (page === 1) {
       p.push(1, 2, 3);
     } else if (page === total) {
@@ -27,31 +28,27 @@ function Pagination({ page, total, setPage }: PaginationProps) {
     } else {
       p.push(page - 1, page, page + 1);
     }
-    
+
     return p;
   };
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center'
-    }}>
-      <button onClick={prev} disabled={page === 1}>
+    <div className="pagination-container" >
+      <button onClick={prev} disabled={page === 1} className="pagination-btn">
         ←
       </button>
 
-      <button onClick={() => setPage(getPages()[0])} disabled={page === getPages()[0]}>
+      <button onClick={() => setPage(getPages()[0])} disabled={page === getPages()[0]} className="pagination-btn">
         {getPages()[0]}
       </button>
-      <button onClick={() => setPage(getPages()[1])} disabled={page === getPages()[1]}>
+      <button onClick={() => setPage(getPages()[1])} disabled={page === getPages()[1]} className="pagination-btn">
         {getPages()[1]}
       </button>
-      <button onClick={() => setPage(getPages()[2])} disabled={page === getPages()[2]}>
+      <button onClick={() => setPage(getPages()[2])} disabled={page === getPages()[2]} className="pagination-btn">
         {getPages()[2]}
       </button>
 
-      <button onClick={next} disabled={page === total}>
+      <button onClick={next} disabled={page === total} className="pagination-btn">
         →
       </button>
     </div>

@@ -5,12 +5,11 @@
   min-height: calc(100vh - 80px);
 }
 
-/* 商品網格 */
+/* 商品網格 - 響應式核心設定 */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 25px;
-  max-width: 1400px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
   margin: 0 auto;
 }
 
@@ -30,7 +29,7 @@
 }
 
 .products-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-5px);
   box-shadow: 0 12px 30px rgba(255, 94, 120, 0.25);
   border-color: #FF9EAA;
 }
@@ -50,9 +49,13 @@
   font-size: 1.1rem;
   color: #5D4037;
   font-weight: 700;
-  white-space: nowrap;
+  /* 標題超過兩行省略，避免卡片高度不一 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-height: 2.4em; /* 預留兩行高度 */
 }
 
 /* 商品卡片價格 */
@@ -71,13 +74,13 @@
 
 /* 按鈕共用樣式 */
 .add-to-cart-button, .add-to-auction-button {
-  padding: 12px;
+  padding: 10px;
   border-radius: 12px;
   cursor: pointer;
   border: none;
   font-weight: 600;
   transition: all 0.3s ease;
-  margin-top: auto;
+  margin-top: auto; /* 將按鈕推到底部 */
   font-size: 0.95rem;
 }
 
@@ -115,4 +118,26 @@
 /* 平均評分 */
 .average-rating {
   color: #FFB300 !important;
+}
+
+/* === RWD 手機版設定 === */
+@media (max-width: 500px) {
+  .products-container {
+    padding: 10px;
+  }
+
+  /* 強制變成單欄 (1個商品一行) */
+  .products-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  /* 手機版圖片稍微調高，讓視覺重心更好 */
+  .products-card-image {
+    height: 220px;
+  }
+
+  .products-card h4 {
+    font-size: 1.1rem;
+  }
 }
