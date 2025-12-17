@@ -1,0 +1,30 @@
+.user-profile-page-wrapper {
+  min-height: 100vh;
+  background-color: #fef7f7;
+  padding: 2rem 1rem;
+}
+
+.user-profile-content {
+  margin: 0 auto;
+}
+
+.profile-main-container {
+  display: flex;
+  justify-content: center;
+}
+
+.error-banner {
+  margin: 0 auto 2rem;
+  padding: 1rem;
+  background-color: #fff;
+  border: 1px solid #f5c2c7;
+  border-radius: 8px;
+  color: #d63384;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .user-profile-page-wrapper {
+    padding: 1rem 0.5rem;
+  }
+}

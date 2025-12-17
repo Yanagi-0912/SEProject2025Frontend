@@ -1,10 +1,15 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import './Header.css'
 import { ragSearch } from '../../../api/search';
 
-function Header() {
+interface HeaderProps {
+    backUrl?: string;
+}
+
+function Header({ backUrl }: HeaderProps = {}) {
     const navigate = useNavigate();
+    const location = useLocation();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     // 檢查登入狀態
@@ -79,9 +84,24 @@ function Header() {
         }
     };
 
+  const handleBack = () => {
+    if (backUrl) {
+      navigate(backUrl);
+    } else {
+      // 檢查是否在 UserProfilePage 且有 productId
+      const productId = (location.state as { productId?: string })?.productId;
+      if (productId) {
+        navigate(`/product/${productId}`);
+      } else {
+        navigate('/');
+        window.location.reload();
+      }
+    }
+  };
+
   return (
     <div className="header-container">
-      <button onClick={() => { navigate('/'); window.location.reload(); }} className="back-button">
+      <button onClick={handleBack} className="back-button">
         <img src="/home-icon.png" alt="回到首頁" className="home-icon-img" />
       </button>
       <div className="search-section">
