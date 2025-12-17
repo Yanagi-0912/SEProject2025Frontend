@@ -1,0 +1,107 @@
+.profile-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-size: 1rem;
+  color: #a8556f;
+  font-weight: 500;
+}
+
+.form-label span {
+  color: #d63384;
+}
+
+.form-input {
+  padding: 0.75rem;
+  border: 1px solid #f5c2c7;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #fff;
+  color: #d63384;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #d63384;
+  box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.1);
+}
+
+.form-input:disabled {
+  background-color: #fef7f7;
+  color: #a8556f;
+  cursor: not-allowed;
+}
+
+.form-input::placeholder {
+  color: #c99fb0;
+}
+
+.validation-message {
+  font-size: 0.875rem;
+  color: #d63384;
+  margin-top: 0.25rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.form-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.save-button {
+  background-color: #d63384;
+  color: white;
+}
+
+.save-button:hover:not(:disabled) {
+  background-color: #c2255a;
+}
+
+.save-button:active:not(:disabled) {
+  background-color: #a91e4d;
+}
+
+.save-button:disabled {
+  background-color: #c99fb0;
+  cursor: not-allowed;
+}
+
+.cancel-button {
+  background-color: #fff;
+  color: #d63384;
+  border: 1px solid #f5c2c7;
+}
+
+.cancel-button:hover:not(:disabled) {
+  background-color: #fef7f7;
+  border-color: #d63384;
+}
+
+.cancel-button:active:not(:disabled) {
+  background-color: #f5c2c7;
+}
+
+.cancel-button:disabled {
+  color: #c99fb0;
+  border-color: #f5c2c7;
+  cursor: not-allowed;
+}
