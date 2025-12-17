@@ -51,10 +51,10 @@ function DirectProduct(props: DirectProps) {
         }
     }, [props.productStock]);
 
-    const handleAddToCart = async () => {
+    const handleAddToCart = async (): Promise<boolean> => {
         if (!props.productID) {
             alert('商品ID無效');
-            return;
+        return false;
         }
         
       // 先使用從 hook 取得的 user id，若沒有則退回到 localStorage 的 username 或 userId
@@ -62,7 +62,19 @@ function DirectProduct(props: DirectProps) {
       if (!userId) {
         alert('請先登入');
         navigate('/login');
-        return;
+      return false;
+      }
+
+      const stock = props.productStock;
+      if (typeof stock === 'number') {
+        if (stock <= 0) {
+          alert('庫存不足，無法加入購物車');
+          return false;
+        }
+        if (quantity > stock) {
+          alert('庫存不足，請調整數量');
+          return false;
+        }
       }
 
 
@@ -74,9 +86,11 @@ function DirectProduct(props: DirectProps) {
                 }
             });
             alert('成功加入購物車！');
+        return true;
         } catch (error) {
             console.error('加入購物車失敗:', error);
             alert('加入購物車失敗，請稍後再試');
+        return false;
         }
     };
 
@@ -178,7 +192,11 @@ function DirectProduct(props: DirectProps) {
                   type="button" 
                   className="cart-button" 
                   onClick={handleAddToCart}
-                  disabled={quantity <= 0 || addToCartMutation.isPending}
+                  disabled={
+                    quantity <= 0 ||
+                    addToCartMutation.isPending ||
+                    (typeof props.productStock === 'number' && quantity > (props.productStock ?? 0))
+                  }
                 >
                   <span>🛒</span>
                   {addToCartMutation.isPending ? '加入中...' : '加入購物車'}
@@ -186,7 +204,10 @@ function DirectProduct(props: DirectProps) {
                 <button
                   type="button"
                   className="buy-button"
-                  onClick={() => { handleAddToCart(); navigate('/cart'); }}
+                  onClick={async () => {
+                    const ok = await handleAddToCart();
+                    if (ok) navigate('/cart');
+                  }}
                   disabled={quantity <= 0}
                 >
                   <span>⚡</span>
