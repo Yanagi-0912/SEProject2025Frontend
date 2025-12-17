@@ -48,6 +48,15 @@ const ProductManage = ({ viewMode, searchQuery, productList, onModeChange }: Pro
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // 檢查 token
+    const token = localStorage.getItem('token');
+    console.log('Token from localStorage:', token);
+    if (!token) {
+      alert('未登入或登入已過期，請重新登入');
+      return;
+    }
+    
     // 簡單前端驗證
     if (!newProduct.productName || newProduct.productName.trim() === '') {
       alert('請輸入商品名稱');
@@ -63,11 +72,11 @@ const ProductManage = ({ viewMode, searchQuery, productList, onModeChange }: Pro
     console.debug('Create product payload:', newProduct);
 
     try {
+      console.log('About to call createProductMutation with:', newProduct);
       await createProductMutation.mutateAsync({
         data: newProduct
       });
-
-      alert('商品創建成功！');
+      console.log('createProductMutation succeeded');
       
       // 重置表單
       setNewProduct({
@@ -104,8 +113,10 @@ const ProductManage = ({ viewMode, searchQuery, productList, onModeChange }: Pro
       const resp = await uploadImageMutation.mutateAsync({
         data: { file }
       });
-      const url = resp.data;
-      setNewProduct(prev => ({ ...prev, productImage: url }));
+      // resp 是 AxiosResponse，resp.data 是 {url: '...'}
+      const imageUrl: string = (resp?.data as unknown as { url: string })?.url || '';
+      console.log('Image URL extracted:', imageUrl);
+      setNewProduct(prev => ({ ...prev, productImage: imageUrl }));
     } catch (error) {
       console.error('圖片上傳失敗:', error);
       alert('圖片上傳失敗，請稍後再試');
@@ -164,8 +175,8 @@ const ProductManage = ({ viewMode, searchQuery, productList, onModeChange }: Pro
       const resp = await uploadImageMutation.mutateAsync({
         data: { file }
       });
-      const url = resp.data;
-      setEditingProduct(prev => (prev ? { ...prev, productImage: url } : prev));
+      const imageUrl: string = (resp?.data as unknown as { url: string })?.url || '';
+      setEditingProduct(prev => (prev ? { ...prev, productImage: imageUrl } : prev));
     } catch (error) {
       console.error('圖片上傳失敗:', error);
       alert('圖片上傳失敗，請稍後再試');
