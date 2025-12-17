@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import type { Product } from '../../../../api/generated';
-import { useCreateProduct, useDeleteProduct, useEditProduct } from '../../../../api/generated';
+import { useCreateProduct, useDeleteProduct, useEditProduct, useUploadImage } from '../../../../api/generated';
 
 interface ProductManageProps {
   viewMode: 'list' | 'create' | 'edit';
@@ -15,6 +15,7 @@ const ProductManage = ({ viewMode, searchQuery, productList, onModeChange }: Pro
   const createProductMutation = useCreateProduct();
   const deleteProductMutation = useDeleteProduct();
   const editProductMutation = useEditProduct();
+  const uploadImageMutation = useUploadImage();
 
   // 商品表單狀態 - 使用完整的 Product 結構
   const [newProduct, setNewProduct] = useState<Product>({
@@ -96,6 +97,23 @@ const ProductManage = ({ viewMode, searchQuery, productList, onModeChange }: Pro
     }
   };
 
+  const handleUploadNewImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const resp = await uploadImageMutation.mutateAsync({
+        data: { file }
+      });
+      const url = resp.data;
+      setNewProduct(prev => ({ ...prev, productImage: url }));
+    } catch (error) {
+      console.error('圖片上傳失敗:', error);
+      alert('圖片上傳失敗，請稍後再試');
+    } finally {
+      e.target.value = '';
+    }
+  };
+
   const handleUpdateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingProduct || !editingProduct.productID) {
@@ -136,6 +154,23 @@ const ProductManage = ({ viewMode, searchQuery, productList, onModeChange }: Pro
       } else {
         alert('更新商品失敗，請稍後再試');
       }
+    }
+  };
+
+  const handleUploadEditImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !editingProduct) return;
+    try {
+      const resp = await uploadImageMutation.mutateAsync({
+        data: { file }
+      });
+      const url = resp.data;
+      setEditingProduct(prev => (prev ? { ...prev, productImage: url } : prev));
+    } catch (error) {
+      console.error('圖片上傳失敗:', error);
+      alert('圖片上傳失敗，請稍後再試');
+    } finally {
+      e.target.value = '';
     }
   };
 
@@ -280,14 +315,17 @@ const ProductManage = ({ viewMode, searchQuery, productList, onModeChange }: Pro
           )}
 
           <div className="form-group">
-            <label className="form-label">圖片網址</label>
+            <label className="form-label">圖片上傳</label>
             <input
-              type="url"
-              value={editingProduct.productImage || ''}
-              onChange={(e) => handleEditInputChange('productImage', e.target.value)}
+              type="file"
+              accept="image/*"
+              onChange={handleUploadEditImage}
               className="form-input"
-              placeholder="https://..."
+              disabled={uploadImageMutation.isPending}
             />
+            {uploadImageMutation.isPending && (
+              <div className="uploading-hint">上傳中...</div>
+            )}
             {editingProduct.productImage && (
               <div className="image-preview">
                 <img src={editingProduct.productImage} alt="預覽" />
@@ -428,14 +466,17 @@ const ProductManage = ({ viewMode, searchQuery, productList, onModeChange }: Pro
           )}
 
           <div className="form-group">
-            <label className="form-label">圖片網址</label>
+            <label className="form-label">圖片上傳</label>
             <input
-              type="url"
-              value={newProduct.productImage}
-              onChange={(e) => handleInputChange('productImage', e.target.value)}
+              type="file"
+              accept="image/*"
+              onChange={handleUploadNewImage}
               className="form-input"
-              placeholder="https://..."
+              disabled={uploadImageMutation.isPending}
             />
+            {uploadImageMutation.isPending && (
+              <div className="uploading-hint">上傳中...</div>
+            )}
             {newProduct.productImage && (
               <div className="image-preview">
                 <img src={newProduct.productImage} alt="預覽" />
