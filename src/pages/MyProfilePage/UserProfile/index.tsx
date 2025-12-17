@@ -30,25 +30,10 @@ function UserProfile(profile: UserProps) {
       </div>
       
       {/* 操作按鈕 */}
-      {!isEditing ? (
+      {!isEditing && (
         <button onClick={handleEdit}>
           編輯個人資料
         </button>
-      ) : (
-        <>
-          <button 
-            onClick={handleSave} 
-            disabled={updateUserMutation.isPending}
-          >
-            {updateUserMutation.isPending ? '儲存中...' : '儲存'}
-          </button>
-          <button 
-            onClick={handleCancel} 
-            disabled={updateUserMutation.isPending}
-          >
-            取消
-          </button>
-        </>
       )}
 
       {/* 內容區域 */}
