@@ -1,40 +1,44 @@
 import type { UserProps } from '../../../types/user';
+import './UserProfile.css';
 
 function UserProfile(profile: UserProps) {
   return (
-    <div>
-      {/* 用戶基本資訊 */}
-      <h1>{profile.username}</h1>
-      <p>{profile.email}</p>
-      
-      {/* 評分資訊 */}
-      <div>
-        <span>平均評分</span>
-        <span>⭐ {profile.averageRating?.toFixed(1) ?? '尚無評分'}</span>
+    <div className="user-profile-view-container">
+      <div className="user-profile-view-header">
+        <h1>{profile.username}</h1>
+        <p>{profile.email}</p>
       </div>
-      <div>
-        <span>評分次數</span>
-        <span>{profile.ratingCount ?? 0} 次</span>
+      
+      <div className="user-profile-view-rating">
+        <div className="user-profile-view-rating-item">
+          <span className="user-profile-view-rating-label">平均評分</span>
+          <span className="user-profile-view-rating-value">{profile.averageRating?.toFixed(1) ?? '尚無評分'}</span>
+        </div>
+        <div className="user-profile-view-rating-item">
+          <span className="user-profile-view-rating-label">評分次數</span>
+          <span className="user-profile-view-rating-value">{profile.ratingCount ?? 0} 次</span>
+        </div>
       </div>
 
-      {/* 內容區域 */}
-      <h2>基本資訊</h2>
-      
-      <div>
-        <span>暱稱</span>
-        <span>{profile.nickname || '未設定'}</span>
-      </div>
-      <div>
-        <span>Email</span>
-        <span>{profile.email || '未設定'}</span>
-      </div>
-      <div>
-        <span>電話</span>
-        <span>{profile.phoneNumber || '未填寫'}</span>
-      </div>
-      <div>
-        <span>地址</span>
-        <span>{profile.address || '未填寫'}</span>
+      <div className="user-profile-view-info">
+        <h2>基本資訊</h2>
+        
+        <div className="user-profile-view-info-item">
+          <span className="user-profile-view-info-label">暱稱</span>
+          <span className="user-profile-view-info-value">{profile.nickname || '未設定'}</span>
+        </div>
+        <div className="user-profile-view-info-item">
+          <span className="user-profile-view-info-label">Email</span>
+          <span className="user-profile-view-info-value">{profile.email || '未設定'}</span>
+        </div>
+        <div className="user-profile-view-info-item">
+          <span className="user-profile-view-info-label">電話</span>
+          <span className="user-profile-view-info-value">{profile.phoneNumber || '未填寫'}</span>
+        </div>
+        <div className="user-profile-view-info-item">
+          <span className="user-profile-view-info-label">地址</span>
+          <span className="user-profile-view-info-value">{profile.address || '未填寫'}</span>
+        </div>
       </div>
     </div>
   );

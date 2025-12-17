@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useUpdateUser } from '../../../api/generated';
 import type { UserProps } from '../../../types/user';
+import './ProfileEditForm.css';
 
 interface ProfileEditFormProps {
   profile: UserProps;
@@ -66,46 +67,50 @@ function ProfileEditForm({ profile, onCancel, onSaveSuccess }: ProfileEditFormPr
   };
 
   return (
-    <>
-      <div>
-        <label>使用者名稱</label>
+    <div className="profile-edit-form">
+      <div className="form-group">
+        <label className="form-label">使用者名稱</label>
         <input
           type="text"
+          className="form-input"
           value={editedProfile.username}
           disabled
         />
       </div>
 
-      <div>
-        <label>Email</label>
+      <div className="form-group">
+        <label className="form-label">Email</label>
         <input
           type="email"
+          className="form-input"
           value={editedProfile.email}
           disabled
         />
       </div>
 
-      <div>
-        <label>暱稱 <span>*</span></label>
+      <div className="form-group">
+        <label className="form-label">暱稱 <span>*</span></label>
         <input
           type="text"
+          className="form-input"
           value={editedProfile.nickname}
           onChange={(e) => handleChange('nickname', e.target.value)}
           placeholder="請輸入暱稱"
         />
       </div>
 
-      <div>
-        <label>電話（09開頭10碼）</label>
+      <div className="form-group">
+        <label className="form-label">電話（09開頭10碼）</label>
         <input
           type="tel"
+          className="form-input"
           value={editedProfile.phoneNumber}
           onChange={(e) => handleChange('phoneNumber', e.target.value)}
           placeholder="0912345678"
           maxLength={10}
         />
         {editedProfile.phoneNumber && editedProfile.phoneNumber.length > 0 && (
-          <div>
+          <div className="validation-message">
             {editedProfile.phoneNumber.length !== 10 && (
               <span>目前 {editedProfile.phoneNumber.length} 位，需要 10 位數字</span>
             )}
@@ -116,31 +121,34 @@ function ProfileEditForm({ profile, onCancel, onSaveSuccess }: ProfileEditFormPr
         )}
       </div>
 
-      <div>
-        <label>地址</label>
+      <div className="form-group">
+        <label className="form-label">地址</label>
         <input
           type="text"
+          className="form-input"
           value={editedProfile.address}
           onChange={(e) => handleChange('address', e.target.value)}
           placeholder="例：台北市"
         />
       </div>
 
-      <div>
+      <div className="form-actions">
         <button 
+          className="form-button save-button"
           onClick={handleSave} 
           disabled={updateUserMutation.isPending}
         >
           {updateUserMutation.isPending ? '儲存中...' : '儲存'}
         </button>
         <button 
+          className="form-button cancel-button"
           onClick={onCancel} 
           disabled={updateUserMutation.isPending}
         >
           取消
         </button>
       </div>
-    </>
+    </div>
   );
 }
 
