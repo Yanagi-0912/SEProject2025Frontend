@@ -171,11 +171,6 @@ function SpinWheel({ onWin, remainingTickets = 0 }: SpinWheelProps) {
             <svg
               className="arrow-svg"
               viewBox="0 0 24 24"
-              stroke="currentColor"
-              fill="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
             >
               <polygon points="12 2 22 22 2 22"></polygon>
             </svg>

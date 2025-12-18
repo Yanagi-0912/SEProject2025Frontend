@@ -1,0 +1,138 @@
+
+.spin-wheel-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 1.5rem 1rem 2rem;
+}
+
+.spin-wheel-content {
+  position: relative;
+  width: min(80vw, 19rem);
+  height: min(80vw, 19rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spin-wheel-center {
+  position: absolute;
+  width: 62.5%;
+  height: 62.5%;
+  border-radius: 50%;
+  background: #2563eb;
+  border: 0.15rem solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.center-text {
+  font-size: clamp(1rem, 2.3vw, 1.4rem);
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.4;
+  padding: 0 0.5rem;
+  word-break: keep-all;
+}
+
+.spinning-text {
+  opacity: 0.9;
+}
+
+.ready-text {
+  opacity: 0.7;
+}
+
+.result-text {
+  opacity: 1;
+}
+
+.winner-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.chart-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.arrow-pointer {
+  position: absolute;
+  top: -3%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 9%;
+  height: 9%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+.arrow-svg {
+  width: 100%;
+  height: 100%;
+  color: #f97316;
+  stroke: currentColor;
+  fill: white;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform: rotate(180deg);
+}
+
+.spin-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spin-button {
+  padding: 0.7rem 1.4rem;
+  border-radius: 999px;
+  border: none;
+  background: #4f46e5;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.12s ease-out, background 0.12s ease-out,
+    opacity 0.12s ease-out;
+  white-space: nowrap;
+}
+
+.spin-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.spin-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.spin-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  background: #9ca3af;
+  box-shadow: none;
+}
+
+@media (max-width: 480px) {
+  .center-text {
+    font-size: clamp(1.1rem, 4vw, 1.5rem);
+  }
+}
+
