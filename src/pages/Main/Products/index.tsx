@@ -13,6 +13,7 @@ interface ProductItem {
   auctionEndTime?: string;
   averageRating?: number;
   productCategory?: string;
+  productStatus?: string;
 }
 
 interface ProductsProps {
@@ -85,6 +86,9 @@ function Products({ page, onProductClick }: ProductsProps) {
         ...p
       }))
     : [];
+
+  // 只顯示 ACTIVE 狀態的商品
+  products = products.filter(product => product.productStatus === 'ACTIVE');
 
   // 根據分類篩選商品（只在有選擇分類時才篩選）
   if (selectedCategory) {
