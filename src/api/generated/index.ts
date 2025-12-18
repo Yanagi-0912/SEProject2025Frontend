@@ -74,6 +74,8 @@ export interface UpdateUserRequest {
    * @pattern ^[0-9]{10}$
    */
   phoneNumber?: string;
+  /** 剩餘抽獎次數（可選） */
+  remainingDrawTimes?: number;
 }
 
 export type ProductProductType = typeof ProductProductType[keyof typeof ProductProductType];
@@ -143,6 +145,8 @@ export interface UserInfoResponse {
   isBanned?: boolean;
   /** 正在販售的商品列表 */
   sellingProducts?: Product[];
+  /** 剩餘抽獎次數 */
+  remainingDrawTimes?: number;
 }
 
 export interface Review {
@@ -364,8 +368,8 @@ export interface PurchaseHistory {
   ProductID?: string[];
   ProductQuantity?: number;
   historyItems?: HistoryItem[];
-  productQuantity?: number;
   productID?: string[];
+  productQuantity?: number;
 }
 
 export interface BrowseHistory {
@@ -509,17 +513,6 @@ export type PayOrderParams = {
 couponID?: string;
 };
 
-export type MarkCouponUsedParams = {
-userCouponId: string;
-orderId: string;
-};
-
-export type MarkCouponUsed200 = { [key: string]: unknown };
-
-export type MarkCouponUsed400 = { [key: string]: unknown };
-
-export type MarkCouponUsed403 = { [key: string]: unknown };
-
 export type IssueCouponToUserParams = {
 /**
  * 使用者 ID
@@ -565,6 +558,14 @@ export type UploadImageBody = {
   /** 要上傳的圖片檔（二進位） */
   file: Blob;
 };
+
+export type UseLottery200 = { [key: string]: unknown };
+
+export type UseLottery400 = { [key: string]: unknown };
+
+export type UseLottery401 = { [key: string]: unknown };
+
+export type UseLottery500 = { [key: string]: unknown };
 
 export type CreateReviewHistory200 = { [key: string]: unknown };
 
@@ -1436,69 +1437,6 @@ export const useRemoveFromCart = <TError = AxiosError<string>,
     }
     
 /**
- * @summary 強制將優惠券設為已使用
- */
-export const markCouponUsed = (
-    params: MarkCouponUsedParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<MarkCouponUsed200>> => {
-    
-    
-    return axios.default.post(
-      `/api/userCoupon/markUsed`,undefined,{
-    ...options,
-        params: {...params, ...options?.params},}
-    );
-  }
-
-
-
-export const getMarkCouponUsedMutationOptions = <TError = AxiosError<MarkCouponUsed400 | MarkCouponUsed403>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof markCouponUsed>>, TError,{params: MarkCouponUsedParams}, TContext>, axios?: AxiosRequestConfig}
-): UseMutationOptions<Awaited<ReturnType<typeof markCouponUsed>>, TError,{params: MarkCouponUsedParams}, TContext> => {
-
-const mutationKey = ['markCouponUsed'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof markCouponUsed>>, {params: MarkCouponUsedParams}> = (props) => {
-          const {params} = props ?? {};
-
-          return  markCouponUsed(params,axiosOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type MarkCouponUsedMutationResult = NonNullable<Awaited<ReturnType<typeof markCouponUsed>>>
-    
-    export type MarkCouponUsedMutationError = AxiosError<MarkCouponUsed400 | MarkCouponUsed403>
-
-    /**
- * @summary 強制將優惠券設為已使用
- */
-export const useMarkCouponUsed = <TError = AxiosError<MarkCouponUsed400 | MarkCouponUsed403>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof markCouponUsed>>, TError,{params: MarkCouponUsedParams}, TContext>, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof markCouponUsed>>,
-        TError,
-        {params: MarkCouponUsedParams},
-        TContext
-      > => {
-
-      const mutationOptions = getMarkCouponUsedMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    
-/**
  * 依照 couponID 範本發放給使用者
  * @summary 發放優惠券給使用者
  */
@@ -1939,6 +1877,68 @@ export const useCreateOrder = <TError = AxiosError<unknown>,
       > => {
 
       const mutationOptions = getCreateOrderMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+/**
+ * 扣除使用者一次抽獎次數並返回剩餘抽獎次數
+ * @summary 使用一次抽獎
+ */
+export const useLottery = (
+     options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<UseLottery200>> => {
+    
+    
+    return axios.default.post(
+      `/api/lottery/useOnce`,undefined,options
+    );
+  }
+
+
+
+export const getUseLotteryMutationOptions = <TError = AxiosError<UseLottery400 | UseLottery401 | UseLottery500>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof useLottery>>, TError,void, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof useLottery>>, TError,void, TContext> => {
+
+const mutationKey = ['useLottery'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof useLottery>>, void> = () => {
+          
+
+          return  useLottery(axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UseLotteryMutationResult = NonNullable<Awaited<ReturnType<typeof useLottery>>>
+    
+    export type UseLotteryMutationError = AxiosError<UseLottery400 | UseLottery401 | UseLottery500>
+
+    /**
+ * @summary 使用一次抽獎
+ */
+export const useUseLottery = <TError = AxiosError<UseLottery400 | UseLottery401 | UseLottery500>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof useLottery>>, TError,void, TContext>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof useLottery>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getUseLotteryMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
