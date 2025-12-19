@@ -18,6 +18,7 @@ interface OrderSuccessData {
   orderItems: OrderItem[];
   orderTime: string;
   orderStatus: string;
+  buyOneGetOneItemId?: string;  // 買一送一的商品 ID
 }
 
 const OrderSuccessPage: React.FC = () => {
@@ -92,17 +93,24 @@ const OrderSuccessPage: React.FC = () => {
         <div className="order-items-section">
           <h3 className="section-title">商品明細</h3>
           <div className="order-items-list">
-            {orderData.orderItems.map((item, index) => (
-              <div key={index} className="order-item">
-                <div className="order-item-info">
-                  <span className="order-item-name">
-                    {item.productName || `商品 ${item.productID}`}
-                  </span>
-                  <span className="order-item-quantity">x {item.quantity}</span>
+            {orderData.orderItems.map((item, index) => {
+              const isBuyOneGetOne = item.productID === orderData.buyOneGetOneItemId;
+              return (
+                <div key={index} className="order-item">
+                  <div className="order-item-info">
+                    <span className="order-item-name">
+                      {item.productName || `商品 ${item.productID}`}
+                      {isBuyOneGetOne && <span className="order-b1g1-tag">送一</span>}
+                    </span>
+                    <span className="order-item-quantity">
+                      x {item.quantity}
+                      {isBuyOneGetOne && <span className="order-b1g1-bonus"> (+1)</span>}
+                    </span>
+                  </div>
+                  <span className="order-item-price">${item.totalPrice}</span>
                 </div>
-                <span className="order-item-price">${item.totalPrice}</span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

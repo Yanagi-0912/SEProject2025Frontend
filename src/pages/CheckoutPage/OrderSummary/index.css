@@ -57,3 +57,26 @@
   color: #FF5E78;
   font-weight: bold;
 }
+
+.order-summary-item-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 買一送一標籤 */
+.order-summary-b1g1-tag {
+  display: inline-block;
+  background-color: #FF5E78;
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+/* 買一送一 +1 提示 */
+.order-summary-b1g1-bonus {
+  color: #FF5E78;
+  font-weight: bold;
+}

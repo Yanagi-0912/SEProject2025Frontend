@@ -17,9 +17,10 @@ interface SellerGroup {
 
 interface OrderSummaryProps {
   sellers: SellerGroup[];
+  buyOneGetOneItemId?: string;  // 買一送一選中的商品 ID
 }
 
-const OrderSummary: React.FC<OrderSummaryProps> = ({ sellers }) => {
+const OrderSummary: React.FC<OrderSummaryProps> = ({ sellers, buyOneGetOneItemId }) => {
   return (
     <div className="order-summary-container">
       <h3 className="order-summary-title">商品明細</h3>
@@ -30,15 +31,27 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ sellers }) => {
               {seller.sellerName || `賣家 ${idx + 1}`}
             </div>
 
-            {seller.items.map((item: CartItem, itemIdx: number) => (
-              <div key={item.id || itemIdx} className="order-summary-item">
-                <span>{item.name || "商品"}</span>
-                <span className="order-summary-item-quantity">x{item.quantity}</span>
-                <span className="order-summary-item-price">
-                  ${item.price * item.quantity}
-                </span>
-              </div>
-            ))}
+            {seller.items.map((item: CartItem, itemIdx: number) => {
+              const isBuyOneGetOne = item.id === buyOneGetOneItemId;
+              const displayQuantity = isBuyOneGetOne ? item.quantity + 1 : item.quantity;
+              const displayPrice = item.price * displayQuantity;  // 買一送一時顯示 2 個的價格
+              
+              return (
+                <div key={item.id || itemIdx} className="order-summary-item">
+                  <span className="order-summary-item-name">
+                    {item.name || "商品"}
+                    {isBuyOneGetOne && <span className="order-summary-b1g1-tag">送一</span>}
+                  </span>
+                  <span className="order-summary-item-quantity">
+                    x{displayQuantity}
+                    {isBuyOneGetOne && <span className="order-summary-b1g1-bonus"> (+1)</span>}
+                  </span>
+                  <span className="order-summary-item-price">
+                    ${displayPrice}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         ))}
       </div>

@@ -4,8 +4,10 @@ import CheckoutHeader from "./CheckoutHeader";
 import OrderSummary from "./OrderSummary";
 import ShippingForm from "./ShippingForm";
 import PaymentForm from "./PaymentForm";
+import CouponSelector from "./CouponSelector";
 import { useCreateOrder, useRemoveFromCart } from "../../api/generated";
 import type { Order, OrderItem } from "../../api/generated";
+import { payOrder } from "../../api/coupon";
 import "./index.css";
 
 // 1. 定義預期的 API 回應介面，不用 any
@@ -75,26 +77,92 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     }
   );
 
+  // 運費（後端預設 100 元）
+  const SHIPPING_FEE = 100;
+
+  // 優惠券狀態
+  const [selectedUserCoupon, setSelectedUserCoupon] = useState<{ id: string; couponID: string } | null>(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [isFreeship, setIsFreeship] = useState(false);
+  const [buyOneGetOneItem, setBuyOneGetOneItem] = useState<{ id: string; name?: string; price: number } | undefined>(undefined);
+
   const createOrderMutation = useCreateOrder();
   const removeFromCartMutation = useRemoveFromCart();
 
-  const totalAmount = orderItems.reduce((total, seller) => {
+  // 優惠券選擇處理
+  const handleCouponSelect = (
+    userCoupon: { id: string; couponID: string } | null, 
+    discount: number,
+    freeship: boolean,
+    b1g1Item?: { id: string; name?: string; price: number }
+  ) => {
+    setSelectedUserCoupon(userCoupon);
+    setDiscountAmount(discount);
+    setIsFreeship(freeship);
+    setBuyOneGetOneItem(b1g1Item);
+  };
+
+  // 扁平化商品列表（給 CouponSelector 使用）
+  // 使用 productId || id 作為統一的商品 ID
+  const flatOrderItems = orderItems.flatMap(seller =>
+    seller.items.map(item => ({
+      id: item.productId || item.id,  // 統一使用 productId
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      stock: item.stock  // 傳遞庫存資訊（買一送一需要檢查）
+    }))
+  );
+
+  // 原始商品總價（不含買一送一的 +1）
+  const baseProductTotal = orderItems.reduce((total, seller) => {
     return total + seller.items.reduce((sum: number, item: CartItem) =>
       sum + item.price * item.quantity, 0
     );
   }, 0);
 
+  // 商品總價（如果有買一送一，需要加上送的那個商品的價格）
+  // 買一送一 = 買 1 拿 2，所以總價是 2 個商品的價格
+  const productTotal = buyOneGetOneItem 
+    ? baseProductTotal + buyOneGetOneItem.price  // 加上送的商品價格
+    : baseProductTotal;
+
+  // 實際運費（如果使用免運券則為 0）
+  const actualShippingFee = isFreeship ? 0 : SHIPPING_FEE;
+
+  // 最終金額（商品 + 實際運費 - 折扣）
+  // 買一送一：折扣 = 送的商品價格，所以最終只付一個商品的錢 + 運費
+  const finalAmount = productTotal + actualShippingFee - (isFreeship ? 0 : discountAmount);
+
+  // 庫存檢查（買一送一需要 2 件庫存）
   const hasStockIssue = orderItems.some(seller =>
     seller.items.some(item => {
       const stock = item.stock;
-      return stock !== undefined && stock !== null && item.quantity > stock;
+      const itemId = item.productId || item.id;
+      // 買一送一的商品需要多 1 件庫存
+      const requiredQuantity = (buyOneGetOneItem && itemId === buyOneGetOneItem.id)
+        ? item.quantity + 1
+        : item.quantity;
+      return stock !== undefined && stock !== null && requiredQuantity > stock;
     })
   );
 
   const stockIssueItems = orderItems.flatMap(seller =>
     seller.items.filter(item => {
       const stock = item.stock;
-      return stock !== undefined && stock !== null && item.quantity > stock;
+      const itemId = item.productId || item.id;
+      // 買一送一的商品需要多 1 件庫存
+      const requiredQuantity = (buyOneGetOneItem && itemId === buyOneGetOneItem.id)
+        ? item.quantity + 1
+        : item.quantity;
+      return stock !== undefined && stock !== null && requiredQuantity > stock;
+    }).map(item => {
+      const itemId = item.productId || item.id;
+      // 顯示實際需要的數量
+      const requiredQuantity = (buyOneGetOneItem && itemId === buyOneGetOneItem.id)
+        ? item.quantity + 1
+        : item.quantity;
+      return { ...item, quantity: requiredQuantity };
     })
   );
 
@@ -177,6 +245,18 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         }))
       );
 
+      // 用於顯示的訂單商品列表（包含商品名稱）
+      const orderItemsForDisplay = orderItems.flatMap(seller =>
+        seller.items.map((item: CartItem) => ({
+          productID: item.productId || item.id,
+          productName: item.name,
+          quantity: item.quantity,
+          sellerID: seller.sellerId,
+          price: item.price,
+          totalPrice: item.price * item.quantity
+        }))
+      );
+
       const orderPayload: Order = {
         orderType: "DIRECT",
         orderStatus: "PENDING",
@@ -186,19 +266,29 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         orderItems: orderItemsPayload
       };
 
-      console.log("=== 送出訂單資料 ===");
-      console.log(JSON.stringify(orderPayload, null, 2));
-
       const response = await createOrderMutation.mutateAsync({
         data: orderPayload
       });
 
-      console.log("✅ 訂單建立成功:", response.data);
+      // 2. 從回應中解析 orderID
+      let orderId: string;
+      
+      if (typeof response.data === 'string') {
+        const match = response.data.match(/OrderID:\s*(\S+)/);
+        orderId = match ? match[1] : `ORD${Date.now()}`;
+      } else {
+        const responseData = response.data as unknown as CreateOrderResponse;
+        orderId = responseData?.orderID || `ORD${Date.now()}`;
+      }
 
-      // 2. 使用安全的方式讀取資料，不是用 any
-      const responseData = response.data as unknown as CreateOrderResponse;
-      const orderId = responseData?.orderID || `ORD${Date.now()}`;
+      // 3. 付款並套用優惠券
+      try {
+        await payOrder(orderId, selectedUserCoupon?.id);
+      } catch {
+        // 即使付款失敗，訂單已建立，繼續流程
+      }
 
+      // 4. 從購物車移除已結帳商品
       try {
         const itemIdsToRemove = orderItems.flatMap(seller =>
           seller.items.map(item => item.id)
@@ -215,12 +305,32 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         console.error("⚠️ 從購物車移除商品失敗:", removeError);
       }
 
+      // 如果有買一送一，把對應商品的數量 +1（後端 payOrder 會更新實際數量）
+      const displayOrderItems = orderItemsForDisplay.map(item => {
+        if (buyOneGetOneItem && (item.productID === buyOneGetOneItem.id)) {
+          const newQuantity = item.quantity + 1;  // 買一送一：+1
+          return {
+            ...item,
+            quantity: newQuantity,
+            totalPrice: item.price * newQuantity,  // 更新總價（2 個商品的價格）
+            productName: item.productName || buyOneGetOneItem.name
+          };
+        }
+        return item;
+      });
+
       navigate('/order-success', {
         state: {
           orderData: {
             orderID: orderId,
-            totalAmount: totalAmount,
-            orderItems: orderItemsPayload,
+            productTotal: productTotal,
+            shippingFee: actualShippingFee,
+            discountAmount: isFreeship ? SHIPPING_FEE : discountAmount,
+            totalAmount: finalAmount,
+            couponUsed: selectedUserCoupon ? true : false,
+            isFreeship: isFreeship,
+            buyOneGetOneItemId: buyOneGetOneItem?.id,  // 傳遞買一送一的商品 ID
+            orderItems: displayOrderItems,
             orderTime: new Date().toISOString(),
             orderStatus: 'PENDING'
           }
@@ -274,7 +384,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
       ) : (
         <div className="checkout-grid">
           <div>
-            <OrderSummary sellers={orderItems} />
+            <OrderSummary sellers={orderItems} buyOneGetOneItemId={buyOneGetOneItem?.id} />
             <ShippingForm
               address={shippingAddress}
               onChange={setShippingAddress}
@@ -295,19 +405,54 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   </div>
                 </div>
               )}
+
+              {/* 優惠券選擇 */}
+              <CouponSelector
+                productTotal={productTotal}
+                shippingFee={SHIPPING_FEE}
+                orderType="DIRECT"
+                orderItems={flatOrderItems}
+                onCouponSelect={handleCouponSelect}
+              />
+
               <div className="checkout-summary-content">
                 <div className="checkout-summary-row">
                   <span>商品小計</span>
-                  <span>${totalAmount}</span>
+                  <span>${productTotal}</span>
                 </div>
                 <div className="checkout-summary-row">
                   <span>運費</span>
-                  <span>$0</span>
+                  {isFreeship ? (
+                    <span>
+                      <span className="checkout-original-shipping">${SHIPPING_FEE}</span>
+                      <span className="checkout-free-shipping">$0</span>
+                    </span>
+                  ) : (
+                    <span>${SHIPPING_FEE}</span>
+                  )}
                 </div>
+                {discountAmount > 0 && !isFreeship && !buyOneGetOneItem && (
+                  <div className="checkout-summary-row checkout-discount-row">
+                    <span>優惠券折扣</span>
+                    <span className="checkout-discount-amount">-${discountAmount}</span>
+                  </div>
+                )}
+                {isFreeship && (
+                  <div className="checkout-summary-row checkout-discount-row">
+                    <span>免運優惠</span>
+                    <span className="checkout-discount-amount">-${SHIPPING_FEE}</span>
+                  </div>
+                )}
+                {buyOneGetOneItem && (
+                  <div className="checkout-summary-row checkout-discount-row">
+                    <span>買一送一 ({buyOneGetOneItem.name || '商品'})</span>
+                    <span className="checkout-discount-amount">-${discountAmount}</span>
+                  </div>
+                )}
                 <div className="checkout-summary-divider">
                   <div className="checkout-summary-total">
                     <span>總計</span>
-                    <span className="checkout-summary-total-amount">${totalAmount}</span>
+                    <span className="checkout-summary-total-amount">${finalAmount}</span>
                   </div>
                 </div>
               </div>

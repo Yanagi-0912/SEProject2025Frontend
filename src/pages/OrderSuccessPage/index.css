@@ -119,6 +119,9 @@
   color: #333;
   margin-bottom: 4px;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .order-item-quantity {
@@ -129,6 +132,23 @@
 .order-item-price {
   color: #5D4037;
   font-weight: 600;
+}
+
+/* 買一送一標籤 */
+.order-b1g1-tag {
+  display: inline-block;
+  background-color: #FF5E78;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+/* 買一送一 +1 提示 */
+.order-b1g1-bonus {
+  color: #FF5E78;
+  font-weight: bold;
 }
 
 /* 總金額 */

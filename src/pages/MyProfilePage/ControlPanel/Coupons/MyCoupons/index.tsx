@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import './MyCoupons.css'
 
 interface Coupon {
@@ -17,14 +16,8 @@ interface MyCouponsProps {
 }
 
 function MyCoupons({ coupons }: MyCouponsProps) {
-  const navigate = useNavigate()
   const [showCoupons, setShowCoupons] = useState(false)
   const totalQuantity = coupons.reduce((sum, coupon) => sum + (coupon.quantity || 1), 0)
-
-  const handleUseCoupon = (couponId: string) => {
-    // 導航到購物車頁面，帶上優惠券 ID
-    navigate(`/cart?couponId=${couponId}`)
-  }
 
   return (
     <div className="my-coupons-container">
@@ -50,16 +43,8 @@ function MyCoupons({ coupons }: MyCouponsProps) {
                 </h3>
                 <p className="coupon-discount">{coupon.discount}</p>
               </div>
-              <div className="coupon-actions">
-                <div className="coupon-dates">
-                  <div>到期：{coupon.expiryDate}</div>
-                </div>
-                <button 
-                  className="use-coupon-btn"
-                  onClick={() => handleUseCoupon(coupon.id)}
-                >
-                  使用
-                </button>
+              <div className="coupon-dates">
+                <div>到期：{coupon.expiryDate}</div>
               </div>
             </div>
           ))}
