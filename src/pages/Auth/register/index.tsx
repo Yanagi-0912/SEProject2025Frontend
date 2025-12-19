@@ -2,7 +2,6 @@ import { useState, type FormEvent } from 'react'
 import './Register.css'
 import { register } from '../../../api/register'
 import { login } from '../../../api/login'
-import { handlePostRegisterDraw } from './drawCoupons'
 
 interface RegisterProps {
   onBackToLogin?: () => void
@@ -47,10 +46,7 @@ function Register({ onBackToLogin, registerSuccess }: RegisterProps) {
       localStorage.setItem('username', loginData.username)
       localStorage.setItem('email', email)
 
-      // 3. 抽獎十次（背景執行，不阻塞註冊流程）
-      handlePostRegisterDraw().catch(err => {
-        console.error('抽獎失敗:', err)
-      })
+      // 註：後端會自動處理註冊時發放優惠券，前端不需要呼叫
 
       registerSuccess?.()
       onBackToLogin?.()
