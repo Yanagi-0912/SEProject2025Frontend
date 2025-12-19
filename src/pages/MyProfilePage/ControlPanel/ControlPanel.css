@@ -1,0 +1,60 @@
+/* ControlPanel/ControlPanel.css */
+.control-panel {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid #f5c2c7;
+}
+
+.control-panel-title {
+  color: #d63384;
+  font-size: 1.25rem;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #f5c2c7;
+}
+
+/* 便當盒風格的按鈕網格 */
+.control-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.control-panel-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+  background-color: #fef7f7;
+  border: 2px solid #f5c2c7;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 80px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #5D4037;
+}
+
+.control-panel-btn:hover {
+  background-color: #FF5E78;
+  border-color: #FF5E78;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 94, 120, 0.3);
+  color: white;
+}
+
+/* 響應式設計 */
+@media (max-width: 600px) {
+  .control-panel-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .control-panel-btn {
+    padding: 1rem 0.75rem;
+    min-height: 60px;
+    font-size: 10rem;
+  }
+}

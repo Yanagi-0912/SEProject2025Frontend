@@ -1,0 +1,52 @@
+/* MyProfilePage/MyProfilePage.css */
+.my-profile-page {
+  min-height: 100vh;
+  background-color: #FFF0F5;
+  padding-bottom: 2rem;
+}
+
+.my-profile-content {
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.my-profile-sidebar {
+  flex: 2;
+  min-width: 0;
+  max-width: 45%;
+}
+
+.my-profile-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.my-profile-error {
+  background-color: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1rem;
+  color: #856404;
+  text-align: center;
+}
+
+/* 響應式設計 - 窄螢幕時 ControlPanel 在上，UserProfile 在下 */
+@media (max-width: 900px) {
+  .my-profile-content {
+    flex-direction: column-reverse;
+    padding: 1rem;
+  }
+
+  .my-profile-sidebar {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .my-profile-main {
+    width: 100%;
+  }
+}

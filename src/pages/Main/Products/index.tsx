@@ -28,12 +28,14 @@ function Products({ page, onProductClick }: ProductsProps) {
   const categoryParam = searchParams.get('category');
   const minPriceParam = searchParams.get('minPrice');
   const maxPriceParam = searchParams.get('maxPrice');
+  const minRatingParam = searchParams.get('minRating');
 
   // 簡化：有 ragIds 就用 RAG，有 keyword 就用模糊搜尋，都沒有就顯示全部
   const ragIds = ragIdsParam ? ragIdsParam.split(',') : [];
   const selectedCategory = categoryParam && categoryParam !== 'all' ? categoryParam : undefined;
   const minPrice = minPriceParam ? Number(minPriceParam) : undefined;
   const maxPrice = maxPriceParam ? Number(maxPriceParam) : undefined;
+  const minRating = minRatingParam ? Number(minRatingParam) : undefined;
 
   // 1. 全部商品
   const { data: allData, isLoading: isAllLoading, error: allError } = useGetAllProduct(
@@ -111,6 +113,17 @@ function Products({ page, onProductClick }: ProductsProps) {
       const meetsMaxPrice = maxPrice === undefined || productPrice <= maxPrice;
       
       return meetsMinPrice && meetsMaxPrice;
+    });
+  }
+
+  // 根據評價篩選商品（只在有設定最低評價時才篩選）
+  if (minRating !== undefined) {
+    products = products.filter(product => {
+      // 如果商品沒有評分，則不符合篩選條件
+      if (product.averageRating === undefined || product.averageRating === null) {
+        return false;
+      }
+      return product.averageRating >= minRating;
     });
   }
 

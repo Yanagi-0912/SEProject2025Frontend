@@ -8,7 +8,7 @@
 /* 優惠條款按鈕 */
 .terms-toggle-button {
   background: none;
-  color: #3b82f6;
+  color: #FF5E78;
   border: none;
   padding: 0;
   font-size: 0.75rem;
@@ -23,29 +23,30 @@
 
 .terms-toggle-button:hover {
   opacity: 1;
-  color: #2563eb;
+  color: #FF5E78;
 }
 
 .terms-toggle-button:active {
-  color: #1d4ed8;
+  color: #c2255a;
 }
 
 /* 優惠條款內容 */
 .terms-content {
   background: white;
-  border-radius: 15px;
-  padding: 25px 30px;
-  margin-top: 15px;
-  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  box-shadow: 0 4px 15px rgba(255, 94, 120, 0.15);
+  border: 1px solid #f5c2c7;
   animation: slideDown 0.3s ease-out;
   position: absolute;
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
-  min-width: 350px;
-  max-width: 400px;
-  margin-bottom: 10px;
+  min-width: 200px;
+  max-width: 280px;
+  margin-bottom: 0.5rem;
 }
 
 @keyframes slideDown {
@@ -60,12 +61,11 @@
 }
 
 .terms-content h3 {
-  color: #667eea;
-  font-size: 1.3rem;
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  color: #FF5E78;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f5c2c7;
 }
 
 .terms-content ul {
@@ -75,25 +75,18 @@
 }
 
 .terms-content li {
-  padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
-  color: #333;
-  font-size: 0.95rem;
+  padding: 0.4rem 0;
+  color: #5D4037;
+  font-size: 0.85rem;
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-.terms-content li:last-child {
-  border-bottom: none;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .terms-content li::before {
-  content: "✓";
-  color: #667eea;
-  font-weight: bold;
-  font-size: 1.1rem;
-  flex-shrink: 0;
+  content: "•";
+  color: #d63384;
+  font-size: 0.8rem;
 }
 
 /* 響應式設計 */
