@@ -82,18 +82,6 @@ export const drawCoupon = async (userId: string): Promise<DrawCouponResponse> =>
 };
 
 /**
- * 取得當前使用者的優惠券 API
- * GET /api/userCoupon/me
- * @deprecated 請使用 getUserCouponsByUserId(userId) 替代
- */
-export const getUserCoupons = async (): Promise<UserCouponItem[]> => {
-  const response = await axios.get<UserCouponItem[]>(
-    `${PRODUCT_API}/api/userCoupon/me`
-  );
-  return response.data;
-};
-
-/**
  * 使用一次抽獎次數 API
  * POST /api/lottery/useOnce
  */
@@ -150,10 +138,21 @@ export const issueUserCoupon = async (userId: string, couponId: string): Promise
 /**
  * 取得使用者所有優惠券 API
  * GET /api/userCoupon/{userId}
+ * 需要：JWT Token
  */
 export const getUserCouponsByUserId = async (userId: string): Promise<UserCouponItem[]> => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    throw new Error('未登入');
+  }
+  
   const response = await axios.get<UserCouponItem[]>(
-    `${PRODUCT_API}/api/userCoupon/${userId}`
+    `${PRODUCT_API}/api/userCoupon/${userId}`,
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }
   );
   return response.data;
 };
