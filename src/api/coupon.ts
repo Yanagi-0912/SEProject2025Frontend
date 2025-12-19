@@ -39,14 +39,20 @@ export interface CouponListItem {
  * 使用者優惠券項目
  */
 export interface UserCouponItem {
-  couponID: string;
-  couponName: string;
+  id: string;                    // UserCoupon 的唯一 ID
+  couponID: string;              // 優惠券模板 ID
+  userId: string;                // 擁有此券的使用者 ID
+  couponName?: string;
   description?: string;
-  discountType: 'PERCENT' | 'FIXED' | 'FREESHIP' | 'BUY_ONE_GET_ONE';
-  discountValue: number;
-  expireTime: string;
-  obtainedTime?: string;
-  isUsed?: boolean;
+  discountType?: 'PERCENT' | 'FIXED' | 'FREESHIP' | 'BUY_ONE_GET_ONE';
+  discountValue?: number;
+  getTime: string;               // 領取時間
+  remainingUsage: number;        // 剩餘可用次數
+  expireTime: string;            // 到期時間
+  usedTime?: string | null;      // 使用時間
+  orderID?: string | null;       // 使用的訂單 ID
+  obtainedTime?: string;         // 相容舊欄位
+  isUsed?: boolean;              // 相容舊欄位
 }
 
 /**

@@ -19,7 +19,7 @@ interface Coupon {
 
 const coupons: Coupon[] = [
   { id: '0', name: '9折優惠', discount: '10% OFF', color: '#8f7f8f', value: 50, discountType: 'PERCENT', discountValue: 0.1 },
-  { id: '1', name: '8折優惠', discount: '20% OFF', color: '"#f97066"', value: 50, discountType: 'PERCENT', discountValue: 0.2 },
+  { id: '1', name: '滿500折百', discount: '$100 OFF', color: '#f97066', value: 50, discountType: 'FIXED', discountValue: 100 },
   { id: '2', name: '免運券', discount: 'FREE SHIP', color: '#2e90fa', value: 50, discountType: 'FREESHIP', discountValue: 0 },
   { id: '3', name: '7折優惠', discount: '30% OFF', color: '#fdb022', value: 50, discountType: 'PERCENT', discountValue: 0.3 },
   { id: '4', name: '滿千折百', discount: '$100 OFF', color: '#ee46bc', value: 50, discountType: 'FIXED', discountValue: 100 },
