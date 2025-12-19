@@ -15,12 +15,13 @@ function Terms() {
 
       {showTerms && (
         <div className="terms-content">
-          <h3>使用條款</h3>
+          <h3>使用說明</h3>
           <ul>
-            <li>手動發放：透過 API (POST /api/userCoupon/issue)</li>
-            <li>自動發放：節日排程（HolidayCouponScheduler）</li>
-            <li>自動發放：首購優惠（issueCouponsAfterPay）</li>
-            <li>所有優惠券有效期限：7天（過期自動刪除）</li>
+            <li>每筆訂單限用一張優惠券</li>
+            <li>優惠券適用於整筆訂單</li>
+            <li>拍賣商品不適用</li>
+            <li>買一送一限 $500 以下商品</li>
+            <li>請於到期日前使用</li>
           </ul>
         </div>
       )}

@@ -1,4 +1,5 @@
 import React from 'react';
+import './ControlPanel.css';
 
 interface ControlPanelProps {
   onCouponsClick?: () => void;
@@ -14,23 +15,23 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   onHistoryClick
 }) => {
   return (
-    <div>
-      <h2>功能選單</h2>
-      <div>
-        <button onClick={onCouponsClick}>
-            <h3>優惠券</h3>
+    <div className="control-panel">
+      <h2 className="control-panel-title">功能選單</h2>
+      <div className="control-panel-grid">
+        <button className="control-panel-btn" onClick={onCouponsClick}>
+          優惠券
         </button>
 
-        <button onClick={onChangePasswordClick}>
-            <h3>修改密碼</h3>
+        <button className="control-panel-btn" onClick={onChangePasswordClick}>
+          修改密碼
         </button>
 
-        <button onClick={onSellerDashboardClick}>
-            <h3>賣家後台</h3>
+        <button className="control-panel-btn" onClick={onSellerDashboardClick}>
+          賣家後台
         </button>
 
-        <button onClick={onHistoryClick}>
-            <h3>歷史紀錄</h3>
+        <button className="control-panel-btn" onClick={onHistoryClick}>
+          歷史紀錄
         </button>
       </div>
     </div>

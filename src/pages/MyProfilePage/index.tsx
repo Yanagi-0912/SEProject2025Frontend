@@ -5,6 +5,7 @@ import UserProfile from './UserProfile';
 import ControlPanel from './ControlPanel';
 import { useGetCurrentUser, useUpdatePassword } from '../../api/generated';
 import { SAMPLE_USER, normalizeUserData, type UserProps } from '../../types/user';
+import './MyProfilePage.css';
 
 const MyProfilePage: React.FC = () => {
 	const navigate = useNavigate();
@@ -95,27 +96,29 @@ const MyProfilePage: React.FC = () => {
 	};
 
 	return (
-		<div>
+		<div className="my-profile-page">
 			<Header />
 			{error && (
-				<div>
+				<div className="my-profile-error">
 					{error} 請先登入
 				</div>
 			)}
 			
-			<div style={{ border: '1px solid red' }}>
-				<div style={{ border: '1px solid blue' }}>
-				<UserProfile 
-					{...user} 
-					onUpdateSuccess={handleUpdateSuccess}
-				/>
+			<div className="my-profile-content">
+				<div className="my-profile-sidebar">
+					<UserProfile 
+						{...user} 
+						onUpdateSuccess={handleUpdateSuccess}
+					/>
 				</div>
-				<ControlPanel
-					onCouponsClick={handleCouponsClick}
-					onChangePasswordClick={handleChangePasswordClick}
-					onSellerDashboardClick={handleSellerDashboardClick}
-					onHistoryClick={handleHistoryClick}
-				/>
+				<div className="my-profile-main">
+					<ControlPanel
+						onCouponsClick={handleCouponsClick}
+						onChangePasswordClick={handleChangePasswordClick}
+						onSellerDashboardClick={handleSellerDashboardClick}
+						onHistoryClick={handleHistoryClick}
+					/>
+				</div>
 			</div>
 		</div>
 	);
