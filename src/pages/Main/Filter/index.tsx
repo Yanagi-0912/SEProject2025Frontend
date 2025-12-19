@@ -10,7 +10,9 @@ function Filter() {
   const categoryFromUrl = searchParams.get('category');
   const [selectedDepartment, setSelectedDepartment] = useState(categoryFromUrl || 'all')
   
-  const [selectedReview, setSelectedReview] = useState('all')
+  // 從 URL 讀取評價參數
+  const minRatingFromUrl = searchParams.get('minRating');
+  const [selectedReview, setSelectedReview] = useState(minRatingFromUrl === '4' ? '4up' : 'all')
   const [showAllDepartments, setShowAllDepartments] = useState(false)
   
   // 從 API 取得分類列表
@@ -51,6 +53,18 @@ function Filter() {
     setSearchParams(params, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [minPrice, maxPrice]);
+
+  // 當評價篩選改變時，更新 URL 參數
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    if (selectedReview === '4up') {
+      params.set('minRating', '4');
+    } else {
+      params.delete('minRating');
+    }
+    setSearchParams(params, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedReview]);
 
   // 將 API 回傳的分類轉換為元件需要的格式
   const departments = [
