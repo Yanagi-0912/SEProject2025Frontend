@@ -8,8 +8,6 @@ interface ShoppingProps {
 
 const Shopping: React.FC<ShoppingProps> = ({ onBackToMain }) => {
   const [currentPage, setCurrentPage] = useState<"cart" | "checkout">("cart");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [checkoutItems, setCheckoutItems] = useState<any[]>([]);
 
   if (currentPage === "checkout") {
     return (
@@ -22,8 +20,7 @@ const Shopping: React.FC<ShoppingProps> = ({ onBackToMain }) => {
   return (
     <CartPage
       onBack={onBackToMain}
-      onCheckout={(items) => {
-        setCheckoutItems(items);
+      onCheckout={() => {
         setCurrentPage("checkout");
       }}
     />
