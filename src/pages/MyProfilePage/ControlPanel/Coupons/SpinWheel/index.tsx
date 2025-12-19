@@ -18,14 +18,14 @@ interface Coupon {
 }
 
 const coupons: Coupon[] = [
-  { id: '1', name: '9折優惠', discount: '10% OFF', color: '#8f7f8f', value: 50, discountType: 'PERCENT', discountValue: 0.1 },
-  { id: '2', name: '8折優惠', discount: '20% OFF', color: '"#f97066"', value: 50, discountType: 'PERCENT', discountValue: 0.2 },
-  { id: '3', name: '免運券', discount: 'FREE SHIP', color: '#2e90fa', value: 50, discountType: 'FREESHIP', discountValue: 0 },
-  { id: '4', name: '7折優惠', discount: '30% OFF', color: '#fdb022', value: 50, discountType: 'PERCENT', discountValue: 0.3 },
-  { id: '5', name: '滿千折百', discount: '$100 OFF', color: '#ee46bc', value: 50, discountType: 'FIXED', discountValue: 100 },
-  { id: '6', name: '買一送一', discount: 'BUY 1 GET 1', color: '#854CFF', value: 50, discountType: 'BUY_ONE_GET_ONE', discountValue: 0 },
-  { id: '7', name: '5折優惠', discount: '50% OFF', color: '#BB8FCE', value: 50, discountType: 'PERCENT', discountValue: 0.5 },
-  { id: '8', name: '銘謝惠顧', discount: 'NEXT TIME', color: '#95A5A6', value: 50, discountType: 'PERCENT', discountValue: 0 },
+  { id: '0', name: '9折優惠', discount: '10% OFF', color: '#8f7f8f', value: 50, discountType: 'PERCENT', discountValue: 0.1 },
+  { id: '1', name: '8折優惠', discount: '20% OFF', color: '"#f97066"', value: 50, discountType: 'PERCENT', discountValue: 0.2 },
+  { id: '2', name: '免運券', discount: 'FREE SHIP', color: '#2e90fa', value: 50, discountType: 'FREESHIP', discountValue: 0 },
+  { id: '3', name: '7折優惠', discount: '30% OFF', color: '#fdb022', value: 50, discountType: 'PERCENT', discountValue: 0.3 },
+  { id: '4', name: '滿千折百', discount: '$100 OFF', color: '#ee46bc', value: 50, discountType: 'FIXED', discountValue: 100 },
+  { id: '5', name: '買一送一', discount: 'BUY 1 GET 1', color: '#854CFF', value: 50, discountType: 'BUY_ONE_GET_ONE', discountValue: 0 },
+  { id: '6', name: '5折優惠', discount: '50% OFF', color: '#BB8FCE', value: 50, discountType: 'PERCENT', discountValue: 0.5 },
+  { id: '7', name: '銘謝惠顧', discount: 'NEXT TIME', color: '#95A5A6', value: 50, discountType: 'PERCENT', discountValue: 0 },
 ]
 
 interface SpinWheelProps {

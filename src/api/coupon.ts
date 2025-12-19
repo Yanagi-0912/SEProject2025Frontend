@@ -82,19 +82,84 @@ export const drawCoupon = async (userId: string): Promise<DrawCouponResponse> =>
 };
 
 /**
- * 取得當前使用者的優惠券 API
- * GET /api/userCoupon/me
+ * 使用一次抽獎次數 API
+ * POST /api/lottery/useOnce
  */
-export const getUserCoupons = async (): Promise<UserCouponItem[]> => {
-  const response = await axios.get<UserCouponItem[]>(
-    `${PRODUCT_API}/api/userCoupon/me`
+export const useLotteryOnce = async (): Promise<string> => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    throw new Error('未登入');
+  }
+  
+  const response = await axios.post<string>(
+    `${PRODUCT_API}/api/lottery/useOnce`,
+    undefined,
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  );
+  return response.data; // 回傳 "Remaining draw times: 9" 格式的字串
+};
+
+/**
+ * 發放優惠券給使用者 API
+ * POST /api/userCoupon/issue?userId={userId}&couponId={couponId}
+ */
+export const issueUserCoupon = async (userId: string, couponId: string): Promise<{
+  userId: string;
+  couponID: string;
+  remainingUsage: number;
+  used: boolean;
+}> => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    throw new Error('未登入');
+  }
+  
+  const response = await axios.post<{
+    userId: string;
+    couponID: string;
+    remainingUsage: number;
+    used: boolean;
+  }>(
+    `${PRODUCT_API}/api/userCoupon/issue?userId=${userId}&couponId=${couponId}`,
+    undefined,
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }
   );
   return response.data;
 };
 
 /**
- * 取得剩餘抽獎券數量 API
- * GET /api/userCoupon/draw/remaining
+ * 取得使用者所有優惠券 API
+ * GET /api/userCoupon/{userId}
+ * 需要：JWT Token
+ */
+export const getUserCouponsByUserId = async (userId: string): Promise<UserCouponItem[]> => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    throw new Error('未登入');
+  }
+  
+  const response = await axios.get<UserCouponItem[]>(
+    `${PRODUCT_API}/api/userCoupon/${userId}`,
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  );
+  return response.data;
+};
+
+/**
+ * 取得剩餘抽獎券數量 API（已廢棄，改用 /api/user/me 的 remainingDrawTimes）
+ * @deprecated 請使用 useGetCurrentUser 取得 remainingDrawTimes
  */
 export const getRemainingDrawTickets = async (): Promise<number> => {
   try {

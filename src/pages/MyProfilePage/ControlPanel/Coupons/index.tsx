@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import SpinWheel from './SpinWheel'
 import MyCoupons from './MyCoupons'
 import Terms from './Terms'
-import { createCoupon, getUserCoupons, getRemainingDrawTickets } from '../../../../api/coupon'
+import { getUserCouponsByUserId, useLotteryOnce, issueUserCoupon, getAllCoupons } from '../../../../api/coupon'
+import { useGetCurrentUser } from '../../../../api/generated'
 
 interface Coupon {
   id: string
@@ -16,33 +17,37 @@ interface Coupon {
 
 function Coupons() {
   const navigate = useNavigate()
-  const [username, setUsername] = useState('')
   const [myCoupons, setMyCoupons] = useState<Coupon[]>([])
-  const [totalSpent, setTotalSpent] = useState(0)
   const [loading, setLoading] = useState(true)
-  const [remainingTickets, setRemainingTickets] = useState(0)
+  const [couponIdMap, setCouponIdMap] = useState<Map<number, string>>(new Map())
 
+  // 使用 useGetCurrentUser 取得使用者資訊（包含 remainingDrawTimes）
+  const { data: userData, refetch: refetchUser } = useGetCurrentUser()
+  const remainingTickets = userData?.data?.remainingDrawTimes ?? 0
+  const userId = userData?.data?.id
+  const username = userData?.data?.username || userData?.data?.nickname || '使用者'
+
+  // 當 userId 改變時，載入資料
   useEffect(() => {
-    // 取得使用者名稱（如果有登入的話）
-    const savedUsername = localStorage.getItem('username')
-    setUsername(savedUsername || '訪客')
-
-    // 從 API 載入使用者的優惠券
-    loadUserCoupons()
+    if (userId) {
+      // 從 API 載入使用者的優惠券
+      loadUserCoupons()
+    }
     
-    // 載入剩餘抽獎券數量
-    loadRemainingTickets()
-
-    // 模擬總消費金額（實際應該從後端取得）
-    const savedSpent = localStorage.getItem('totalSpent')
-    setTotalSpent(savedSpent ? parseInt(savedSpent) : 0)
-  }, [])
+    // 載入所有可用的優惠券，建立 couponId 映射
+    loadCouponIdMap()
+  }, [userId])
 
   // 從 API 載入使用者的優惠券
   const loadUserCoupons = async () => {
+    if (!userId) {
+      setLoading(false)
+      return
+    }
+    
     try {
       setLoading(true)
-      const userCoupons = await getUserCoupons()
+      const userCoupons = await getUserCouponsByUserId(userId)
       
       // 轉換 API 回傳的格式為組件需要的格式
       const convertedCoupons: Coupon[] = userCoupons
@@ -81,20 +86,59 @@ function Coupons() {
 
       setMyCoupons(convertedCoupons)
     } catch (error) {
-      console.error('載入優惠券失敗:', error)
-      alert('載入優惠券失敗，請稍後再試')
+      // 如果是 404，可能是使用者還沒有任何優惠券，這是正常的
+      if ((error as any)?.response?.status === 404) {
+        setMyCoupons([])
+      } else {
+        console.error('載入優惠券失敗:', error)
+        alert('載入優惠券失敗，請稍後再試')
+      }
     } finally {
       setLoading(false)
     }
   }
 
-  // 載入剩餘抽獎券數量
-  const loadRemainingTickets = async () => {
+  // 載入所有可用的優惠券，建立 couponId 映射
+  // SpinWheel 中的優惠券名稱對應表
+  const spinWheelCouponNames: { [key: number]: string } = {
+    0: '9折優惠',
+    1: '8折優惠',
+    2: '免運券',
+    3: '7折優惠',
+    4: '滿千折百',
+    5: '買一送一',
+    6: '5折優惠',
+    7: '銘謝惠顧'
+  }
+
+  const loadCouponIdMap = async () => {
     try {
-      const tickets = await getRemainingDrawTickets()
-      setRemainingTickets(tickets)
+      const allCoupons = await getAllCoupons()
+      
+      // 根據 couponName 建立映射：SpinWheel 的索引對應到實際的 couponID
+      const map = new Map<number, string>()
+      
+      for (let i = 0; i < 8; i++) {
+        // 銘謝惠顧 (id '7') 不需要 couponId，跳過
+        if (i === 7) {
+          continue
+        }
+        
+        const expectedName = spinWheelCouponNames[i]
+        
+        // 精確匹配
+        const matchedCoupon = allCoupons.find(coupon => 
+          coupon.couponName === expectedName
+        )
+        
+        if (matchedCoupon) {
+          map.set(i, matchedCoupon.couponID)
+        }
+      }
+      
+      setCouponIdMap(map)
     } catch (error) {
-      console.error('載入剩餘抽獎券數量失敗:', error)
+      console.error('載入優惠券列表失敗:', error)
     }
   }
 
@@ -107,35 +151,48 @@ function Coupons() {
     discountType: 'PERCENT' | 'FIXED' | 'FREESHIP' | 'BUY_ONE_GET_ONE'
     discountValue: number
   }) => {
-    const today = new Date()
-    const expireDate = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000) // 7天後過期
 
-    // 直接使用 SpinWheel 回傳的 discountType 和 discountValue
-    const discountType = coupon.discountType
-    const discountValue = coupon.discountValue
+    // 如果是「銘謝惠顧」，只扣除次數，不發放優惠券
+    if (coupon.id === '7') {
+      try {
+        await useLotteryOnce()
+        alert('銘謝惠顧，下次再來！')
+        // 重新取得使用者資訊以更新剩餘次數
+        await refetchUser()
+        return
+      } catch (error) {
+        console.error('扣除抽獎次數失敗:', error)
+        alert('扣除抽獎次數失敗，請稍後再試')
+        return
+      }
+    }
+
+    // 取得對應的 couponId
+    // id 現在從 '0' 開始，直接對應索引
+    const couponIndex = parseInt(coupon.id) // SpinWheel 的 id 是 '0'-'7'，直接對應索引 0-7
+    const actualCouponId = couponIdMap.get(couponIndex)
+
+    if (!actualCouponId) {
+      alert('優惠券 ID 對應失敗，請稍後再試')
+      return
+    }
 
     try {
-      // 調用 API 創建優惠券
-      await createCoupon({
-        couponName: coupon.name,
-        description: coupon.discount,
-        expireTime: expireDate.toISOString(),
-        couponCount: 1000, // 總數量
-        discountType: discountType,
-        discountValue: discountValue,
-        minPurchaseAmount: 0, // 預設最低消費金額
-        createdTime: today.toISOString(),
-        maxUsage: 1 // 每個使用者最多使用 1 次
-      })
+      // 1. 先扣除一次抽獎次數
+      await useLotteryOnce()
+      
+      // 2. 發放優惠券給使用者
+      await issueUserCoupon(userId, actualCouponId)
 
       alert(`恭喜獲得 ${coupon.name}！`)
       
-      // 重新載入優惠券列表和剩餘抽獎券數量
+      // 重新載入優惠券列表和使用者資訊
       await loadUserCoupons()
-      await loadRemainingTickets()
+      await refetchUser()
     } catch (error) {
-      console.error('創建優惠券失敗:', error)
-      alert('創建優惠券失敗，請稍後再試')
+      console.error('抽獎流程失敗:', error)
+      const errorMessage = (error as Error).message || '抽獎流程失敗，請稍後再試'
+      alert(errorMessage)
     }
   }
 
@@ -148,7 +205,7 @@ function Coupons() {
         </button>
       </div>
 
-      <h1>{username} - 消費：${totalSpent.toLocaleString()}</h1>
+      <h1>{username}</h1>
 
       {/* 優惠券 */}
       <div>
