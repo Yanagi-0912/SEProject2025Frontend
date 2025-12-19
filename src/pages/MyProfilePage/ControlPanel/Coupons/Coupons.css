@@ -1,0 +1,52 @@
+.coupons-container {
+  min-height: 100vh;
+  padding: 1.25rem;
+  padding-bottom: 3.75rem;
+  background-color: #fef7f7;
+}
+
+.coupons-header {
+  margin-bottom: 1.25rem;
+}
+
+.coupons-header button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.coupons-header .home-icon-img {
+  width: 3rem;
+  height: 3rem;
+  border: 0.125rem solid #FF9EAA;
+  border-radius: 50%;
+  background-color: white;
+  padding: 0.125rem;
+}
+
+.coupons-title {
+  color: #d63384;
+  font-size: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.coupons-section {
+  background-color: white;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid #f5c2c7;
+  margin-bottom: 1.25rem;
+}
+
+.spinwheel-section {
+  margin-top: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.terms-section {
+  text-align: center;
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #f5c2c7;
+}

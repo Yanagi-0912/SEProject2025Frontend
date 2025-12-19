@@ -192,3 +192,27 @@ export const createCoupon = async (
   );
   return response.data;
 };
+
+/**
+ * 付款並套用優惠券 API
+ * PUT /api/orders/pay/{orderID}?couponID={userCouponId}
+ * 
+ * @param orderID - 訂單 ID
+ * @param userCouponId - UserCoupon 的 id（不是 Coupon 模板的 couponID）
+ */
+export const payOrder = async (
+  orderID: string,
+  userCouponId?: string
+): Promise<string> => {
+  const token = localStorage.getItem('token');
+  const url = userCouponId 
+    ? `${PRODUCT_API}/api/orders/pay/${orderID}?couponID=${userCouponId}`
+    : `${PRODUCT_API}/api/orders/pay/${orderID}`;
+  
+  const response = await axios.put<string>(url, null, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};

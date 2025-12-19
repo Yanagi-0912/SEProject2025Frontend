@@ -3,24 +3,25 @@ import SpinWheel from './SpinWheel'
 import MyCoupons from './MyCoupons'
 import Terms from './Terms'
 import { useCoupons } from './useCoupons'
+import './Coupons.css'
 
 function Coupons() {
   const navigate = useNavigate()
   const { myCoupons, loading, remainingTickets, username, handleWin } = useCoupons()
 
   return (
-    <div style={{ border: '1px solid red', minHeight: '100vh', padding: '20px', overflowY: 'auto', paddingBottom: '60px' }}>
+    <div className="coupons-container">
       {/* 頂部導航區 */}
-      <div style={{ marginBottom: '20px' }}>
+      <div className="coupons-header">
         <button onClick={() => navigate('/user/me')}>
           <img src="/home-icon.png" alt="回首頁" className="home-icon-img" />
         </button>
       </div>
 
-      <h1>{username}</h1>
+      <h1 className="coupons-title">{username}</h1>
 
       {/* 優惠券 */}
-      <div>
+      <div className="coupons-section">
         {loading ? (
           <div>載入中...</div>
         ) : (
@@ -29,12 +30,12 @@ function Coupons() {
       </div>
 
       {/* 拉霸機 */}
-      <div style={{ marginTop: '20px', marginBottom: '40px', border: '1px solid orange' }}>
+      <div className="spinwheel-section">
         <SpinWheel onWin={handleWin} remainingTickets={remainingTickets} />
       </div>
 
-      {/* 使用條款 - 頁面底部 */}
-      <div style={{ textAlign: 'center', marginTop: '40px', paddingTop: '20px', borderTop: '1px solid #e0e0e0' }}>
+      {/* 使用條款 */}
+      <div className="terms-section">
         <Terms />
       </div>
     </div>

@@ -94,3 +94,25 @@
   color: #aaa;
   font-size: 12px;
 }
+
+/* 優惠券折扣樣式 */
+.checkout-discount-row {
+  color: #FF5E78;
+}
+
+.checkout-discount-amount {
+  color: #FF5E78;
+  font-weight: 600;
+}
+
+/* 免運費樣式 */
+.checkout-original-shipping {
+  text-decoration: line-through;
+  color: #999;
+  margin-right: 8px;
+}
+
+.checkout-free-shipping {
+  color: #FF5E78;
+  font-weight: 600;
+}

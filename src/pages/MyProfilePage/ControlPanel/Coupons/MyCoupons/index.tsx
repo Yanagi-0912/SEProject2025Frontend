@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import './MyCoupons.css'
 
 interface Coupon {
   id: string
@@ -16,48 +17,37 @@ interface MyCouponsProps {
 
 function MyCoupons({ coupons }: MyCouponsProps) {
   const [showCoupons, setShowCoupons] = useState(false)
+  const totalQuantity = coupons.reduce((sum, coupon) => sum + (coupon.quantity || 1), 0)
 
   return (
-    <div>
+    <div className="my-coupons-container">
       <button 
+        className="my-coupons-toggle"
         onClick={() => setShowCoupons(!showCoupons)}
-        style={{ 
-          padding: '10px 20px', 
-          fontSize: '1rem',
-          marginBottom: '10px',
-          cursor: 'pointer'
-        }}
       >
-        {showCoupons ? '收起優惠券列表' : (() => {
-          const totalQuantity = coupons.reduce((sum, coupon) => sum + (coupon.quantity || 1), 0)
-          return `優惠券（${totalQuantity}）`
-        })()}
+        {showCoupons ? '收起優惠券列表' : `優惠券（${totalQuantity}）`}
       </button>
 
       {showCoupons && (
-        <div style={{ border: '2px solid #ccc', padding: '10px', marginTop: '10px' }}>
+        <div className="my-coupons-list">
+          <p className="my-coupons-total">總共有 {totalQuantity} 張優惠券</p>
           
-            <div>
-              {(() => {
-                const totalQuantity = coupons.reduce((sum, coupon) => sum + (coupon.quantity || 1), 0)
-                return <p>總共有 {totalQuantity} 張優惠券</p>
-              })()}
-              {coupons.map((coupon) => (
-                <div key={coupon.id} style={{ border: '1px solid #ddd', padding: '10px', marginBottom: '10px' }}>
-                  <h3>
-                    {coupon.name}
-                    {coupon.quantity && coupon.quantity > 1 && (
-                      <span style={{ marginLeft: '10px', color: '#666', fontSize: '0.9em' }}>
-                        x{coupon.quantity}
-                      </span>
-                    )}
-                  </h3>
-                  <p>折扣：{coupon.discount}</p>
-                  <p>獲得：{coupon.obtainedDate}</p>
-                  <p>到期：{coupon.expiryDate}</p>
-                </div>
-              ))}
+          {coupons.map((coupon) => (
+            <div key={coupon.id} className="coupon-card">
+              <div className="coupon-info">
+                <h3 className="coupon-name">
+                  {coupon.name}
+                  {coupon.quantity && coupon.quantity > 1 && (
+                    <span className="coupon-quantity"> x{coupon.quantity}</span>
+                  )}
+                </h3>
+                <p className="coupon-discount">{coupon.discount}</p>
+              </div>
+              <div className="coupon-dates">
+                <div>到期：{coupon.expiryDate}</div>
+              </div>
             </div>
+          ))}
         </div>
       )}
     </div>
