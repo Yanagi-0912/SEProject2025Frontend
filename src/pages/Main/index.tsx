@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import Filter from './Filter'
 import Header from './Header'
@@ -8,7 +8,6 @@ import './Main.css'
 
 function Main() {
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
   const [page, setPage] = useState(1)
   const [showFilter, setShowFilter] = useState(false)
   const [totalPages, setTotalPages] = useState(10)
