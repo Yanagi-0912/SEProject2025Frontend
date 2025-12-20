@@ -25,6 +25,46 @@ function Filter() {
   const [minPrice, setMinPrice] = useState<string>(minPriceFromUrl || '')
   const [maxPrice, setMaxPrice] = useState<string>(maxPriceFromUrl || '')
 
+  // 監聽 URL 參數變化，同步更新狀態（當 RAG 搜尋清除參數時）
+  useEffect(() => {
+    const currentCategory = searchParams.get('category');
+    const currentMinRating = searchParams.get('minRating');
+    const currentMinPrice = searchParams.get('minPrice');
+    const currentMaxPrice = searchParams.get('maxPrice');
+    
+    // 同步分類狀態
+    if (!currentCategory) {
+      if (selectedDepartment !== 'all') {
+        setSelectedDepartment('all');
+      }
+    } else if (selectedDepartment !== currentCategory) {
+      setSelectedDepartment(currentCategory);
+    }
+    
+    // 同步評價狀態
+    if (!currentMinRating) {
+      if (selectedReview !== 'all') {
+        setSelectedReview('all');
+      }
+    } else if (currentMinRating === '4' && selectedReview !== '4up') {
+      setSelectedReview('4up');
+    }
+    
+    // 同步價格狀態
+    if (!currentMinPrice && minPrice !== '') {
+      setMinPrice('');
+    } else if (currentMinPrice && minPrice !== currentMinPrice) {
+      setMinPrice(currentMinPrice);
+    }
+    
+    if (!currentMaxPrice && maxPrice !== '') {
+      setMaxPrice('');
+    } else if (currentMaxPrice && maxPrice !== currentMaxPrice) {
+      setMaxPrice(currentMaxPrice);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.toString()]);
+
   // 當分類改變時，更新 URL 參數
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
