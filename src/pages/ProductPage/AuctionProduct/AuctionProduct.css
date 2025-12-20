@@ -241,3 +241,97 @@
   border: 1px solid #FF9EAA;
   margin-top: auto;
 }
+
+/* === RWD 手機版 === */
+@media (max-width: 768px) {
+  .auction-card {
+    flex-direction: column;
+    margin: 12px;
+    gap: 0;
+  }
+
+  .auction-image-container {
+    width: 100%;
+    min-width: 100%;
+    height: 300px;
+  }
+
+  .auction-content {
+    padding: 20px;
+  }
+
+  .auction-title {
+    font-size: 22px;
+  }
+
+  .auction-rating {
+    font-size: 16px;
+    padding: 6px 12px;
+  }
+
+  .countdown-display {
+    font-size: 36px;
+  }
+
+  .price-section {
+    flex-direction: column;
+  }
+
+  .bid-section {
+    margin-top: 20px;
+  }
+
+  .bid-actions {
+    flex-direction: column;
+  }
+
+  .bid-button,
+  .favorite-button-auction {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .auction-card {
+    margin: 8px;
+    border-radius: 12px;
+  }
+
+  .auction-image-container {
+    height: 250px;
+  }
+
+  .auction-content {
+    padding: 16px;
+  }
+
+  .auction-title {
+    font-size: 20px;
+  }
+
+  .auction-rating {
+    font-size: 14px;
+    padding: 4px 10px;
+  }
+
+  .countdown-section {
+    padding: 16px;
+  }
+
+  .countdown-display {
+    font-size: 28px;
+  }
+
+  .countdown-display.ended {
+    font-size: 24px;
+  }
+
+  .price-item {
+    padding: 12px;
+  }
+
+  .price-value {
+    font-size: 20px;
+  }
+}

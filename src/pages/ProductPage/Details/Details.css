@@ -18,3 +18,31 @@
   color: #5D4037;
   line-height: 1.5;
 }
+
+/* === RWD 手機版 === */
+@media (max-width: 768px) {
+  .details-card {
+    margin: 12px;
+    padding: 16px;
+  }
+
+  .details-card h3 {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .details-card {
+    margin: 8px;
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .details-card h3 {
+    font-size: 1.1rem;
+  }
+
+  .details-card p {
+    font-size: 0.9rem;
+  }
+}

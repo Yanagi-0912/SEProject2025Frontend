@@ -143,7 +143,7 @@ function DirectProduct(props: DirectProps) {
           <div className="direct-header">
             <h2 className="direct-title">{props.productName}</h2>
             <div className="direct-rating">
-              ⭐ {props.averageRating?.toFixed(1) ?? 'N/A'}
+              {props.averageRating?.toFixed(1) ?? 'N/A'}
             </div>
           </div>
 
@@ -153,7 +153,7 @@ function DirectProduct(props: DirectProps) {
               {props.productStock ?? 0} 件
             </div>
             {(props.productStock ?? 0) <= 10 && (props.productStock ?? 0) > 0 && (
-              <div className="stock-warning">⚠️ 庫存不足</div>
+              <div className="stock-warning">庫存不足</div>
             )}
           </div>
 
@@ -198,7 +198,6 @@ function DirectProduct(props: DirectProps) {
                     (typeof props.productStock === 'number' && quantity > (props.productStock ?? 0))
                   }
                 >
-                  <span>🛒</span>
                   {addToCartMutation.isPending ? '加入中...' : '加入購物車'}
                 </button>
                 <button
@@ -210,7 +209,6 @@ function DirectProduct(props: DirectProps) {
                   }}
                   disabled={quantity <= 0}
                 >
-                  <span>⚡</span>
                   立即購買
                 </button>
                 <button
@@ -219,14 +217,13 @@ function DirectProduct(props: DirectProps) {
                   onClick={handleToggleFavorite}
                   disabled={addToFavoritesMutation.isPending || removeFromFavoritesMutation.isPending}
                 >
-                  <span>{isFavorite ? '❤️' : '🤍'}</span>
                   {isFavorite ? '移除收藏' : '加入收藏'}
                 </button>
               </div>
             </div>
           ) : (
             <div className="warning-message">
-              ⚠️ 此商品目前無法購買
+              此商品目前無法購買
             </div>
           )}
         </div>

@@ -14,7 +14,7 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',  // 允許外部訪問
     allowedHosts: [
-      'frontend.jamessu2016.com',
+      'davidloman.jamessu2016.com',
       'localhost',
       '127.0.0.1'
     ],

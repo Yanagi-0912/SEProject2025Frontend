@@ -169,3 +169,63 @@
   color: #5D4037;
   font-weight: bold;
 }
+
+/* === RWD 手機版 === */
+@media (max-width: 768px) {
+  .review-container {
+    margin: 12px;
+  }
+
+  .review-input-container,
+  .review-list-container {
+    padding: 20px;
+  }
+
+  .review-input-container h3,
+  .review-list-container h3 {
+    font-size: 20px;
+  }
+
+  .star {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .review-container {
+    margin: 8px;
+  }
+
+  .review-input-container,
+  .review-list-container {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .review-input-container h3,
+  .review-list-container h3 {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .star {
+    font-size: 18px;
+  }
+
+  .rating-input {
+    flex-wrap: wrap;
+  }
+
+  .submit-section {
+    justify-content: center;
+  }
+
+  .submit-review-btn {
+    width: 100%;
+    padding: 12px 24px;
+  }
+
+  .review-item {
+    padding: 16px;
+  }
+}
