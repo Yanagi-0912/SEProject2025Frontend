@@ -127,14 +127,14 @@ function Header({ backUrl, showSearch = true }: HeaderProps) {
           RAG 搜尋
         </button>
       </div>
-      <div className="actions-section">
+      <div className={`actions-section ${isLoggedIn ? 'logged-in' : 'logged-out'}`}>
         {isLoggedIn ? (
           <>
-            <button type="button" onClick={handleLogout} className="action-button">登出</button>
-            <button type="button" onClick={handleAccount} className="action-button">我的帳號</button>
-            <button type="button" onClick={handleCart} className="action-button">購物車</button>
-            <button type="button" onClick={handleFavorite} className="action-button">我的最愛</button>
-            <button type="button" onClick={handleChat} className="action-button">訊息</button>
+            <button type="button" onClick={handleAccount} className="action-button mobile-important">我的帳號</button>
+            <button type="button" onClick={handleCart} className="action-button mobile-important">購物車</button>
+            <button type="button" onClick={handleFavorite} className="action-button mobile-important">我的最愛</button>
+            <button type="button" onClick={handleChat} className="action-button mobile-important">訊息</button>
+            <button type="button" onClick={handleLogout} className="action-button mobile-important">登出</button>
           </>
         ) : (
           <button type="button" onClick={handleLogin} className="action-button">登入</button>
