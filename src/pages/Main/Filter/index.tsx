@@ -66,13 +66,16 @@ function Filter() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedReview]);
 
-  // 將 API 回傳的分類轉換為元件需要的格式（不包含「全部」選項）
-  const departments = categories.map(category => ({
-    id: category,
-    label: category
-  }))
+  // 將 API 回傳的分類轉換為元件需要的格式，加上「全部」選項
+  const departments = [
+    { id: 'all', label: '全部' },
+    ...categories.map(category => ({
+      id: category,
+      label: category
+    }))
+  ]
 
-  const displayedDepartments = showAllDepartments ? departments : departments.slice(0, 5)
+  const displayedDepartments = showAllDepartments ? departments : departments.slice(0, 6) // 包含「全部」所以是 6 個
 
   // 處理分類點擊：再次點擊相同分類則取消選擇（回到全部）
   const handleDepartmentClick = (deptId: string) => {
@@ -115,7 +118,7 @@ function Filter() {
             <label htmlFor={dept.id}>{dept.label}</label>
           </div>
         ))}
-        {departments.length > 5 && (
+        {departments.length > 6 && (
           <button 
             className="see-more-button"
             onClick={() => setShowAllDepartments(!showAllDepartments)}
@@ -129,6 +132,20 @@ function Filter() {
       {/* Customer Reviews Section */}
       <div className="filter-section">
         <h3 className="filter-title">顧客評價</h3>
+        <div 
+          className="filter-option"
+          onClick={() => setSelectedReview('all')}
+        >
+          <input
+            type="radio"
+            id="review-all"
+            name="review"
+            checked={selectedReview === 'all'}
+            onChange={() => {}}
+            readOnly
+          />
+          <label htmlFor="review-all">全部</label>
+        </div>
         <div 
           className="filter-option"
           onClick={handleReviewClick}
