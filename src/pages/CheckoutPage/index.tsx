@@ -73,21 +73,21 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>(
     savedShippingAddress || {
-      recipientName: currentUser?.nickname || "",
-      phone: currentUser?.phoneNumber || "",
+      recipientName: "",
+      phone: "",
       address: "",
       city: "",
       postalCode: ""
     }
   );
 
-  // 當用戶資料載入後，如果地址欄位是空的，自動填入預設值
+  // 當用戶資料載入後，如果地址欄位是空的且有資料，自動填入預設值
   useEffect(() => {
     if (currentUser && !savedShippingAddress) {
       setShippingAddress(prev => ({
         ...prev,
-        recipientName: prev.recipientName || currentUser.nickname || "",
-        phone: prev.phone || currentUser.phoneNumber || ""
+        recipientName: prev.recipientName || (currentUser.nickname?.trim() || ""),
+        phone: prev.phone || (currentUser.phoneNumber?.trim() || "")
       }));
     }
   }, [currentUser, savedShippingAddress]);
