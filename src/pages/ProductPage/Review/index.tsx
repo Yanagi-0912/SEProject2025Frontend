@@ -1,17 +1,24 @@
 import { useState } from 'react';
+import { AxiosError } from 'axios';
 import './Review.css';
-import { useCreateReview, type Review as ReviewType } from '../../../api/generated';
+import { useCreateReview, useGetReviewsByProductId, type Review as ReviewType } from '../../../api/generated';
 
 interface ReviewProps {
     productID: string;
     reviews?: ReviewType[];
 }
 
-function Review({ productID, reviews = [] }: ReviewProps) {
+function Review({ productID, reviews: propReviews = [] }: ReviewProps) {
     const [starCount, setStarCount] = useState(5);
     const [comment, setComment] = useState('');
     const [imgURL, setImgURL] = useState('');
+    
     const createReviewMutation = useCreateReview();
+    const { data: reviewsData, refetch } = useGetReviewsByProductId(productID);
+
+    // 合併 props 傳入的評論與 API 取得的評論 (優先使用 API)
+    // 注意：這裡假設 API 回傳的是陣列，即使生成的型別可能是單數
+    const reviews = (reviewsData?.data as unknown as ReviewType[]) || propReviews;
 
     const handleSubmit = async () => {
         if (!comment.trim()) {
@@ -33,9 +40,16 @@ function Review({ productID, reviews = [] }: ReviewProps) {
             setComment('');
             setImgURL('');
             setStarCount(5);
+            // 重新抓取評論列表
+            refetch();
         } catch (error) {
             console.error('提交評論失敗:', error);
-            alert('提交評論失敗，請稍後再試');
+            if (error instanceof AxiosError && error.response?.status === 400) {
+                // 顯示後端回傳的具體錯誤訊息 (例如：只有購買過商品的用戶才能評論)
+                alert(`提交評論失敗：${error.response.data}`);
+            } else {
+                alert('提交評論失敗，請稍後再試');
+            }
         }
     };
 
