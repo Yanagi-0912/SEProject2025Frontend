@@ -76,8 +76,10 @@ function Header({ backUrl, showSearch = true }: HeaderProps) {
             const ids = await ragSearch(searchKeyword);
             if (ids && ids.length > 0) {
                 const idString = ids.join(',');
-                // 使用新的參數名稱 ragIds，避免污染一般搜尋的 keyword
-                navigate(`/?ragIds=${idString}`);
+                // 清除所有篩選條件，只保留 ragIds
+                const params = new URLSearchParams();
+                params.set('ragIds', idString);
+                navigate(`/?${params.toString()}`);
             } else {
                 alert('找不到相關商品');
             }
