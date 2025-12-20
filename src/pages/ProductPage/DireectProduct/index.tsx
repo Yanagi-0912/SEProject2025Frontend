@@ -51,7 +51,7 @@ function DirectProduct(props: DirectProps) {
         }
     }, [props.productStock]);
 
-    const handleAddToCart = async (): Promise<boolean> => {
+    const handleAddToCart = async (showAlert: boolean = true): Promise<boolean> => {
         if (!props.productID) {
             alert('商品ID無效');
         return false;
@@ -85,7 +85,9 @@ function DirectProduct(props: DirectProps) {
                     quantity: quantity
                 }
             });
-            alert('成功加入購物車！');
+            if (showAlert) {
+                alert('成功加入購物車！');
+            }
         return true;
         } catch (error) {
             console.error('加入購物車失敗:', error);
@@ -204,7 +206,7 @@ function DirectProduct(props: DirectProps) {
                   type="button"
                   className="buy-button"
                   onClick={async () => {
-                    const ok = await handleAddToCart();
+                    const ok = await handleAddToCart(false);
                     if (ok) navigate('/cart');
                   }}
                   disabled={quantity <= 0}

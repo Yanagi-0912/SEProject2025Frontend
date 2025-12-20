@@ -131,7 +131,7 @@ const OrderSuccessPage: React.FC = () => {
         {/* 操作按鈕 */}
         <div className="order-actions">
           <button
-            onClick={() => navigate('/orders')}
+            onClick={() => navigate('/profile/history?tab=OrderHistory')}
             className="btn-view-orders"
           >
             查看我的訂單
