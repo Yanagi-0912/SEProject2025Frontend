@@ -150,10 +150,14 @@
 @media (max-width: 600px) {
   .header-container {
     padding: 10px;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .back-button {
-    margin-right: 10px;
+    margin-right: 0;
+    margin-bottom: 10px;
+    align-self: flex-start;
   }
 
   .home-icon-img {
@@ -161,9 +165,57 @@
     height: 45px;
   }
 
+  /* 手機版：登入按鈕在搜尋欄上方 */
+  .actions-section {
+    order: 2;
+    width: 100%;
+    margin-left: 0;
+    margin-bottom: 10px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  /* 手機版：已登入時顯示所有重要按鈕 */
+  .actions-section.logged-in .action-button.mobile-hidden {
+    display: none;
+  }
+
+  .actions-section.logged-in .action-button.mobile-important {
+    display: inline-block;
+  }
+
+  /* 手機版：未登入時顯示登入按鈕 */
+  .actions-section.logged-out {
+    display: flex;
+  }
+
+  .action-button {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    border-radius: 12px;
+    white-space: nowrap;
+  }
+
+  /* 桌面版：顯示所有按鈕 */
+  @media (min-width: 601px) {
+    .action-button.mobile-hidden {
+      display: inline-block !important;
+    }
+    
+    .action-button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 20px;
+    }
+  }
+
   .search-section {
+    order: 3;
     flex-direction: column;
     gap: 10px;
+    width: 100%;
+    margin-top: 0;
   }
 
   .search-input {
@@ -176,16 +228,5 @@
     padding: 12px 18px;
     font-size: 0.9rem;
     width: 100%;
-  }
-
-  .actions-section {
-    gap: 8px;
-    margin-left: 0;
-  }
-
-  .action-button {
-    padding: 6px 10px;
-    font-size: 0.8rem;
-    border-radius: 15px;
   }
 }

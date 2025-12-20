@@ -3,6 +3,8 @@
   padding: 50px 60px;
   min-width: 500px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .login-main-title {
@@ -106,4 +108,91 @@
 .login-divider {
   color: #ccc;
   margin: 0 8px;
+}
+
+/* === RWD 平板版 === */
+@media (max-width: 768px) {
+  .login-page-container {
+    min-width: auto;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .login-main-title {
+    font-size: 1.75rem;
+    margin-bottom: 20px;
+  }
+
+  .login-input-group {
+    margin-bottom: 20px;
+  }
+
+  .login-input-field {
+    padding: 12px 14px;
+    font-size: 0.95rem;
+  }
+
+  .login-main-button {
+    padding: 12px;
+    font-size: 1rem;
+  }
+}
+
+/* === RWD 手機版 === */
+@media (max-width: 480px) {
+  .login-page-container {
+    padding: 0px 0px;
+    min-width: auto;
+    width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .login-main-title {
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+  }
+
+  .login-input-group {
+    margin-bottom: 18px;
+  }
+
+  .login-input-label {
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+  }
+
+  .login-input-field {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
+  .login-main-button {
+    padding: 12px;
+    font-size: 0.95rem;
+    margin-top: 8px;
+  }
+
+  .login-links-container {
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .login-links-container > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .login-small-link {
+    font-size: 0.85rem;
+  }
+
+  .login-divider {
+    margin: 0 4px;
+  }
 }
