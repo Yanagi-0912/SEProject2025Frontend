@@ -100,7 +100,8 @@ function Header({ backUrl, showSearch = true }: HeaderProps) {
       } else {
         // 只有在首頁按下 home icon 才重載
         if (location.pathname === '/') {
-          window.location.reload();
+          // 清除所有 URL 參數後重載
+          window.location.href = '/';
         } else {
           navigate('/');
         }
