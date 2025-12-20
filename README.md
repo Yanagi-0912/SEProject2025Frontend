@@ -43,3 +43,9 @@
 1.後端api更新後再port:8080上運行
 2.修改orval.config.ts中的input為新版swagger.json的網址
 3.前端根目錄下執行npx orval
+
+### 使用playWright測試
+1.執行指令下載playwright
+npx playwright install
+2.執行指令跑測試腳本
+npx playwright test --ui
