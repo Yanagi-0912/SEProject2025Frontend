@@ -2,6 +2,7 @@ import './Products.css'
 import { useGetAllProduct, useAddToCart, type Product } from '../../../api/generated'
 import { useSearchParams } from 'react-router-dom'
 import { useBlurSearch, useGetProductsByIds } from '../../../api/search'
+import { useEffect } from 'react'
 
 interface ProductItem {
   id: string;
@@ -19,9 +20,10 @@ interface ProductItem {
 interface ProductsProps {
   page: number;
   onProductClick?: (product: ProductItem) => void;
+  onTotalPagesChange?: (totalPages: number) => void;
 }
 
-function Products({ page, onProductClick }: ProductsProps) {
+function Products({ page, onProductClick, onTotalPagesChange }: ProductsProps) {
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get('keyword');
   const ragIdsParam = searchParams.get('ragIds');
@@ -37,9 +39,14 @@ function Products({ page, onProductClick }: ProductsProps) {
   const maxPrice = maxPriceParam ? Number(maxPriceParam) : undefined;
   const minRating = minRatingParam ? Number(minRatingParam) : undefined;
 
+  // 檢查是否有篩選條件
+  const hasFilter = selectedCategory || minPrice !== undefined || maxPrice !== undefined || minRating !== undefined;
+  
   // 1. 全部商品
+  // 如果有篩選條件，載入所有商品（使用大 pageSize）以便前端篩選和分頁
+  // 如果沒有篩選條件，使用後端分頁
   const { data: allData, isLoading: isAllLoading, error: allError } = useGetAllProduct(
-    { page, pageSize: 20 },
+    hasFilter ? { page: 1, pageSize: 1000 } : { page, pageSize: 20 },
     { query: { enabled: !keyword && ragIds.length === 0 } }
   );
 
@@ -127,6 +134,20 @@ function Products({ page, onProductClick }: ProductsProps) {
     });
   }
 
+  // 前端分頁：計算總頁數和當前頁的商品
+  const pageSize = 20;
+  const totalPages = Math.ceil(products.length / pageSize) || 1;
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedProducts = products.slice(startIndex, endIndex);
+
+  // 通知父組件總頁數變化
+  useEffect(() => {
+    if (onTotalPagesChange) {
+      onTotalPagesChange(totalPages);
+    }
+  }, [totalPages, onTotalPagesChange]);
+
   if (isLoading) return <div>載入中...</div>;
   if (error) {
     const errorMessage = (error as Error).message || '發生未知錯誤';
@@ -158,7 +179,7 @@ function Products({ page, onProductClick }: ProductsProps) {
   return (
     <div className="products-container">
       <div className="products-grid">
-        {products.map(product => (
+        {paginatedProducts.map(product => (
           <div 
             key={product.id} 
             className="products-card"

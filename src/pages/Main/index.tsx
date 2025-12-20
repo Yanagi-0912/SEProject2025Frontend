@@ -1,5 +1,5 @@
-import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import Filter from './Filter'
 import Header from './Header'
 import Products from './Products'
@@ -8,9 +8,18 @@ import './Main.css'
 
 function Main() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [page, setPage] = useState(1)
   const [showFilter, setShowFilter] = useState(false)
-  const total = 10
+  const [totalPages, setTotalPages] = useState(10)
+
+  // 當總頁數更新後，檢查當前頁是否還有結果
+  // 如果當前頁超過總頁數，才重置到第一頁
+  useEffect(() => {
+    if (page > totalPages && totalPages > 0) {
+      setPage(1)
+    }
+  }, [totalPages, page])
 
   return (
     <div className="main-container">
@@ -35,8 +44,9 @@ function Main() {
               const id = p.id ?? p.productID ?? null
               if (id) navigate(`/product/${id}`)
             }}
+            onTotalPagesChange={setTotalPages}
           />
-          <Pagination page={page} total={total} setPage={setPage} />
+          <Pagination page={page} total={totalPages} setPage={setPage} />
         </div>
       </div>
     </div>
