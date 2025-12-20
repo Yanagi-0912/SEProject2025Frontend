@@ -116,3 +116,27 @@
   color: #FF5E78;
   font-weight: 600;
 }
+
+/* --- RWD 響應式設定 --- */
+@media screen and (max-width: 900px) {
+  .checkout-container {
+    padding: 10px;
+  }
+
+  .checkout-grid {
+    grid-template-columns: 1fr; /* 改為單欄 */
+    gap: 20px;
+  }
+
+  /* 調整訂單摘要區塊順序 */
+  .checkout-grid > div:nth-child(2) {
+    /* 如果希望摘要在最下方，保持預設順序即可 */
+    /* 若希望摘要在上方，可使用 order 屬性 (需父層設為 flex) */
+  }
+
+  .checkout-summary-sidebar {
+    position: static; /* 取消 sticky，避免在單欄時佔據太多空間 */
+    box-shadow: none;
+    border: 1px solid #FFDEE9;
+  }
+}

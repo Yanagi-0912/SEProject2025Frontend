@@ -80,3 +80,63 @@
   text-align: center;
   color: #8D6E63;
 }
+
+/* --- RWD 響應式設定 --- */
+@media screen and (max-width: 768px) {
+  .seller-section {
+    padding: 10px;
+    margin-bottom: 15px;
+  }
+
+  .seller-section-name {
+    font-size: 16px;
+  }
+
+  /* --- RWD 手機版設定 (SellerSection/index.css) --- */
+  @media screen and (max-width: 768px) {
+    .seller-section {
+      background-color: white;
+      margin-bottom: 12px;
+      padding: 15px;
+      border: 1px solid #FFDEE9; /* ✅ 保持粉色邊框 */
+      border-radius: 12px;       /* ✅ 保持圓角 */
+      box-shadow: 0 2px 8px rgba(255, 182, 193, 0.2);
+    }
+
+    .seller-section-header {
+      border-bottom: 1px dashed #FFC5D0;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+    }
+
+    .seller-section-name {
+      font-size: 16px;
+      font-weight: bold;
+      color: #5D4037; /* ✅ 保持深褐色 */
+    }
+
+    /* 強制將表格轉換為區塊佈局 */
+    .seller-section-table,
+    .seller-section-table tbody {
+      display: block;
+      width: 100%;
+    }
+
+    /* 隱藏原本的表格標題 */
+    .seller-section-table thead {
+      display: none;
+    }
+
+    .seller-section-table tr {
+      display: block;
+      border-bottom: 1px solid #FFDEE9;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+    }
+
+    .seller-section-table tr:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+  }

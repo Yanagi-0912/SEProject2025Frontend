@@ -68,3 +68,89 @@
   opacity: 0.7;
   box-shadow: none;
 }
+
+/* --- RWD 手機版設定 (CartFooter/index.css) --- */
+@media screen and (max-width: 768px) {
+  .cart-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    border-top: 1px solid #FFDEE9; /* ✅ 保持粉色邊框 */
+    border-radius: 0;
+    margin: 0;
+    padding: 0;
+    box-shadow: 0 -4px 15px rgba(255, 183, 197, 0.2);
+    z-index: 999;
+
+    flex-direction: row;
+    justify-content: space-between;
+    height: 60px;
+    box-sizing: border-box; /* 確保 padding 不會撐大寬度 */
+  }
+
+  /* 全選 */
+  .cart-footer-select-all {
+    margin-left: 15px;
+    font-size: 14px;
+    color: #5D4037;
+  }
+
+  .cart-footer-checkbox {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* 總金額 */
+  .cart-footer-summary {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    margin-right: 10px;
+    color: #5D4037;
+  }
+
+  /* 隱藏 "已選 X 件" 文字，手機版空間不足 */
+  .cart-footer-count {
+    display: none;
+  }
+
+  /* 用 CSS 偽元素把文字簡化為 "總計" */
+  .cart-footer-summary {
+    visibility: hidden; /* 隱藏原本文字 */
+    position: relative;
+    width: auto;
+  }
+
+  .cart-footer-summary::after {
+    visibility: visible;
+    content: "總計";
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    margin-right: 5px;
+    font-size: 14px;
+    color: #5D4037;
+  }
+
+  .cart-footer-price {
+    visibility: visible;
+    color: #FF5E78; /* ✅ 保持粉紅色 */
+    font-size: 20px;
+    margin-left: 5px;
+  }
+
+  /* 結帳按鈕 */
+  .cart-footer-checkout-btn {
+    height: 100%;
+    width: 110px;
+    border-radius: 0; /* 貼齊邊緣 */
+    margin: 0;
+    font-size: 16px;
+    background: linear-gradient(135deg, #FF9EAA 0%, #FF5E78 100%); /* ✅ 保持原本的漸層按鈕 */
+    box-shadow: none;
+  }
+}

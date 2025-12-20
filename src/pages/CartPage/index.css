@@ -34,3 +34,25 @@
   color: #8D6E63;
   font-size: 18px;
 }
+
+/* --- RWD 手機版設定 (CartPage/index.css) --- */
+@media screen and (max-width: 768px) {
+  .cart-container {
+    padding: 10px 10px 80px 10px; /* 底部預留空間給 Footer */
+    background-color: #FFF0F5; /* ✅ 保持原有的淺粉色背景 */
+    min-height: 100vh;
+  }
+
+
+  .cart-content {
+    border: none;
+    background-color: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .empty-cart {
+    padding: 100px 0;
+    color: #8D6E63; /* ✅ 保持原有深褐色 */
+  }
+}

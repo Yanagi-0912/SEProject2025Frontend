@@ -125,3 +125,132 @@
   background-color: #FF5E78;
   color: white;
 }
+
+/* --- RWD 手機版設定 (CartItem/index.css) --- */
+@media screen and (max-width: 768px) {
+  .cart-item-row td {
+    display: block;
+    padding: 0;
+    border: none;
+    text-align: left;
+  }
+
+  /* Grid 佈局：Checkbox | 圖片 | 資訊 */
+  .cart-item-row {
+    display: grid;
+    grid-template-columns: 30px 90px 1fr;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "checkbox image info"
+      "checkbox image action"; /* action 包含價格與數量 */
+    gap: 10px;
+    position: relative;
+  }
+
+  /* 1. 勾選框 */
+  .cart-item-checkbox-cell {
+    grid-area: checkbox;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 2. 圖片 */
+  .cart-item-product-cell {
+    grid-area: image;
+  }
+
+  .cart-item-product-info {
+    display: block;
+  }
+
+  .cart-item-image {
+    width: 80px;
+    height: 80px;
+    border: 1px solid #FFC5D0; /* ✅ 保持粉色邊框 */
+    border-radius: 8px;
+  }
+
+  /* 3. 商品資訊 (名稱) */
+  .cart-item-details {
+    /* 這裡稍微 hack，將名稱移到 info 區域 */
+    position: absolute;
+    left: 130px; /* 30px + 90px gap */
+    top: 0;
+    right: 0;
+  }
+
+  .cart-item-name {
+    font-size: 15px;
+    color: #5D4037; /* ✅ 保持深褐色 */
+    margin-bottom: 5px;
+    /* 限制兩行 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* 4. 價格與數量 (合併顯示在右下或下方) */
+  .cart-item-price-cell {
+    grid-column: 3 / 4;
+    grid-row: 2 / 3;
+    align-self: end;
+    text-align: left !important;
+    color: #FF5E78; /* ✅ 保持原本的粉紅色 */
+    font-weight: bold;
+    font-size: 16px;
+    padding: 5px 0;
+  }
+
+  .cart-item-quantity-cell {
+    grid-column: 3 / 4;
+    grid-row: 2 / 3;
+    justify-self: end;
+    align-self: end;
+    padding: 0;
+  }
+
+  /* 數量按鈕樣式微調 */
+  .cart-item-quantity-btn {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background-color: #FFF0F5;
+    border: 1px solid #FFC5D0;
+    color: #FF5E78;
+  }
+
+  .cart-item-quantity-value {
+    padding: 0 8px;
+    font-size: 14px;
+    color: #5D4037;
+  }
+
+  /* 🔥 5. 隱藏小計 (RWD 要求) */
+  .cart-item-subtotal-cell {
+    display: none !important;
+  }
+
+  /* 6. 刪除按鈕 (改為右上角小圖示或文字) */
+  .cart-item-action-cell {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: auto;
+    padding: 0;
+  }
+
+  .cart-item-delete-btn {
+    background: transparent;
+    border: none;
+    color: #999;
+    font-size: 12px;
+    padding: 10px; /* 增加點擊範圍 */
+  }
+
+  .cart-item-delete-btn:hover {
+    background: transparent;
+    color: #FF5E78;
+  }
+}
