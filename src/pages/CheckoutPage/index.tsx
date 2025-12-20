@@ -5,7 +5,7 @@ import OrderSummary from "./OrderSummary";
 import ShippingForm from "./ShippingForm";
 import PaymentForm from "./PaymentForm";
 import CouponSelector from "./CouponSelector";
-import { useCreateOrder, useRemoveFromCart } from "../../api/generated";
+import { useCreateOrder, useRemoveFromCart, useGetCurrentUser } from "../../api/generated";
 import type { Order, OrderItem } from "../../api/generated";
 import { payOrder } from "../../api/coupon";
 import "./index.css";
@@ -67,15 +67,30 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     }
   }, [orderItems, navigate]);
 
+  // 取得當前使用者資料
+  const { data: userData } = useGetCurrentUser();
+  const currentUser = userData?.data;
+
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>(
     savedShippingAddress || {
-      recipientName: "",
-      phone: "",
+      recipientName: currentUser?.nickname || "",
+      phone: currentUser?.phoneNumber || "",
       address: "",
       city: "",
       postalCode: ""
     }
   );
+
+  // 當用戶資料載入後，如果地址欄位是空的，自動填入預設值
+  useEffect(() => {
+    if (currentUser && !savedShippingAddress) {
+      setShippingAddress(prev => ({
+        ...prev,
+        recipientName: prev.recipientName || currentUser.nickname || "",
+        phone: prev.phone || currentUser.phoneNumber || ""
+      }));
+    }
+  }, [currentUser, savedShippingAddress]);
 
   // 運費（後端預設 100 元）
   const SHIPPING_FEE = 100;
