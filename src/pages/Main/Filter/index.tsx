@@ -66,16 +66,31 @@ function Filter() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedReview]);
 
-  // 將 API 回傳的分類轉換為元件需要的格式
-  const departments = [
-    { id: 'all', label: '全部' },
-    ...categories.map(category => ({
-      id: category,
-      label: category
-    }))
-  ]
+  // 將 API 回傳的分類轉換為元件需要的格式（不包含「全部」選項）
+  const departments = categories.map(category => ({
+    id: category,
+    label: category
+  }))
 
   const displayedDepartments = showAllDepartments ? departments : departments.slice(0, 5)
+
+  // 處理分類點擊：再次點擊相同分類則取消選擇（回到全部）
+  const handleDepartmentClick = (deptId: string) => {
+    if (selectedDepartment === deptId) {
+      setSelectedDepartment('all')  // 取消選擇，回到全部
+    } else {
+      setSelectedDepartment(deptId)
+    }
+  }
+
+  // 處理評價點擊：再次點擊則取消選擇
+  const handleReviewClick = () => {
+    if (selectedReview === '4up') {
+      setSelectedReview('all')  // 取消選擇
+    } else {
+      setSelectedReview('4up')
+    }
+  }
 
 
   return (
@@ -84,13 +99,18 @@ function Filter() {
       <div className="filter-section">
         <h3 className="filter-title">分類</h3>
         {displayedDepartments.map(dept => (
-          <div key={dept.id} className="filter-option">
+          <div 
+            key={dept.id} 
+            className="filter-option"
+            onClick={() => handleDepartmentClick(dept.id)}
+          >
             <input
               type="radio"
               id={dept.id}
               name="department"
               checked={selectedDepartment === dept.id}
-              onChange={() => setSelectedDepartment(dept.id)}
+              onChange={() => {}}
+              readOnly
             />
             <label htmlFor={dept.id}>{dept.label}</label>
           </div>
@@ -109,23 +129,17 @@ function Filter() {
       {/* Customer Reviews Section */}
       <div className="filter-section">
         <h3 className="filter-title">顧客評價</h3>
-        <div className="filter-option">
-          <input
-            type="radio"
-            id="review-all"
-            name="review"
-            checked={selectedReview === 'all'}
-            onChange={() => setSelectedReview('all')}
-          />
-          <label htmlFor="review-all">全部</label>
-        </div>
-        <div className="filter-option">
+        <div 
+          className="filter-option"
+          onClick={handleReviewClick}
+        >
           <input
             type="radio"
             id="review-4up"
             name="review"
             checked={selectedReview === '4up'}
-            onChange={() => setSelectedReview('4up')}
+            onChange={() => {}}
+            readOnly
           />
           <label htmlFor="review-4up">
             <span className="star-rating">
