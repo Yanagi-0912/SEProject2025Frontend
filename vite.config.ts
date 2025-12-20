@@ -12,6 +12,12 @@ export default defineConfig({
   ],
   // 開發時代理後端，避免瀏覽器 CORS 限制
   server: {
+    host: '0.0.0.0',  // 允許外部訪問
+    allowedHosts: [
+      'frontend.jamessu2016.com',
+      'localhost',
+      '127.0.0.1'
+    ],
     proxy: {
       // 把 /products 的請求代理到本地後端
       '/products': {
