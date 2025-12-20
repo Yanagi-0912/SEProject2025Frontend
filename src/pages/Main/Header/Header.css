@@ -161,14 +161,21 @@
     height: 45px;
   }
 
+  .search-section {
+    flex-direction: column;
+    gap: 10px;
+  }
+
   .search-input {
-    font-size: 0.9rem;
-    padding: 10px 15px;
+    font-size: 1rem;
+    padding: 12px 16px;
+    width: 100%;
   }
 
   .rag-btn {
-    padding: 8px 16px;
-    font-size: 0.85rem;
+    padding: 12px 18px;
+    font-size: 0.9rem;
+    width: 100%;
   }
 
   .actions-section {
