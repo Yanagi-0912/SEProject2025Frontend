@@ -1,0 +1,67 @@
+/* UserHistory ControlPanel 標籤切換 */
+.user-history-controlpanel {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.user-history-controlpanel button {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 2px solid #FFC5D0;
+  background-color: white;
+  color: #5D4037;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.user-history-controlpanel button:hover {
+  background-color: #FFF0F5;
+  border-color: #FF9EAA;
+}
+
+.user-history-controlpanel button:active {
+  transform: translateY(1px);
+}
+
+/* 選中狀態 */
+.user-history-tab-active {
+  background: linear-gradient(135deg, #FF9EAA 0%, #FF5E78 100%) !important;
+  color: white !important;
+  border-color: #FF5E78 !important;
+}
+
+.user-history-tab {
+  /* 預設樣式已在上面定義 */
+}
+
+/* === RWD 平板版 === */
+@media (max-width: 768px) {
+  .user-history-controlpanel {
+    gap: 0.5rem;
+  }
+
+  .user-history-controlpanel button {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* === RWD 手機版 === */
+@media (max-width: 480px) {
+  .user-history-controlpanel {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .user-history-controlpanel button {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+}

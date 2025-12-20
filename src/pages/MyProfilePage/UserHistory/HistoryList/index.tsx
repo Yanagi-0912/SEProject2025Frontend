@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { HistoryTab } from '../ControlPanel';
 import type { AxiosError } from 'axios';
+import './index.css';
 import {
   useGetOrderByBuyerId,
   useGetReviewHistoriesByUserId,
@@ -13,10 +14,12 @@ import {
   type GetProductByIdQueryResult,
   type GetPurchaseHistoriesByUserIdQueryResult,
   type GetBidHistoriesByUserIdQueryResult,
-  type GetReviewHistoriesByUserIdQueryResult
+  type GetReviewHistoriesByUserIdQueryResult,
+  type Coupon
 } from '../../../../api/generated';
 import type { Order, PurchaseHistory, BidHistory, ReviewHistory, BrowseHistory, Product } from '../../../../api/generated';
 import { useQueryClient } from '@tanstack/react-query';
+import { getUserCouponsByUserId, getAllCoupons, type UserCouponItem } from '../../../../api/coupon';
 
 interface Props {
   selected: HistoryTab;
@@ -34,6 +37,35 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
   // (display mapping will use the typed API interfaces directly)
 
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [userCoupons, setUserCoupons] = useState<UserCouponItem[]>([]);
+  const [couponTemplates, setCouponTemplates] = useState<Map<string, Coupon>>(new Map());
+
+  // 載入使用者優惠券和優惠券模板
+  useEffect(() => {
+    if (!userId) return;
+    
+    const loadCoupons = async () => {
+      try {
+        // 載入優惠券模板
+        const templatesRes = await getAllCoupons();
+        const templateMap = new Map<string, Coupon>();
+        if (Array.isArray(templatesRes)) {
+          templatesRes.forEach(t => {
+            if (t.couponID) templateMap.set(t.couponID, t);
+          });
+        }
+        setCouponTemplates(templateMap);
+
+        // 載入使用者優惠券
+        const userCouponsRes = await getUserCouponsByUserId(userId);
+        setUserCoupons(userCouponsRes);
+      } catch (error) {
+        console.error('載入優惠券失敗:', error);
+      }
+    };
+
+    loadCoupons();
+  }, [userId]);
 
   const toggleExpand = (id?: string) => {
     if (!id) return;
@@ -70,17 +102,64 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     );
   };
 
+  // 根據訂單 ID 找出使用的優惠券
+  const getCouponForOrder = (orderID?: string): { userCoupon: UserCouponItem; template: Coupon | undefined } | null => {
+    if (!orderID) return null;
+    const userCoupon = userCoupons.find(uc => uc.orderID === orderID);
+    if (!userCoupon) return null;
+    const template = userCoupon.couponID ? couponTemplates.get(userCoupon.couponID) : undefined;
+    return { userCoupon, template };
+  };
+
+  // 取得優惠券顯示名稱
+  const getCouponDisplayName = (coupon: { userCoupon: UserCouponItem; template: Coupon | undefined }): string => {
+    return coupon.template?.couponName || coupon.userCoupon.couponName || coupon.userCoupon.couponID || '優惠券';
+  };
+
+  // 取得優惠券折扣描述
+  const getCouponDiscountDesc = (coupon: { userCoupon: UserCouponItem; template: Coupon | undefined }): string => {
+    const template = coupon.template;
+    const discountType = template?.discountType || coupon.userCoupon.discountType;
+    const discountValue = template?.discountValue || coupon.userCoupon.discountValue;
+
+    if (!discountType || discountValue === undefined) return '';
+
+    switch (discountType) {
+      case 'PERCENT':
+        return `${discountValue}折`;
+      case 'FIXED':
+        return `折抵 $${discountValue}`;
+      case 'FREESHIP':
+        return '免運費';
+      case 'BUY_ONE_GET_ONE':
+        return '買一送一';
+      default:
+        return '';
+    }
+  };
+
   const renderOrderDetail = (order: Order | undefined) => {
     if (!order) return null;
+    const couponInfo = getCouponForOrder(order.orderID);
+    
     return (
-      <div style={{ padding: 8, background: '#f9fafb', borderRadius: 6, marginTop: 8 }}>
+      <div className="user-history-detail">
         <div><strong>訂單編號：</strong>{order.orderID}</div>
         <div><strong>訂單時間：</strong>{order.orderTime}</div>
         <div><strong>狀態：</strong>{orderStatusLabel(order.orderStatus)}</div>
+        {couponInfo && (
+          <div className="user-history-coupon-info">
+            <strong>使用優惠券：</strong>
+            <span className="user-history-coupon-name">{getCouponDisplayName(couponInfo)}</span>
+            {getCouponDiscountDesc(couponInfo) && (
+              <span className="user-history-coupon-discount">({getCouponDiscountDesc(couponInfo)})</span>
+            )}
+          </div>
+        )}
         <div><strong>總金額：</strong>{order.totalPrice ?? '-'}</div>
         <div><strong>運費：</strong>{order.shippingFee ?? '-'}</div>
         {order.orderItems && order.orderItems.length > 0 && (
-          <div style={{ marginTop: 8 }}>
+          <div className="user-history-detail-items">
             <strong>訂單項目：</strong>
             <ul>
               {order.orderItems.map((it, i) => (
@@ -93,8 +172,9 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
         )}
           {/* 確認訂單按鈕：只在待處理 (PENDING) 顯示 */}
           {order.orderStatus === 'PENDING' && (
-            <div style={{ marginTop: 12 }}>
+            <div className="user-history-confirm-section">
               <button
+                className="user-history-confirm-button"
                 onClick={() => {
                   if (!order.orderID) return;
                   if (!window.confirm('確定要確認付款此訂單嗎？')) return;
@@ -105,10 +185,10 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
                 {payOrderMutation.isPending ? '處理中...' : '確認訂單'}
               </button>
               {payOrderMutation.isError && (
-                <div style={{ color: 'crimson', marginTop: 8 }}>付款失敗，請稍後重試</div>
+                <div className="user-history-message error">付款失敗，請稍後重試</div>
               )}
               {payOrderMutation.isSuccess && (
-                <div style={{ color: 'green', marginTop: 8 }}>付款成功</div>
+                <div className="user-history-message success">付款成功</div>
               )}
             </div>
           )}
@@ -133,7 +213,7 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     const ph = item as PurchaseHistory;
     if (ph.historyItems && ph.historyItems.length) {
       return (
-        <div style={{ padding: 8, background: '#f9fafb', borderRadius: 6, marginTop: 8 }}>
+        <div className="user-history-detail">
           <div><strong>時間：</strong>{ph.timeStamp}</div>
           <div><strong>項目：</strong></div>
           <ul>
@@ -148,7 +228,7 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     const bh = item as BidHistory;
     if (typeof bh.bidAmount !== 'undefined' || bh.historyItem) {
       return (
-        <div style={{ padding: 8, background: '#f9fafb', borderRadius: 6, marginTop: 8 }}>
+        <div className="user-history-detail">
           <div><strong>時間：</strong>{bh.timeStamp}</div>
           <div><strong>出價：</strong>{bh.bidAmount ?? '-'}</div>
           {bh.historyItem && (
@@ -161,7 +241,7 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     const rh = item as ReviewHistory;
     if (rh.reviewID || rh.actionType) {
       return (
-        <div style={{ padding: 8, background: '#f9fafb', borderRadius: 6, marginTop: 8 }}>
+        <div className="user-history-detail">
           <div><strong>時間：</strong>{rh.timeStamp}</div>
           <div><strong>評論 ID：</strong>{rh.reviewID}</div>
           <div><strong>動作：</strong>{rh.actionType}</div>
@@ -172,7 +252,7 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     const br = item as BrowseHistory;
     if (br.historyItem) {
       return (
-        <div style={{ padding: 8, background: '#f9fafb', borderRadius: 6, marginTop: 8 }}>
+        <div className="user-history-detail">
           <div><strong>時間：</strong>{br.timeStamp}</div>
           <div><strong>商品：</strong>{br.historyItem.productName}</div>
         </div>
@@ -182,16 +262,16 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     return null;
   };
 
-  const renderLoading = () => <div>載入中…</div>;
+  const renderLoading = () => <div className="user-history-empty">載入中…</div>;
   const renderError = (err?: unknown) => {
     // If the server returned 404, treat it as "no records" and show a friendly message.
     const axiosErr = err as AxiosError | undefined;
-    if (axiosErr?.response?.status === 404) return <div>尚沒有紀錄</div>;
-    return <div style={{ color: 'crimson' }}>載入失敗</div>;
+    if (axiosErr?.response?.status === 404) return <div className="user-history-empty">尚沒有紀錄</div>;
+    return <div className="user-history-message error">載入失敗</div>;
   };
 
   const renderOrders = () => {
-    if (!userId) return <div>找不到使用者 ID</div>;
+    if (!userId) return <div className="user-history-empty">找不到使用者 ID</div>;
     const isLoading = orderQuery?.isLoading;
     const isError = orderQuery?.isError;
     const raw = orderQuery?.data as GetOrderByBuyerIdQueryResult | undefined;
@@ -199,19 +279,29 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     if (isLoading) return renderLoading();
     if (isError) return renderError(orderQuery?.error);
     const orderItems: Order[] = Array.isArray(data) ? data : (data && typeof data === 'object' && 'orderID' in data) ? [data as Order] : [];
-    if (!orderItems.length) return <div>沒有訂單紀錄</div>;
+    if (!orderItems.length) return <div className="user-history-empty">沒有訂單紀錄</div>;
+    // 依時間排序：最新的在前
+    const sortedOrders = [...orderItems].sort((a, b) => {
+      const timeA = a.orderTime ? new Date(a.orderTime).getTime() : 0;
+      const timeB = b.orderTime ? new Date(b.orderTime).getTime() : 0;
+      return timeB - timeA; // 降序：新的在前
+    });
     return (
       <ul>
-        {orderItems.map((o, idx) => {
+        {sortedOrders.map((o, idx) => {
           const id = o.orderID ?? String(idx);
           return (
-            <li key={id} style={{ padding: 8, borderBottom: '1px solid #eee' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <strong>{o.orderID}</strong> <span style={{ color: '#6b7280' }}>— {o.orderTime}</span>
-                  <div style={{ fontSize: 13, color: '#374151' }}>狀態：{orderStatusLabel(o.orderStatus)}</div>
+            <li key={id}>
+              <div className="user-history-list-item-header">
+                <div className="user-history-list-item-info">
+                  <div className="user-history-list-item-title">{o.orderID}</div>
+                  <div className="user-history-list-item-time">— {o.orderTime}</div>
+                  <div className="user-history-list-item-meta">狀態：{orderStatusLabel(o.orderStatus)}</div>
                 </div>
-                <button onClick={() => toggleExpand(id)} style={{ marginLeft: 12 }}>
+                <button 
+                  className="user-history-list-item-button"
+                  onClick={() => toggleExpand(id)}
+                >
                   {expanded === id ? '收起' : '查看詳情'}
                 </button>
               </div>
@@ -224,7 +314,7 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
   };
 
   const renderPurchases = () => {
-    if (!userId) return <div>找不到使用者 ID</div>;
+    if (!userId) return <div className="user-history-empty">找不到使用者 ID</div>;
     const isLoading = purchaseQuery?.isLoading;
     const isError = purchaseQuery?.isError;
     const raw = purchaseQuery?.data as GetPurchaseHistoriesByUserIdQueryResult | undefined;
@@ -232,19 +322,29 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     if (isLoading) return renderLoading();
     if (isError) return renderError(purchaseQuery?.error);
     const purchaseItems: PurchaseHistory[] = Array.isArray(data) ? data.filter((item) => item && '_id' in item) : (data && '_id' in data) ? [data] : [];
-    if (!purchaseItems.length) return <div>沒有購買紀錄</div>;
+    if (!purchaseItems.length) return <div className="user-history-empty">沒有購買紀錄</div>;
+    // 依時間排序：最新的在前
+    const sortedPurchases = [...purchaseItems].sort((a, b) => {
+      const timeA = a.timeStamp ? new Date(a.timeStamp).getTime() : 0;
+      const timeB = b.timeStamp ? new Date(b.timeStamp).getTime() : 0;
+      return timeB - timeA; // 降序：新的在前
+    });
     return (
       <ul>
-        {purchaseItems.map((p, idx) => {
+        {sortedPurchases.map((p, idx) => {
           const id = p._id ?? String(idx);
           return (
-            <li key={id} style={{ padding: 8, borderBottom: '1px solid #eee' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <strong>{p._id}</strong> <span style={{ color: '#6b7280' }}>— {p.timeStamp}</span>
-                  <div style={{ fontSize: 13, color: '#374151' }}>合計商品數：{p.productQuantity ?? '-'}</div>
+            <li key={id}>
+              <div className="user-history-list-item-header">
+                <div className="user-history-list-item-info">
+                  <div className="user-history-list-item-title">{p._id}</div>
+                  <div className="user-history-list-item-time">— {p.timeStamp}</div>
+                  <div className="user-history-list-item-meta">合計商品數：{p.productQuantity ?? '-'}</div>
                 </div>
-                <button onClick={() => toggleExpand(id)} style={{ marginLeft: 12 }}>
+                <button 
+                  className="user-history-list-item-button"
+                  onClick={() => toggleExpand(id)}
+                >
                   {expanded === id ? '收起' : '查看詳情'}
                 </button>
               </div>
@@ -257,7 +357,7 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
   };
 
   const renderBids = () => {
-    if (!userId) return <div>找不到使用者 ID</div>;
+    if (!userId) return <div className="user-history-empty">找不到使用者 ID</div>;
     const isLoading = bidQuery?.isLoading;
     const isError = bidQuery?.isError;
     const raw = bidQuery?.data as GetBidHistoriesByUserIdQueryResult | undefined;
@@ -265,19 +365,29 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     if (isLoading) return renderLoading();
     if (isError) return renderError(bidQuery?.error);
     const bidItems: BidHistory[] = Array.isArray(data) ? data.filter((item) => item && '_id' in item) : (data && '_id' in data) ? [data] : [];
-    if (!bidItems.length) return <div>沒有競標紀錄</div>;
+    if (!bidItems.length) return <div className="user-history-empty">沒有競標紀錄</div>;
+    // 依時間排序：最新的在前
+    const sortedBids = [...bidItems].sort((a, b) => {
+      const timeA = a.timeStamp ? new Date(a.timeStamp).getTime() : 0;
+      const timeB = b.timeStamp ? new Date(b.timeStamp).getTime() : 0;
+      return timeB - timeA; // 降序：新的在前
+    });
     return (
       <ul>
-        {bidItems.map((b, idx) => {
+        {sortedBids.map((b, idx) => {
           const id = b._id ?? String(idx);
           return (
-            <li key={id} style={{ padding: 8, borderBottom: '1px solid #eee' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <strong>{b._id}</strong> <span style={{ color: '#6b7280' }}>— {b.timeStamp}</span>
-                  <div style={{ fontSize: 13, color: '#374151' }}>出價：{b.bidAmount ?? '-'}</div>
+            <li key={id}>
+              <div className="user-history-list-item-header">
+                <div className="user-history-list-item-info">
+                  <div className="user-history-list-item-title">{b._id}</div>
+                  <div className="user-history-list-item-time">— {b.timeStamp}</div>
+                  <div className="user-history-list-item-meta">出價：{b.bidAmount ?? '-'}</div>
                 </div>
-                <button onClick={() => toggleExpand(id)} style={{ marginLeft: 12 }}>
+                <button 
+                  className="user-history-list-item-button"
+                  onClick={() => toggleExpand(id)}
+                >
                   {expanded === id ? '收起' : '查看詳情'}
                 </button>
               </div>
@@ -290,7 +400,7 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
   };
 
   const renderReviews = () => {
-    if (!userId) return <div>找不到使用者 ID</div>;
+    if (!userId) return <div className="user-history-empty">找不到使用者 ID</div>;
     const isLoading = reviewQuery?.isLoading;
     const isError = reviewQuery?.isError;
     const raw = reviewQuery?.data as GetReviewHistoriesByUserIdQueryResult | undefined;
@@ -298,19 +408,29 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     if (isLoading) return renderLoading();
     if (isError) return renderError(reviewQuery?.error);
     const reviewItems: ReviewHistory[] = Array.isArray(data) ? data : (data && typeof data === 'object' && '_id' in data) ? [data as ReviewHistory] : [];
-    if (!reviewItems.length) return <div>沒有評論紀錄</div>;
+    if (!reviewItems.length) return <div className="user-history-empty">沒有評論紀錄</div>;
+    // 依時間排序：最新的在前
+    const sortedReviews = [...reviewItems].sort((a, b) => {
+      const timeA = a.timeStamp ? new Date(a.timeStamp).getTime() : 0;
+      const timeB = b.timeStamp ? new Date(b.timeStamp).getTime() : 0;
+      return timeB - timeA; // 降序：新的在前
+    });
     return (
       <ul>
-        {reviewItems.map((r, idx) => {
+        {sortedReviews.map((r, idx) => {
           const id = r._id ?? r.reviewID ?? String(idx);
           return (
-            <li key={id} style={{ padding: 8, borderBottom: '1px solid #eee' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <strong>{r.reviewID ?? r._id}</strong> <span style={{ color: '#6b7280' }}>— {r.timeStamp}</span>
-                  <div style={{ fontSize: 13, color: '#374151' }}>動作：{r.actionType ?? '-'}</div>
+            <li key={id}>
+              <div className="user-history-list-item-header">
+                <div className="user-history-list-item-info">
+                  <div className="user-history-list-item-title">{r.reviewID ?? r._id}</div>
+                  <div className="user-history-list-item-time">— {r.timeStamp}</div>
+                  <div className="user-history-list-item-meta">動作：{r.actionType ?? '-'}</div>
                 </div>
-                <button onClick={() => toggleExpand(id)} style={{ marginLeft: 12 }}>
+                <button 
+                  className="user-history-list-item-button"
+                  onClick={() => toggleExpand(id)}
+                >
                   {expanded === id ? '收起' : '查看詳情'}
                 </button>
               </div>
@@ -333,7 +453,7 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
       case 'ReviewHistory':
         return renderReviews();
       default:
-        return <div>沒有資料</div>;
+        return <div className="user-history-empty">沒有資料</div>;
     }
   };
 

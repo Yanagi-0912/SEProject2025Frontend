@@ -1,0 +1,234 @@
+/* UserHistory HistoryList 列表 */
+.user-history-list {
+  width: 100%;
+}
+
+.user-history-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.user-history-list li {
+  padding: 1rem;
+  border-bottom: 1px solid #FFDEE9;
+  background-color: white;
+  transition: background-color 0.2s ease;
+}
+
+.user-history-list li:hover {
+  background-color: #FFF0F5;
+}
+
+.user-history-list li:last-child {
+  border-bottom: none;
+}
+
+/* 列表項目標題區域 */
+.user-history-list-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-history-list-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-history-list-item-title {
+  font-weight: 700;
+  color: #5D4037;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.user-history-list-item-time {
+  color: #8D6E63;
+  font-size: 0.875rem;
+}
+
+.user-history-list-item-meta {
+  font-size: 0.875rem;
+  color: #5D4037;
+  margin-top: 0.25rem;
+}
+
+.user-history-list-item-button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 2px solid #FFC5D0;
+  background-color: white;
+  color: #FF5E78;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.user-history-list-item-button:hover {
+  background-color: #FF5E78;
+  color: white;
+  border-color: #FF5E78;
+}
+
+/* 詳情區域 */
+.user-history-detail {
+  padding: 1rem;
+  background-color: #FFF0F5;
+  border-radius: 0.5rem;
+  margin-top: 0.75rem;
+  border: 1px solid #FFDEE9;
+}
+
+.user-history-detail div {
+  margin-bottom: 0.5rem;
+  color: #5D4037;
+  font-size: 0.9rem;
+}
+
+.user-history-coupon-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.user-history-coupon-name {
+  color: #FF5E78;
+  font-weight: 600;
+}
+
+.user-history-coupon-discount {
+  color: #8D6E63;
+  font-size: 0.85rem;
+}
+
+.user-history-detail strong {
+  color: #FF5E78;
+  font-weight: 600;
+}
+
+.user-history-detail-items {
+  margin-top: 0.75rem;
+}
+
+.user-history-detail ul {
+  margin-top: 0.5rem;
+  padding-left: 1.5rem;
+}
+
+.user-history-detail li {
+  padding: 0.25rem 0;
+  border-bottom: none;
+  background-color: transparent;
+}
+
+.user-history-detail li:hover {
+  background-color: transparent;
+}
+
+/* 確認訂單按鈕區域 */
+.user-history-confirm-section {
+  margin-top: 1rem;
+}
+
+.user-history-confirm-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: linear-gradient(135deg, #FF9EAA 0%, #FF5E78 100%);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-history-confirm-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 94, 120, 0.3);
+}
+
+.user-history-confirm-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.user-history-message {
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.user-history-message.success {
+  color: #4CAF50;
+  background-color: #E8F5E9;
+}
+
+.user-history-message.error {
+  color: #E57373;
+  background-color: #FFEBEE;
+}
+
+/* 空狀態 */
+.user-history-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #8D6E63;
+  font-size: 1rem;
+}
+
+/* === RWD 平板版 === */
+@media (max-width: 768px) {
+  .user-history-list li {
+    padding: 0.875rem;
+  }
+
+  .user-history-list-item-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .user-history-list-item-button {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* === RWD 手機版 === */
+@media (max-width: 480px) {
+  .user-history-list li {
+    padding: 0.75rem;
+  }
+
+  .user-history-list-item-title {
+    font-size: 0.9rem;
+  }
+
+  .user-history-list-item-time {
+    font-size: 0.8rem;
+  }
+
+  .user-history-list-item-meta {
+    font-size: 0.8rem;
+  }
+
+  .user-history-detail {
+    padding: 0.75rem;
+  }
+
+  .user-history-detail div {
+    font-size: 0.85rem;
+  }
+
+  .user-history-confirm-button {
+    width: 100%;
+    padding: 0.75rem 1rem;
+  }
+}
