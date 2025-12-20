@@ -48,3 +48,26 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(255, 94, 120, 0.5);
 }
+
+@media screen and (max-width: 768px) {
+  .checkout-footer {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+  }
+
+  .checkout-footer-amount {
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+  }
+
+  .checkout-footer-button {
+    width: 100%;
+    padding: 12px;
+  }
+}

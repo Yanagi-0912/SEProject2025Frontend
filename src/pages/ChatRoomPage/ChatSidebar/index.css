@@ -131,3 +131,69 @@
   margin-left: 10px;
   flex-shrink: 0;
 }
+
+/* --- RWD 響應式設定 --- */
+@media screen and (max-width: 768px) {
+  .chat-sidebar-header {
+    padding: 10px;
+    text-align: center;
+  }
+
+  .chat-room-list {
+    display: flex; /* 改為橫向排列 (類似 IG 限時動態) 或 保持垂直但緊湊 */
+    flex-direction: row;
+    overflow-x: auto; /* 允許橫向滑動 */
+    overflow-y: hidden;
+    padding: 5px;
+    gap: 10px;
+  }
+
+  /* 如果希望保持垂直列表，請註解掉上面的 display: flex 及 flex-direction: row */
+
+  /* 針對橫向滑動的樣式調整 (如果採用) */
+  .chat-room-item {
+    flex-direction: column;
+    min-width: 80px;
+    max-width: 80px;
+    padding: 5px;
+    border-bottom: none;
+    text-align: center;
+    border-radius: 8px;
+  }
+
+  .chat-room-item.active {
+    border-left: none;
+    border-bottom: 3px solid #FF5E78;
+    background-color: #FFF0F5;
+  }
+
+  .chat-room-avatar {
+    margin-right: 0;
+    margin-bottom: 5px;
+    width: 45px;
+    height: 45px;
+  }
+
+  .chat-room-info {
+    width: 100%;
+  }
+
+  .chat-room-top {
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .chat-room-name {
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+
+  /* 橫向模式下隱藏最後訊息與時間，只顯示頭像與名字 */
+  .chat-room-time,
+  .chat-room-bottom {
+    display: none;
+  }
+}

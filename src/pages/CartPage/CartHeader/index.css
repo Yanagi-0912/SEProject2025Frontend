@@ -48,3 +48,24 @@
 .cart-header-spacer {
   width: 50px; /* 對應按鈕寬度以保持置中 */
 }
+
+/* --- RWD 響應式設定 --- */
+@media screen and (max-width: 768px) {
+  .cart-header {
+    padding: 10px;
+    margin-bottom: 15px;
+  }
+
+  .cart-header-title {
+    font-size: 1.2rem;
+  }
+
+  .home-icon-img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .cart-header-spacer {
+    width: 40px;
+  }
+}

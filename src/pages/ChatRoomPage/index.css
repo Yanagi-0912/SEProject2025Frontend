@@ -67,3 +67,38 @@
   font-size: 16px;
   font-weight: 500;
 }
+
+/* --- RWD 響應式設定 --- */
+@media screen and (max-width: 768px) {
+  .chatroom-container {
+    height: 100vh; /* 確保滿版 */
+  }
+
+  .chatroom-content {
+    flex-direction: column; /* 改為垂直排列 */
+    margin: 0; /* 移除外距以爭取空間 */
+    border: none;
+    border-radius: 0;
+  }
+
+  /* 側邊欄調整 */
+  .chatroom-content .chat-sidebar {
+    width: 100%; /* 滿寬 */
+    height: 160px; /* 固定高度，讓下方留給聊天 */
+    border-right: none;
+    border-bottom: 1px solid #FFDEE9;
+    flex-shrink: 0;
+  }
+
+  /* 主聊天區塊 */
+  .chat-main {
+    flex: 1; /* 佔滿剩餘空間 */
+    height: calc(100vh - 70px - 160px); /* 扣掉 Header 和 Sidebar 高度 */
+  }
+
+  .no-chat-selected {
+    font-size: 14px;
+    padding: 20px;
+    text-align: center;
+  }
+}

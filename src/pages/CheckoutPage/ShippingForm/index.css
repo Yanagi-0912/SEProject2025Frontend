@@ -44,3 +44,14 @@
 .shipping-form-textarea {
   resize: vertical;
 }
+
+@media screen and (max-width: 768px) {
+  .shipping-form-row {
+    grid-template-columns: 1fr; /* 城市與郵遞區號變垂直排列 */
+    gap: 10px;
+  }
+
+  .shipping-form-container {
+    padding: 15px;
+  }
+}

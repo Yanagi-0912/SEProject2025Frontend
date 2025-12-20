@@ -86,3 +86,24 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(255, 94, 120, 0.4);
 }
+
+@media screen and (max-width: 768px) {
+  .chat-header {
+    height: 60px;
+    padding: 0 10px;
+  }
+
+  .home-icon-img {
+    width: 35px;
+    height: 35px;
+  }
+
+  .chat-header-title {
+    font-size: 16px;
+  }
+
+  .chat-header-checkout-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
