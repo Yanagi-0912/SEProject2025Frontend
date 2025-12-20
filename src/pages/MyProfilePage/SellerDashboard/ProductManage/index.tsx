@@ -114,13 +114,46 @@ const ProductManage = ({ viewMode, searchQuery, productList, onModeChange }: Pro
       const resp = await uploadImageMutation.mutateAsync({
         data: { file }
       });
-      // resp 是 AxiosResponse，resp.data 是 {url: '...'}
-      const imageUrl: string = (resp?.data as unknown as { url: string })?.url || '';
+      // resp 是 AxiosResponse<string> 但實際上返回的是 JSON {url: '...'}
+      // 取得 data 屬性並嘗試解析
+      const responseData = resp.data;
+      console.log('Response data:', responseData);
+      
+      let imageUrl = '';
+      // 伺服器回傳的是 {url: '...'} 的 JSON，但被當成 string
+      if (typeof responseData === 'string') {
+        // 嘗試解析為 JSON
+        try {
+          const parsed = JSON.parse(responseData) as { url: string };
+          imageUrl = parsed.url || '';
+        } catch {
+          // 如果不是 JSON，直接使用
+          imageUrl = responseData;
+        }
+      } else if (typeof responseData === 'object' && responseData !== null) {
+        imageUrl = (responseData as Record<string, unknown>).url as string || '';
+      }
+      
       console.log('Image URL extracted:', imageUrl);
-      setNewProduct(prev => ({ ...prev, productImage: imageUrl }));
+      if (imageUrl) {
+        setNewProduct(prev => ({ ...prev, productImage: imageUrl }));
+        console.log('圖片已更新:', imageUrl);
+      } else {
+        console.warn('未能提取到圖片 URL');
+      }
     } catch (error) {
       console.error('圖片上傳失敗:', error);
-      alert('圖片上傳失敗，請稍後再試');
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 413) {
+          alert('檔案太大，請選擇較小的圖片');
+        } else if (error.response?.status === 500) {
+          alert('伺服器錯誤，圖片上傳失敗，請聯絡管理員');
+        } else {
+          alert('圖片上傳失敗，請稍後再試');
+        }
+      } else {
+        alert('圖片上傳失敗，請稍後再試');
+      }
     } finally {
       e.target.value = '';
     }
@@ -176,11 +209,46 @@ const ProductManage = ({ viewMode, searchQuery, productList, onModeChange }: Pro
       const resp = await uploadImageMutation.mutateAsync({
         data: { file }
       });
-      const imageUrl: string = (resp?.data as unknown as { url: string })?.url || '';
-      setEditingProduct(prev => (prev ? { ...prev, productImage: imageUrl } : prev));
+      // resp 是 AxiosResponse<string> 但實際上返回的是 JSON {url: '...'}
+      // 取得 data 屬性並嘗試解析
+      const responseData = resp.data;
+      console.log('Response data:', responseData);
+      
+      let imageUrl = '';
+      // 伺服器回傳的是 {url: '...'} 的 JSON，但被當成 string
+      if (typeof responseData === 'string') {
+        // 嘗試解析為 JSON
+        try {
+          const parsed = JSON.parse(responseData) as { url: string };
+          imageUrl = parsed.url || '';
+        } catch {
+          // 如果不是 JSON，直接使用
+          imageUrl = responseData;
+        }
+      } else if (typeof responseData === 'object' && responseData !== null) {
+        imageUrl = (responseData as Record<string, unknown>).url as string || '';
+      }
+      
+      console.log('Image URL extracted:', imageUrl);
+      if (imageUrl) {
+        setEditingProduct(prev => (prev ? { ...prev, productImage: imageUrl } : prev));
+        console.log('圖片已更新:', imageUrl);
+      } else {
+        console.warn('未能提取到圖片 URL');
+      }
     } catch (error) {
       console.error('圖片上傳失敗:', error);
-      alert('圖片上傳失敗，請稍後再試');
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 413) {
+          alert('檔案太大，請選擇較小的圖片');
+        } else if (error.response?.status === 500) {
+          alert('伺服器錯誤，圖片上傳失敗，請聯絡管理員');
+        } else {
+          alert('圖片上傳失敗，請稍後再試');
+        }
+      } else {
+        alert('圖片上傳失敗，請稍後再試');
+      }
     } finally {
       e.target.value = '';
     }

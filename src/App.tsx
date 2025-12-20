@@ -16,6 +16,7 @@ import CheckoutPage from './pages/CheckoutPage'
 import ChatRoomPage from './pages/ChatRoomPage'
 import FavoriteList from './pages/FavoriteList'
 import OrderSuccessPage from './pages/OrderSuccessPage'
+import UserHistory from './pages/MyProfilePage/UserHistory'
 
 function App() {
   const navigate = useNavigate()
@@ -46,6 +47,8 @@ function App() {
               <Route path="/profile/coupons" element={<Coupons />} />
               {/* 賣家後台 */}
               <Route path="/seller/dashboard" element={<SellerDashboard />} />
+              {/* 歷史紀錄 */}
+              <Route path="/profile/history" element={<UserHistory />} />
           {/* 其他使用者頁 */}
           <Route path="/user/:id" element={<UserProfilePage />} />
 

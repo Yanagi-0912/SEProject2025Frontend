@@ -85,9 +85,7 @@ const MyProfilePage: React.FC = () => {
 	};
 
 	const handleHistoryClick = () => {
-		console.log('查看歷史紀錄');
-		// TODO: 導航到歷史紀錄頁面
-		alert('歷史紀錄功能開發中...');
+		navigate('/profile/history');
 	};
 
 	const handleUpdateSuccess = () => {
