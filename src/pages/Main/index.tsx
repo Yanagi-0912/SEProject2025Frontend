@@ -4,21 +4,31 @@ import Filter from './Filter'
 import Header from './Header'
 import Products from './Products'
 import Pagination from './Pagination'
+import './Main.css'
 
 function Main() {
   const navigate = useNavigate()
   const [page, setPage] = useState(1)
+  const [showFilter, setShowFilter] = useState(false)
   const total = 10
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#FFF0F5' }}>
+    <div className="main-container">
       <Header />
 
-      <div style={{ display: 'flex', alignItems: 'flex-start', maxWidth: '1600px', margin: '0 auto' }}>
-        <div style={{ width: '280px', flexShrink: 0 }}>
+      {/* 手機版篩選按鈕 */}
+      <button 
+        className="mobile-filter-toggle"
+        onClick={() => setShowFilter(!showFilter)}
+      >
+        {showFilter ? '收起篩選 ▲' : '展開篩選 ▼'}
+      </button>
+
+      <div className="main-content">
+        <div className={`main-sidebar ${showFilter ? 'show' : ''}`}>
           <Filter />
         </div>
-        <div style={{ flex: 1 }}>
+        <div className="main-products">
           <Products
             page={page}
             onProductClick={(p: { id?: string | number; productID?: string | number }) => {

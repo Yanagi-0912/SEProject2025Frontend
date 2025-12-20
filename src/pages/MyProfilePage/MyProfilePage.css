@@ -34,7 +34,7 @@
   text-align: center;
 }
 
-/* 響應式設計 - 窄螢幕時 ControlPanel 在上，UserProfile 在下 */
+/* 響應式設計 - 平板 */
 @media (max-width: 900px) {
   .my-profile-content {
     flex-direction: column-reverse;
@@ -48,5 +48,17 @@
 
   .my-profile-main {
     width: 100%;
+  }
+}
+
+/* 響應式設計 - 手機 */
+@media (max-width: 480px) {
+  .my-profile-page {
+    padding-bottom: 1rem;
+  }
+
+  .my-profile-content {
+    padding: 0.5rem;
+    gap: 1rem;
   }
 }

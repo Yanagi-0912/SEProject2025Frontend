@@ -97,7 +97,7 @@ const MyProfilePage: React.FC = () => {
 
 	return (
 		<div className="my-profile-page">
-			<Header />
+			<Header showSearch={false} />
 			{error && (
 				<div className="my-profile-error">
 					{error} 請先登入

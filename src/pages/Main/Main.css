@@ -1,0 +1,72 @@
+/* Main 頁面容器 */
+.main-container {
+  min-height: 100vh;
+  background-color: #FFF0F5;
+}
+
+/* 內容區域 - Filter + Products */
+.main-content {
+  display: flex;
+  align-items: flex-start;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Filter 側邊欄 */
+.main-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+/* Products 主區域 */
+.main-products {
+  flex: 1;
+}
+
+/* 手機版篩選按鈕（預設隱藏） */
+.mobile-filter-toggle {
+  display: none;
+  width: calc(100% - 20px);
+  margin: 10px;
+  padding: 12px;
+  background: linear-gradient(135deg, #FF9EAA 0%, #FF5E78 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(255, 94, 120, 0.3);
+}
+
+.mobile-filter-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(255, 94, 120, 0.4);
+}
+
+/* === RWD 平板版 === */
+@media (max-width: 900px) {
+  .main-sidebar {
+    width: 220px;
+  }
+}
+
+/* === RWD 手機版 === */
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+  }
+
+  .main-sidebar {
+    width: 100%;
+    display: none;  /* 預設隱藏 */
+  }
+
+  .main-sidebar.show {
+    display: block;
+  }
+
+  .mobile-filter-toggle {
+    display: block;
+  }
+}

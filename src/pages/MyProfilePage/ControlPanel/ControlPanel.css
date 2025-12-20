@@ -45,16 +45,43 @@
   color: white;
 }
 
-/* 響應式設計 */
-@media (max-width: 600px) {
+/* 響應式設計 - 平板 */
+@media (max-width: 768px) {
+  .control-panel {
+    padding: 1rem;
+  }
+
+  .control-panel-title {
+    font-size: 1.1rem;
+  }
+
   .control-panel-grid {
-    grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
   }
 
   .control-panel-btn {
     padding: 1rem 0.75rem;
-    min-height: 60px;
-    font-size: 10rem;
+    min-height: 70px;
+    font-size: 0.9rem;
+  }
+}
+
+/* 響應式設計 - 手機 */
+@media (max-width: 480px) {
+  .control-panel {
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+  }
+
+  .control-panel-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .control-panel-btn {
+    padding: 0.75rem 0.5rem;
+    min-height: 55px;
+    font-size: 0.85rem;
+    border-radius: 0.75rem;
   }
 }
