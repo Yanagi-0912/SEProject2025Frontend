@@ -31,8 +31,10 @@ function Header({ backUrl, showSearch = true }: HeaderProps) {
     }
     
     const handleAccount = () => {
-        navigate('/user/me'); 
-        window.location.reload();
+        // 如果已經在「我的帳號」頁面，就不需要導航
+        if (location.pathname !== '/user/me') {
+            navigate('/user/me');
+        }
     };
 
     const handleLogin = () => {
@@ -94,8 +96,12 @@ function Header({ backUrl, showSearch = true }: HeaderProps) {
       if (productId) {
         navigate(`/product/${productId}`);
       } else {
-        navigate('/');
-        window.location.reload();
+        // 只有在首頁按下 home icon 才重載
+        if (location.pathname === '/') {
+          window.location.reload();
+        } else {
+          navigate('/');
+        }
       }
     }
   };
