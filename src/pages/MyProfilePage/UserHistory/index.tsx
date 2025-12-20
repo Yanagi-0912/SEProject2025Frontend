@@ -18,7 +18,7 @@ const UserHistory: React.FC = () => {
     if (tabParam && tabParam !== selected) {
       setSelected(tabParam);
     }
-  }, [tabParam]);
+  }, [tabParam, selected]);
 
   // 當選中標籤改變時，更新 URL 參數
   const handleTabSelect = (tab: HistoryTab) => {

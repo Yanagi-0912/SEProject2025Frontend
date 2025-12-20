@@ -10,6 +10,7 @@ import {
   useGetProductById,
   usePayOrder,
   getGetOrderByBuyerIdQueryKey,
+  useCreatePurchaseHistory,
   type GetOrderByBuyerIdQueryResult,
   type GetProductByIdQueryResult,
   type GetPurchaseHistoriesByUserIdQueryResult,
@@ -83,19 +84,45 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
 
   const queryClient = useQueryClient();
   const payOrderMutation = usePayOrder();
+  const createPurchaseHistoryMutation = useCreatePurchaseHistory();
 
-  const handleConfirmOrder = (orderID: string) => {
+  const handleConfirmOrder = (orderID: string, order?: Order) => {
     if (!orderID) return;
     payOrderMutation.mutate(
       { orderID, params: {} },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
           // Invalidate order query for current user so list refreshes
           try {
             const key = getGetOrderByBuyerIdQueryKey({ buyerId: userId ?? '' });
             queryClient.invalidateQueries({ queryKey: key });
           } catch {
             queryClient.invalidateQueries();
+          }
+
+          // 建立購買紀錄
+          if (userId && order?.orderID && order.orderItems) {
+            try {
+              // 收集所有商品 ID
+              const productIDs = order.orderItems
+                .map(item => item.productID)
+                .filter((id): id is string => !!id);
+              
+              // 計算總商品數量
+              const totalQuantity = order.orderItems
+                .reduce((sum, item) => sum + (item.quantity || 0), 0);
+
+              if (productIDs.length > 0) {
+                await createPurchaseHistoryMutation.mutateAsync({
+                  data: {
+                    productID: productIDs,
+                    productQuantity: totalQuantity
+                  }
+                });
+              }
+            } catch (historyErr) {
+              console.error('建立購買紀錄失敗:', historyErr);
+            }
           }
         }
       }
@@ -178,7 +205,7 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
                 onClick={() => {
                   if (!order.orderID) return;
                   if (!window.confirm('確定要確認付款此訂單嗎？')) return;
-                  handleConfirmOrder(order.orderID ?? '');
+                  handleConfirmOrder(order.orderID, order);
                 }}
                 disabled={payOrderMutation.isPending}
               >
