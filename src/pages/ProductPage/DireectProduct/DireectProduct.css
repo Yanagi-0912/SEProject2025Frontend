@@ -300,3 +300,100 @@
   cursor: not-allowed;
   box-shadow: none;
 }
+
+/* === RWD 手機版 === */
+@media (max-width: 768px) {
+  .direct-card {
+    flex-direction: column;
+    margin: 12px;
+    gap: 0;
+  }
+
+  .direct-image-container {
+    width: 100%;
+    min-width: 100%;
+    height: 300px;
+  }
+
+  .direct-content {
+    padding: 20px;
+  }
+
+  .direct-title {
+    font-size: 22px;
+  }
+
+  .direct-rating {
+    font-size: 16px;
+    padding: 6px 12px;
+  }
+
+  .price-section-direct {
+    padding: 24px 16px;
+  }
+
+  .price-value-large {
+    font-size: 48px;
+  }
+
+  .quantity-control {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .quantity-selector {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .cart-button,
+  .buy-button,
+  .favorite-button {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .direct-card {
+    margin: 8px;
+    border-radius: 12px;
+  }
+
+  .direct-image-container {
+    height: 250px;
+  }
+
+  .direct-content {
+    padding: 16px;
+  }
+
+  .direct-title {
+    font-size: 20px;
+  }
+
+  .direct-rating {
+    font-size: 14px;
+    padding: 4px 10px;
+  }
+
+  .price-section-direct {
+    padding: 20px 12px;
+  }
+
+  .price-value-large {
+    font-size: 40px;
+  }
+
+  .stock-section {
+    padding: 10px 12px;
+  }
+
+  .stock-display {
+    font-size: 18px;
+  }
+}

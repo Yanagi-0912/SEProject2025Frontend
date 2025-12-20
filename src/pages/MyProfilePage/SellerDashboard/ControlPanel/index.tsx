@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import './index.css';
 
 interface ControlPanelProps {
   onCreateNew: () => void;
@@ -25,7 +26,6 @@ const ControlPanel = ({ onCreateNew, onViewAll, onSearch }: ControlPanelProps) =
           onClick={onCreateNew}
           className="control-btn create-btn"
         >
-          <span className="btn-icon">➕</span>
           建立新商品
         </button>
         
@@ -33,7 +33,6 @@ const ControlPanel = ({ onCreateNew, onViewAll, onSearch }: ControlPanelProps) =
           onClick={onViewAll}
           className="control-btn view-all-btn"
         >
-          <span className="btn-icon">📋</span>
           檢視所有商品
         </button>
       </div>
@@ -47,7 +46,7 @@ const ControlPanel = ({ onCreateNew, onViewAll, onSearch }: ControlPanelProps) =
           className="search-input"
         />
         <button type="submit" className="search-btn">
-          🔍 搜尋
+          搜尋
         </button>
       </form>
     </div>

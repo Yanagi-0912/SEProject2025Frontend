@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import type { Product } from '../../../../api/generated';
 import { useCreateProduct, useDeleteProduct, useEditProduct, useUploadImage } from '../../../../api/generated';
+import './index.css';
 
 interface ProductManageProps {
   viewMode: 'list' | 'create' | 'edit';
@@ -537,7 +538,6 @@ const ProductManage = ({ viewMode, searchQuery, productList, onModeChange }: Pro
       
       {filteredProducts.length === 0 ? (
         <div className="empty-state">
-          <p className="empty-icon">📦</p>
           <p className="empty-text">
             {searchQuery ? '找不到符合的商品' : '尚無商品，點擊「建立新商品」開始上架'}
           </p>

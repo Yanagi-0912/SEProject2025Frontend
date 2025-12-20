@@ -1,0 +1,44 @@
+/* SellerDashboard 主頁面 */
+.seller-dashboard-page {
+  min-height: 100vh;
+  background-color: #FFF0F5;
+  padding-bottom: 2rem;
+}
+
+.seller-dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #FF5E78;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* === RWD 平板版 === */
+@media (max-width: 900px) {
+  .seller-dashboard-container {
+    padding: 1rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* === RWD 手機版 === */
+@media (max-width: 480px) {
+  .seller-dashboard-container {
+    padding: 0.75rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+}

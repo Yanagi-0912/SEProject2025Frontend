@@ -17,3 +17,35 @@ h3 {
   color: #5D4037;
   margin-bottom: 10px;
 }
+
+/* === RWD 手機版 === */
+@media (max-width: 768px) {
+  .seller-card {
+    margin: 12px;
+    padding: 16px;
+  }
+
+  .seller-row {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .seller-card {
+    margin: 8px;
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .seller-nickname {
+    font-size: 1rem;
+  }
+
+  .seller-meta {
+    font-size: 0.85rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+  }
+}

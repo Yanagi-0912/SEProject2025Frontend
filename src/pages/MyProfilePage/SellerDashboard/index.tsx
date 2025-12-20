@@ -5,6 +5,7 @@ import Header from '../../Main/Header';
 import SellerInfo from './SellerInfo';
 import ControlPanel from './ControlPanel';
 import ProductManage from './ProductManage';
+import './index.css';
 
 type ViewMode = 'list' | 'create' | 'edit';
 

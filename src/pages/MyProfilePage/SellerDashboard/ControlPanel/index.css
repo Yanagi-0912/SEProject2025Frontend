@@ -1,0 +1,134 @@
+/* ControlPanel 控制面板 */
+.control-panel-card {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #f5c2c7;
+  box-shadow: 0 4px 15px rgba(255, 183, 197, 0.2);
+}
+
+.control-panel-actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.control-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  border: 2px solid #f5c2c7;
+  background-color: #fef7f7;
+  color: #5D4037;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.control-btn:hover {
+  background-color: #FF5E78;
+  border-color: #FF5E78;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 94, 120, 0.3);
+}
+
+.create-btn {
+  background: linear-gradient(135deg, #FF9EAA 0%, #FF5E78 100%);
+  color: white;
+  border: none;
+}
+
+.create-btn:hover {
+  background: linear-gradient(135deg, #FF5E78 0%, #FF9EAA 100%);
+}
+
+.search-form {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 2px solid #FFDEE9;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #FF5E78;
+  box-shadow: 0 0 0 3px rgba(255, 94, 120, 0.1);
+}
+
+.search-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  border: none;
+  background: linear-gradient(135deg, #FF9EAA 0%, #FF5E78 100%);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.search-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 94, 120, 0.3);
+}
+
+/* === RWD 平板版 === */
+@media (max-width: 768px) {
+  .control-panel-card {
+    padding: 1rem;
+  }
+
+  .control-panel-actions {
+    flex-direction: column;
+  }
+
+  .control-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .search-form {
+    flex-direction: column;
+  }
+
+  .search-btn {
+    width: 100%;
+  }
+}
+
+/* === RWD 手機版 === */
+@media (max-width: 480px) {
+  .control-panel-card {
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+  }
+
+  .control-btn {
+    padding: 0.625rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .search-input {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .search-btn {
+    padding: 0.625rem 1rem;
+    font-size: 0.9rem;
+  }
+}
