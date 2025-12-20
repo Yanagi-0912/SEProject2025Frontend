@@ -2,8 +2,8 @@ import { test as setup } from '@playwright/test';
 
 setup('登入並儲存認證狀態', async ({ page }) => {
   await page.goto('http://localhost:5173/login');
-  await page.fill('input[name="username"]', 'testuser');
-  await page.fill('input[name="password"]', 'Test123456');
+  await page.fill('input[id="username"]', 'testuser');
+  await page.fill('input[id="password"]', 'Test123456');
   await page.click('button[type="submit"]');
   
   // 等待登入完成
