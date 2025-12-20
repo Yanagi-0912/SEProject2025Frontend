@@ -5,9 +5,10 @@ import { ragSearch } from '../../../api/search';
 
 interface HeaderProps {
     backUrl?: string;
+    showSearch?: boolean;  // 是否顯示搜尋欄，預設 true
 }
 
-function Header({ backUrl }: HeaderProps = {}) {
+function Header({ backUrl, showSearch = true }: HeaderProps) {
     const navigate = useNavigate();
     const location = useLocation();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -104,15 +105,16 @@ function Header({ backUrl }: HeaderProps = {}) {
       <button onClick={handleBack} className="back-button">
         <img src="/home-icon.png" alt="回到首頁" className="home-icon-img" />
       </button>
-      <div className="search-section">
+      <div className={`search-section ${!showSearch ? 'search-hidden' : ''}`}>
         <input 
           type="text" 
           placeholder="搜尋，輸入商品名稱或描述" 
           className="search-input" 
           value={searchKeyword}
           onChange={handleSearchChange}
+          disabled={!showSearch}
         />
-        <button className="search-btn rag-btn" onClick={handleRagSearch}>
+        <button className="search-btn rag-btn" onClick={handleRagSearch} disabled={!showSearch}>
           RAG 搜尋
         </button>
       </div>

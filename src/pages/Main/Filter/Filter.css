@@ -127,3 +127,25 @@
   margin-left: 8px;
   color: #8D6E63;
 }
+
+/* === RWD 手機版 === */
+@media (max-width: 768px) {
+  .filter-container {
+    margin: 10px;
+    padding: 15px;
+  }
+
+  .filter-section {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+  }
+
+  .filter-title {
+    font-size: 1.1rem;
+  }
+
+  .price-input {
+    width: 60px;
+    padding: 6px;
+  }
+}

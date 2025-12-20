@@ -121,4 +121,45 @@
     flex-direction: column;
     gap: 1rem;
   }
+
+  .basic-info-section h2 {
+    font-size: 1.25rem;
+  }
+}
+
+/* 響應式設計 - 手機 */
+@media (max-width: 480px) {
+  .user-profile-container {
+    padding: 1rem;
+    border-radius: 8px;
+  }
+
+  .user-profile-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .user-profile-header p {
+    font-size: 0.875rem;
+  }
+
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    padding: 0.75rem;
+  }
+
+  .info-label {
+    font-size: 0.875rem;
+  }
+
+  .info-value {
+    font-size: 0.9rem;
+  }
+
+  .edit-button {
+    width: 100%;
+    padding: 0.625rem 1rem;
+    font-size: 0.9rem;
+  }
 }

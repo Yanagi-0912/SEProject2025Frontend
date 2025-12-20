@@ -44,6 +44,11 @@
   gap: 10px;
 }
 
+/* 隱藏搜尋欄但保留空間（電腦版） */
+.search-section.search-hidden {
+  visibility: hidden;
+}
+
 /* 搜尋輸入框 */
 .search-input {
   width: 100%;
@@ -110,4 +115,70 @@
   color: #FF5E78;
   border-color: #FF9EAA;
   transform: translateY(-2px);
+}
+
+/* === RWD 平板版 === */
+@media (max-width: 900px) {
+  .header-container {
+    flex-wrap: wrap;
+    padding: 10px 15px;
+    gap: 10px;
+  }
+
+  .search-section {
+    order: 3;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  /* 手機/平板版：完全隱藏（不佔空間） */
+  .search-section.search-hidden {
+    display: none;
+  }
+
+  .actions-section {
+    margin-left: auto;
+  }
+
+  .action-button {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+}
+
+/* === RWD 手機版 === */
+@media (max-width: 600px) {
+  .header-container {
+    padding: 10px;
+  }
+
+  .back-button {
+    margin-right: 10px;
+  }
+
+  .home-icon-img {
+    width: 45px;
+    height: 45px;
+  }
+
+  .search-input {
+    font-size: 0.9rem;
+    padding: 10px 15px;
+  }
+
+  .rag-btn {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+  }
+
+  .actions-section {
+    gap: 8px;
+    margin-left: 0;
+  }
+
+  .action-button {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    border-radius: 15px;
+  }
 }
