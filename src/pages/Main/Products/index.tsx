@@ -43,10 +43,9 @@ function Products({ page, onProductClick, onTotalPagesChange }: ProductsProps) {
   const hasFilter = selectedCategory || minPrice !== undefined || maxPrice !== undefined || minRating !== undefined;
   
   // 1. 全部商品
-  // 如果有篩選條件，載入所有商品（使用大 pageSize）以便前端篩選和分頁
-  // 如果沒有篩選條件，使用後端分頁
+  // 為了確保分頁正常工作，無論是否有篩選都載入所有商品（使用大 pageSize）以便前端分頁
   const { data: allData, isLoading: isAllLoading, error: allError } = useGetAllProduct(
-    hasFilter ? { page: 1, pageSize: 1000 } : { page, pageSize: 20 },
+    { page: 1, pageSize: 1000 },
     { query: { enabled: !keyword && ragIds.length === 0 } }
   );
 
@@ -135,6 +134,7 @@ function Products({ page, onProductClick, onTotalPagesChange }: ProductsProps) {
   }
 
   // 前端分頁：計算總頁數和當前頁的商品
+  // 無論是否有篩選/搜尋，都使用前端分頁（已載入所有商品）
   const pageSize = 20;
   const totalPages = Math.ceil(products.length / pageSize) || 1;
   const startIndex = (page - 1) * pageSize;

@@ -53,6 +53,19 @@
   box-shadow: none;
 }
 
+/* 省略號樣式 */
+.pagination-ellipsis {
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #8D6E63;
+  font-size: 16px;
+  font-weight: 600;
+  user-select: none;
+}
+
 /* RWD 手機版微調 */
 @media (max-width: 480px) {
   .pagination-container {
