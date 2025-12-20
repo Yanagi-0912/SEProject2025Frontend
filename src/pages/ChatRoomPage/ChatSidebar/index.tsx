@@ -51,7 +51,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   return (
     <div className="chat-sidebar">
       <div className="chat-sidebar-header">
-        <h3>{userRole === "BUYER" ? "我的賣家" : "我的買家"}</h3>
+        <h3>{"聊天列表"}</h3>
       </div>
       <div className="chat-room-list">
         {chatRooms.length === 0 ? (
@@ -82,7 +82,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                 </div>
                 <div className="chat-room-bottom">
                   <span className="chat-room-last-message">
-                    {room.lastMessage?.content || "暫無訊息"}
+                    {""}
                   </span>
                   {room.unreadCount > 0 && (
                     <span className="chat-room-unread-badge">
