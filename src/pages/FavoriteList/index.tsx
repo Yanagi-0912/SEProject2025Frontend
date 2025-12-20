@@ -65,7 +65,7 @@ export default function FavoriteList() {
 
 	return (
 		<div>
-			<Header />
+			<Header showSearch={false} />
 			<div className="fav-container">
 				<div className="fav-header">
 					<h2>我的最愛 ({String(favoritesCountQuery.data?.data ?? 0)})</h2>

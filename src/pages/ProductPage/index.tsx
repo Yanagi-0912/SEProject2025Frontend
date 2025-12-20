@@ -139,7 +139,7 @@ const ProductPage: React.FC<{ productID?: string }> = ({ productID }) => {
 
 	return (
 		<div>
-			<Header />
+			<Header showSearch={false} />
 			{error && (
 				<div style={{ color: 'orange', padding: '8px' }}>
 					錯誤：{error} — 使用範例商品顯示

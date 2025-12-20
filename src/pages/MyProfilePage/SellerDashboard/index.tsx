@@ -35,7 +35,7 @@ const SellerDashboard = () => {
 
   return (
     <div className="seller-dashboard-page">
-      <Header/>
+      <Header showSearch={false} backUrl="/user/me"/>
       <div className="seller-dashboard-container">
         <h1 className="dashboard-title">賣家後台</h1>
         
