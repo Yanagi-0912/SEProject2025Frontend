@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import type { HistoryTab } from '../ControlPanel';
-import type { AxiosError } from 'axios';
+import type { AxiosError, AxiosResponse } from 'axios';
 import './index.css';
 import {
   useGetOrderByBuyerId,
   useGetReviewHistoriesByUserId,
   useGetPurchaseHistoriesByUserId,
   useGetBidHistoriesByUserId,
+  useGetBrowseHistoriesByUserId,
   useGetProductById,
   usePayOrder,
   getGetOrderByBuyerIdQueryKey,
@@ -16,6 +17,7 @@ import {
   type GetPurchaseHistoriesByUserIdQueryResult,
   type GetBidHistoriesByUserIdQueryResult,
   type GetReviewHistoriesByUserIdQueryResult,
+  type GetBrowseHistoriesByUserIdQueryResult,
   type Coupon
 } from '../../../../api/generated';
 import type { Order, PurchaseHistory, BidHistory, ReviewHistory, BrowseHistory, Product } from '../../../../api/generated';
@@ -30,9 +32,22 @@ interface Props {
 const HistoryList: React.FC<Props> = ({ selected, userId }) => {
   // Call hooks unconditionally so their call order is stable; hooks should handle an undefined userId internally
   const orderQuery = useGetOrderByBuyerId({ buyerId: userId ?? '' });
-  const reviewQuery = useGetReviewHistoriesByUserId(userId ?? '');
+  const reviewQuery = useGetReviewHistoriesByUserId(userId ?? '', {
+    // Allow 404 to resolve so we can treat it as "no records" without noisy retries
+    axios: { validateStatus: (status) => status === 200 || status === 404 },
+    query: { retry: false }
+  });
   const purchaseQuery = useGetPurchaseHistoriesByUserId(userId ?? '');
   const bidQuery = useGetBidHistoriesByUserId(userId ?? '');
+  useEffect(() => {
+    if (bidQuery?.data) console.info('bid histories response', bidQuery.data);
+    if (bidQuery?.error) console.warn('bid histories error', bidQuery.error);
+  }, [bidQuery?.data, bidQuery?.error]);
+  const browseQuery = useGetBrowseHistoriesByUserId(userId ?? '');
+  useEffect(() => {
+    if (browseQuery?.data) console.info('browse histories response', browseQuery.data);
+    if (browseQuery?.error) console.warn('browse histories error', browseQuery.error);
+  }, [browseQuery?.data, browseQuery?.error]);
 
   // A compact display shape for rendering — fields are optional because API shapes vary.
   // (display mapping will use the typed API interfaces directly)
@@ -258,8 +273,10 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
         <div className="user-history-detail">
           <div><strong>時間：</strong>{bh.timeStamp}</div>
           <div><strong>出價：</strong>{bh.bidAmount ?? '-'}</div>
-          {bh.historyItem && (
+          {bh.historyItem ? (
             <div><strong>商品：</strong>{bh.historyItem.productName} ({bh.historyItem.productQuantity})</div>
+          ) : (
+            <div><strong>商品：</strong>{bh.productID ?? '-'}</div>
           )}
         </div>
       );
@@ -277,11 +294,11 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     }
 
     const br = item as BrowseHistory;
-    if (br.historyItem) {
+    if (br.historyItem || br.productID) {
       return (
         <div className="user-history-detail">
           <div><strong>時間：</strong>{br.timeStamp}</div>
-          <div><strong>商品：</strong>{br.historyItem.productName}</div>
+          <div><strong>商品：</strong>{br.historyItem?.productName ?? br.productID ?? '-'}</div>
         </div>
       );
     }
@@ -403,13 +420,16 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
       <ul>
         {sortedBids.map((b, idx) => {
           const id = b._id ?? String(idx);
+          const pid = b.historyItem?.productID ?? b.productID;
+          const title = b.historyItem?.productName ?? b.historyItem?.productID ?? pid ?? '未取得商品資訊';
           return (
             <li key={id}>
               <div className="user-history-list-item-header">
                 <div className="user-history-list-item-info">
-                  <div className="user-history-list-item-title">{b._id}</div>
+                  <div className="user-history-list-item-title">{title}</div>
                   <div className="user-history-list-item-time">— {b.timeStamp}</div>
                   <div className="user-history-list-item-meta">出價：{b.bidAmount ?? '-'}</div>
+                  <div className="user-history-list-item-meta">商品 ID：{pid ?? '-'}</div>
                 </div>
                 <button 
                   className="user-history-list-item-button"
@@ -432,7 +452,9 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     const isError = reviewQuery?.isError;
     const raw = reviewQuery?.data as GetReviewHistoriesByUserIdQueryResult | undefined;
     const data = raw?.data ?? raw;
+    const status = (raw as AxiosResponse | undefined)?.status;
     if (isLoading) return renderLoading();
+    if (status === 404) return <div className="user-history-empty">沒有評論紀錄</div>;
     if (isError) return renderError(reviewQuery?.error);
     const reviewItems: ReviewHistory[] = Array.isArray(data) ? data : (data && typeof data === 'object' && '_id' in data) ? [data as ReviewHistory] : [];
     if (!reviewItems.length) return <div className="user-history-empty">沒有評論紀錄</div>;
@@ -469,6 +491,43 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     );
   };
 
+  const renderBrowses = () => {
+    if (!userId) return <div className="user-history-empty">找不到使用者 ID</div>;
+    const isLoading = browseQuery?.isLoading;
+    const isError = browseQuery?.isError;
+    const raw = browseQuery?.data as GetBrowseHistoriesByUserIdQueryResult | undefined;
+    const data = raw?.data ?? raw;
+    if (isLoading) return renderLoading();
+    if (isError) return renderError(browseQuery?.error);
+    const browseItems: BrowseHistory[] = Array.isArray(data) ? data : (data && typeof data === 'object' && '_id' in data) ? [data as BrowseHistory] : [];
+    if (!browseItems.length) return <div className="user-history-empty">沒有瀏覽紀錄</div>;
+    const sortedBrowses = [...browseItems].sort((a, b) => {
+      const timeA = a.timeStamp ? new Date(a.timeStamp).getTime() : 0;
+      const timeB = b.timeStamp ? new Date(b.timeStamp).getTime() : 0;
+      return timeB - timeA;
+    });
+    return (
+      <ul>
+        {sortedBrowses.map((br, idx) => {
+          const id = br._id ?? String(idx);
+          const pid = br.historyItem?.productID ?? br.productID;
+          const title = br.historyItem?.productName ?? br.historyItem?.productID ?? pid ?? '未取得商品資訊';
+          return (
+            <li key={id}>
+              <div className="user-history-list-item-header">
+                <div className="user-history-list-item-info">
+                  <div className="user-history-list-item-title">{title}</div>
+                  <div className="user-history-list-item-time">— {br.timeStamp}</div>
+                  <div className="user-history-list-item-meta">商品 ID：{pid ?? '-'}</div>
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    );
+  };
+
   const renderList = () => {
     switch (selected) {
       case 'OrderHistory':
@@ -479,6 +538,8 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
         return renderBids();
       case 'ReviewHistory':
         return renderReviews();
+      case 'BrowseHistory':
+        return renderBrowses();
       default:
         return <div className="user-history-empty">沒有資料</div>;
     }

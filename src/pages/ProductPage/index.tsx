@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from './Header';
 import DirectProduct from './DireectProduct';
@@ -6,7 +6,8 @@ import AuctionProduct from './AuctionProduct';
 import Seller from './Seller';
 import Details from './Details';
 import Review from './Review';
-import { useGetProductById } from '../../api/generated';
+import { useQueryClient } from '@tanstack/react-query';
+import { getGetBrowseHistoriesByUserIdQueryKey, useCreateBrowseHistory, useGetCurrentUser, useGetProductById } from '../../api/generated';
 
 
 interface ProductProps {
@@ -34,25 +35,6 @@ interface ProductProps {
 type ProductStatuses = 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'BANNED';
 
 const SAMPLE_PRODUCT: ProductProps = {
-	productID: '無效的商品ID',
-	sellerID: '無效的賣家ID',
-	productName: '無效的商品名稱',
-	productDescription: '無',
-	productPrice: 404,
-	productImage: `https://picsum.photos/300/300?random=100`,
-	productType: 'INACTIVE',
-	productStock: 404,
-	productCategory: '無',
-	productStatus: 'ACTIVE',
-	createdTime: '{資料遺失}',
-	updatedTime: '{資料遺失}',
-	auctionEndTime: '未設定',
-	nowHighestBid: 404,
-	highestBidderID: '無效的出價者ID',
-	viewCount: 404,
-	averageRating: 4.04,
-	reviewCount: 404,
-	totalSales: 404,
 };
 
 const ProductPage: React.FC<{ productID?: string }> = ({ productID }) => {
@@ -60,6 +42,8 @@ const ProductPage: React.FC<{ productID?: string }> = ({ productID }) => {
 
 	const [product, setProduct] = useState<ProductProps>(SAMPLE_PRODUCT);
 	const [error, setError] = useState<string | null>(null);
+	const lastTrackedProductId = useRef<string | null>(null);
+	const queryClient = useQueryClient();
 
 	// 取得 id（優先 props，接著路由參數，再來 query string）
 	const urlParams = new URLSearchParams(window.location.search);
@@ -67,6 +51,8 @@ const ProductPage: React.FC<{ productID?: string }> = ({ productID }) => {
 
 	// useGetProductById 預設會在 id falsy 時 disabled
 	const productQuery = useGetProductById(id);
+	const currentUserQuery = useGetCurrentUser();
+	const createBrowseHistory = useCreateBrowseHistory();
 
 	useEffect(() => {
 		if (productQuery.isLoading) return;
@@ -132,6 +118,39 @@ const ProductPage: React.FC<{ productID?: string }> = ({ productID }) => {
 			setProduct(SAMPLE_PRODUCT);
 		}
 	}, [productQuery.data, productQuery.isError, productQuery.error, productQuery.isLoading]);
+
+	// 已登入時紀錄瀏覽歷史，只在成功取得商品資料後執行一次
+	useEffect(() => {
+		const userId = currentUserQuery?.data?.data?.id;
+		if (!userId) {
+			console.info('createBrowseHistory skipped: no user');
+			return;
+		}
+		if (!productQuery.isSuccess) {
+			console.info('createBrowseHistory skipped: product not ready');
+			return;
+		}
+		const fetchedProductId = product.productID ?? id;
+		if (!fetchedProductId) {
+			console.info('createBrowseHistory skipped: no product id');
+			return;
+		}
+		if (lastTrackedProductId.current === fetchedProductId) {
+			console.info('createBrowseHistory skipped: already sent for', fetchedProductId);
+			return;
+		}
+		lastTrackedProductId.current = fetchedProductId;
+		console.info('createBrowseHistory -> sending', { userId, productID: fetchedProductId });
+		createBrowseHistory.mutate(
+			{ data: { productID: fetchedProductId } },
+			{
+				onSuccess: () => {
+					queryClient.invalidateQueries({ queryKey: getGetBrowseHistoriesByUserIdQueryKey(userId) });
+				},
+				onError: (err) => console.warn('createBrowseHistory failed', err)
+			}
+		);
+	}, [currentUserQuery?.data?.data?.id, productQuery.isSuccess, product.productID, createBrowseHistory, id, queryClient]);
 
 	if (productQuery.isLoading) {
 		return <div>載入中...</div>;
