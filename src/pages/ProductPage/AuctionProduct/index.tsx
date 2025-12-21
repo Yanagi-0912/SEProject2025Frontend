@@ -1,6 +1,7 @@
 import './AuctionProduct.css';
 import { useState, useEffect, useRef } from 'react';
-import { placeBid, terminateAuction, useGetCurrentUser, useIsFavorited, useAddToFavorites, useRemoveFromFavorites, useCreateBidHistory } from '../../../api/generated';
+import { placeBid, terminateAuction, useGetCurrentUser, useIsFavorited, useAddToFavorites, useRemoveFromFavorites, useCreateBidHistory, getGetBidHistoriesByUserIdQueryKey } from '../../../api/generated';
+import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 interface AuctionProps {
@@ -32,6 +33,7 @@ function AuctionProduct(props: AuctionProps) {
   const addToFavoritesMutation = useAddToFavorites();
   const removeFromFavoritesMutation = useRemoveFromFavorites();
   const createBidHistoryMutation = useCreateBidHistory();
+  const queryClient = useQueryClient();
 
     useEffect(() => {
         const calculateCountdown = () => {
@@ -185,13 +187,18 @@ function AuctionProduct(props: AuctionProps) {
         setCurrentBid(price);
         setBidAmount('');
         
-        // 建立競標歷史記錄
+        // 建立競標歷史記錄（包含出價金額）
         try {
           await createBidHistoryMutation.mutateAsync({
             data: {
-              productID: props.productID
+              productID: props.productID,
+              bidAmount: price
             }
           });
+          console.info('createBidHistory success', { productID: props.productID, bidAmount: price });
+          if (currentUserId) {
+            queryClient.invalidateQueries({ queryKey: getGetBidHistoriesByUserIdQueryKey(currentUserId) });
+          }
         } catch (historyErr) {
           console.error('創建競標歷史失敗:', historyErr);
           // 不影響出價成功的提示

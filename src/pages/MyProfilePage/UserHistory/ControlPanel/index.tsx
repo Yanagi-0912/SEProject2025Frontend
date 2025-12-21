@@ -5,7 +5,8 @@ export type HistoryTab =
   | 'OrderHistory'
   | 'PurchaseHistory'
   | 'BidHistory'
-  | 'ReviewHistory';
+  | 'ReviewHistory'
+  | 'BrowseHistory';
 
 interface Props {
   selected: HistoryTab;
@@ -16,7 +17,8 @@ const tabLabels: Record<HistoryTab, string> = {
   OrderHistory: '訂單紀錄',
   PurchaseHistory: '購買紀錄',
   BidHistory: '競標紀錄',
-  ReviewHistory: '評論紀錄'
+  ReviewHistory: '評論紀錄',
+  BrowseHistory: '瀏覽紀錄'
 };
 
 const ControlPanel: React.FC<Props> = ({ selected, onSelect }) => {
