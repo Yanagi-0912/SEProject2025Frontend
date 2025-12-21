@@ -81,7 +81,7 @@ setup('登入並儲存認證狀態', async ({ page }) => {
         return localStorage.getItem('token') !== null;
       }, { timeout: 30000 });
       console.log('登入成功: localStorage 中已找到 token');
-    } catch (error) {
+    } catch {
       // 如果等待 token 失敗，使用模擬 token
       console.log('登入流程超時，使用模擬認證狀態');
       await page.evaluate(() => {
