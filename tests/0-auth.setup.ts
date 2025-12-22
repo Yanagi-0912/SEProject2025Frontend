@@ -1,4 +1,6 @@
 import { test as setup } from '@playwright/test';
+import fs from 'fs';
+import path from 'path';
 
 setup('登入並儲存認證狀態', async ({ page }) => {
   // 設置較長的超時時間（60秒）
@@ -103,9 +105,15 @@ setup('登入並儲存認證狀態', async ({ page }) => {
     await page.waitForSelector('.main-container, .header-container', { timeout: 10000 });
   }
   
+  // 確保認證狀態儲存目錄存在
+  const authDir = path.resolve(__dirname, '.auth');
+  if (!fs.existsSync(authDir)) {
+    fs.mkdirSync(authDir, { recursive: true });
+  }
+
   // 儲存認證狀態（cookies, localStorage 等）
   await page.context().storageState({ 
-    path: 'tests/.auth/user.json' 
+    path: path.join(authDir, 'user.json')
   });
   
   console.log('認證狀態已儲存');
