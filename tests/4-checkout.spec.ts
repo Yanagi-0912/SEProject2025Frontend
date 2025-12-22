@@ -111,7 +111,7 @@ test.describe('結帳頁面功能', () => {
           try {
             await page.waitForURL('**/checkout**', { timeout: 5000 })
             console.log('✓ 成功導向結帳頁面')
-          } catch (e) {
+          } catch {
             console.log('✗ 導向結帳頁面失敗')
           }
         }

@@ -144,19 +144,19 @@ test.describe('我的最愛功能', () => {
     } else {
       console.log('ⓘ 清除全部按鈕已禁用（可能沒有收藏商品）')
     }
-  })
 
-  test('空白狀態提示', async ({ page }) => {
-    await page.waitForSelector('.fav-container', { timeout: 10000 })
-    const noItemsMsg = page.locator('text=目前沒有最愛商品')
-    const hasNoItemsMsg = await noItemsMsg.count() > 0
-    if (hasNoItemsMsg) {
-      await expect(noItemsMsg).toBeVisible()
-      console.log('✓ 沒有最愛商品時顯示提示訊息')
-    } else {
-      const cards = page.locator('.fav-card')
-      const cardCount = await cards.count()
-      console.log(`ⓘ 有 ${cardCount} 件最愛商品`)
-    }
+    test('空白狀態提示', async ({ page }) => {
+      await page.waitForSelector('.fav-container', { timeout: 10000 })
+      const noItemsMsg = page.locator('text=目前沒有最愛商品')
+      const hasNoItemsMsg = await noItemsMsg.count() > 0
+      if (hasNoItemsMsg) {
+        await expect(noItemsMsg).toBeVisible()
+        console.log('✓ 沒有最愛商品時顯示提示訊息')
+      } else {
+        const cards = page.locator('.fav-card')
+        const cardCount = await cards.count()
+        console.log(`ⓘ 有 ${cardCount} 件最愛商品`)
+      }
+    })
   })
 })
