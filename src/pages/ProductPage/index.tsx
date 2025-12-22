@@ -7,7 +7,7 @@ import Seller from './Seller';
 import Details from './Details';
 import Review from './Review';
 import { useQueryClient } from '@tanstack/react-query';
-import { getGetBrowseHistoriesByUserIdQueryKey, useCreateBrowseHistory, useGetCurrentUser, useGetProductById } from '../../api/generated';
+import { getGetBrowseHistoriesByUserIdQueryKey, useCreateBrowseHistory, useGetCurrentUser, useGetProductById, useGetReviewsByProductId } from '../../api/generated';
 
 
 interface ProductProps {
@@ -53,6 +53,10 @@ const ProductPage: React.FC<{ productID?: string }> = ({ productID }) => {
 	const productQuery = useGetProductById(id);
 	const currentUserQuery = useGetCurrentUser();
 	const createBrowseHistory = useCreateBrowseHistory();
+	// 獲取商品評論
+	const reviewsQuery = useGetReviewsByProductId(id, {
+		query: { enabled: !!id }
+	});
 
 	useEffect(() => {
 		if (productQuery.isLoading) return;
@@ -202,7 +206,12 @@ const ProductPage: React.FC<{ productID?: string }> = ({ productID }) => {
 				createdTime={product.createdTime}
 			updatedTime={product.updatedTime}
 		/>
-			{product.productID && <Review productID={product.productID} />}
+			{product.productID && (
+				<Review 
+					productID={product.productID}
+					reviews={Array.isArray(reviewsQuery.data?.data) ? reviewsQuery.data.data : reviewsQuery.data?.data ? [reviewsQuery.data.data] : []}
+				/>
+			)}
 		</div>
 	);
 };export default ProductPage;
