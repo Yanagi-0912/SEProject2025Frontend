@@ -5,7 +5,6 @@ workspace "SEProject2025" "軟體工程專案2025 - 線上拍賣系統"{
         // People
         buyer = person "買家" "瀏覽、直購、競標商品，管理購物車與訂單"
         seller = person "賣家" "上架、編輯、刪除、下架商品，管理拍賣"
-        admin = person "系統管理員" "維護平台與審核用戶"
         // Software System
         ss = softwareSystem "線上拍賣系統""提供商品瀏覽、競標、直購與管理功能" {
             wa = container "Web Application""React+Typescript"{
@@ -16,8 +15,10 @@ workspace "SEProject2025" "軟體工程專案2025 - 線上拍賣系統"{
                 CheckoutPage = component "結帳頁面""處理訂單結帳流程"
                 UserProfilePage = component "用戶資料頁面""管理用戶個人資訊"
                 SellerDashboard = component "賣家後台""管理商品與拍賣"
-                //AdminDashboard = component "管理員後台""審核用戶與監控系統"
+                HistoryPage = component "歷史紀錄頁面""查看用戶歷史紀錄"
+                CouponPage = component "優惠券頁面""管理用戶優惠券"
                 MessageSystem = component "訊息系統""用戶間即時通訊"
+                FavoritePage = component "收藏頁面""管理用戶收藏清單"
             }
             ba = container "Backend API""Spring Boot"{
                 group "Product Module"{
@@ -29,6 +30,8 @@ workspace "SEProject2025" "軟體工程專案2025 - 線上拍賣系統"{
                     UserController = component "User Controller""處理用戶相關 HTTP 請求"
                     UserService = component "User Service""處理用戶相關業務邏輯"
                     UserRepository = component "User Repository""存取用戶相關資料"
+                    AuthController = component "Auth Controller""處理認證相關 HTTP 請求"
+                    AuthService = component "Auth Service""處理認證相關業務邏輯"
                 }
                 group "Message Module" {
                     MessageController = component "Message Controller""處理訊息相關 HTTP 請求"
@@ -60,16 +63,53 @@ workspace "SEProject2025" "軟體工程專案2025 - 線上拍賣系統"{
                     ReviewService = component "Review Service""處理評價相關業務邏輯"
                     ReviewRepository = component "Review Repository""存取評價相關資料"
                 }
+                group "Coupon Module" {
+                    CouponController = component "Coupon Controller""處理優惠券相關 HTTP 請求"
+                    CouponService = component "Coupon Service""處理優惠券相關業務邏輯"
+                    CouponRepository = component "Coupon Repository""存取優惠券相關資料"
+                }
+                group "Image Module" {
+                    ImageController = component "Image Controller""處理圖片相關 HTTP 請求"
+                    ImageService = component "Image Service""處理圖片相關業務邏輯"
+                }
+                group "Search Module" {
+                    SearchController = component "Search Controller""處理搜尋相關 HTTP 請求"
+                    SearchService = component "Search Service""處理搜尋相關業務邏輯"
+                }
+                group "Bid Module" {
+                    BidController = component "Bid Controller""處理出價相關 HTTP 請求"
+                    BidService = component "Bid Service""處理出價相關業務邏輯"
+                    BidRepository = component "Bid Repository""存取出價相關資料"
+                }
+                group "Favorite Module"{
+                    FavoriteController = component "Favorite Controller""處理收藏相關 HTTP 請求"
+                    FavoriteService = component "Favorite Service""處理收藏相關業務邏輯"
+                    FavoriteRepository = component "Favorite Repository""存取收藏相關資料"
+                }
             }
             db = container "Database Schema""MongoDB" {
                 tags "Database"
             }
         }
 
+        // External Software Systems
+        rag = softwareSystem "RAG 搜尋系統" "Python Flask + RAG，用於語意搜尋與推薦" {
+            tags "External"
+        }
+
+        imageCdn = softwareSystem "圖片 CDN 系統" "GitHub Repository + jsDelivr，用於圖片上傳與全球快取" {
+            tags "External"
+        }
+
+
         // Context Diagram
         buyer -> ss.wa "瀏覽商品、出價競標、直購、結帳"
         seller -> ss.wa "管理商品、上架與下架"
-        admin -> ss.wa "審核賣家與監控交易"
+
+        // External System Relationships (Context)
+        ss.wa -> rag "呼叫 RAG API 進行語意搜尋 / 推薦"
+        ss.wa -> imageCdn "透過 jsDelivr 載入商品圖片"
+        ss.ba -> imageCdn "上傳與管理商品圖片（GitHub API）"
 
         // Container Diagram
         ss.wa -> ss.ba "處理業務邏輯與資料交換"
@@ -92,16 +132,37 @@ workspace "SEProject2025" "軟體工程專案2025 - 線上拍賣系統"{
         ss.ba.HistoryService -> ss.ba.HistoryRepository "存取歷史紀錄資料"
         ss.ba.ReviewController -> ss.ba.ReviewService "調用評價服務"
         ss.ba.ReviewService -> ss.ba.ReviewRepository "存取評價資料"
+        ss.ba.CouponController -> ss.ba.CouponService "調用優惠券服務"
+        ss.ba.CouponService -> ss.ba.CouponRepository "存取優惠券資料"
+        ss.ba.AuthController -> ss.ba.AuthService "調用認證服務"
+        ss.ba.ImageController -> ss.ba.ImageService "調用圖片服務"
+        ss.ba.SearchController -> ss.ba.SearchService "調用搜尋服務"
+        ss.ba.BidController -> ss.ba.BidService "調用出價服務"
+        ss.ba.BidService -> ss.ba.BidRepository "存取出價資料"
         //Backend Components Dependencies
         ss.ba.ProductService -> ss.ba.UserService "查詢賣家資訊"
         ss.ba.UserService -> ss.ba.ProductService "查詢用戶擁有商品資料"
         ss.ba.MessageService -> ss.ba.UserService "查詢用戶資訊"
+        ss.ba.AuthService -> ss.ba.UserRepository "存取用戶資料"
         ss.ba.AuctionService -> ss.ba.ProductService "查詢商品資訊"
         ss.ba.UserService -> ss.ba.CartService "查詢用戶購物車資料"
         ss.ba.CartService -> ss.ba.ProductService "查詢商品資訊"
         ss.ba.OrderService -> ss.ba.CartService "處理購物車資料"
         ss.ba.HistoryService -> ss.ba.UserService "查詢用戶資訊"
+        ss.ba.HistoryService -> ss.ba.OrderService "查詢訂單資訊"
+        ss.ba.HistoryService -> ss.ba.AuctionService "查詢競標資訊"
+        ss.ba.HistoryService -> ss.ba.ProductService "查詢商品資訊"
+        ss.ba.HistoryService -> ss.ba.ReviewService "查詢評價資訊"
         ss.ba.ReviewService -> ss.ba.UserService "查詢用戶資訊"
+        ss.ba.ReviewService -> ss.ba.ProductService "查詢商品資訊"
+        ss.ba.CouponService -> ss.ba.UserService "查詢用戶資訊"
+        ss.ba.BidService -> ss.ba.UserService "查詢用戶資訊"
+        ss.ba.BidService -> ss.ba.AuctionService "查詢競標資訊"
+        ss.ba.BidService -> ss.ba.ProductService "查詢商品資訊"
+        ss.ba.CouponService -> ss.ba.OrderService "查詢訂單資訊"
+        ss.ba.FavoriteService -> ss.ba.UserService "查詢用戶資訊"
+        ss.ba.FavoriteService -> ss.ba.ProductService "查詢商品資訊"
+
         //Frontend Component Diagram
         ss.wa.LogInPage -> ss.wa.HomePage "導向首頁"
         ss.wa.HomePage -> ss.wa.ProductPage "導向商品頁面"
@@ -109,6 +170,10 @@ workspace "SEProject2025" "軟體工程專案2025 - 線上拍賣系統"{
         ss.wa.CartPage -> ss.wa.CheckoutPage "導向結帳頁面"
         ss.wa.HomePage -> ss.wa.UserProfilePage "導向用戶資料頁面"
         ss.wa.UserProfilePage -> ss.wa.SellerDashboard "導向賣家後台"
+        ss.wa.UserProfilePage -> ss.wa.HistoryPage "導向歷史紀錄頁面"
+        ss.wa.UserProfilePage -> ss.wa.CouponPage "導向優惠券頁面"
+        ss.wa.UserProfilePage -> ss.wa.HomePage "返回首頁"
+        ss.wa.HomePage -> ss.wa.FavoritePage "導向收藏頁面"
         ss.wa.CheckoutPage -> ss.wa.MessageSystem "導向訊息系統"
         ss.wa.MessageSystem -> ss.wa.HomePage "返回首頁"
     }
