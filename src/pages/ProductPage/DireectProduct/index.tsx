@@ -193,7 +193,7 @@ function DirectProduct(props: DirectProps) {
                 <button 
                   type="button" 
                   className="cart-button" 
-                  onClick={handleAddToCart}
+                  onClick={async (e) => { e.preventDefault(); await handleAddToCart(); }}
                   disabled={
                     quantity <= 0 ||
                     addToCartMutation.isPending ||

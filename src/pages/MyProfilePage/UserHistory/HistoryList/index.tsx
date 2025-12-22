@@ -38,7 +38,11 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     query: { retry: false }
   });
   const purchaseQuery = useGetPurchaseHistoriesByUserId(userId ?? '');
-  const bidQuery = useGetBidHistoriesByUserId(userId ?? '');
+  const bidQuery = useGetBidHistoriesByUserId(userId ?? '', {
+    // Allow 404 to resolve so we can treat it as "no records" without noisy retries
+    axios: { validateStatus: (status) => status === 200 || status === 404 },
+    query: { retry: false }
+  });
   useEffect(() => {
     if (bidQuery?.data) console.info('bid histories response', bidQuery.data);
     if (bidQuery?.error) console.warn('bid histories error', bidQuery.error);
