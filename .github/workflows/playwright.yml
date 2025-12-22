@@ -44,8 +44,12 @@ jobs:
         run: |
           chmod +x mvnw
           echo "開始啟動後端服務..."
+          # 先編譯主代碼（跳過測試），然後運行
           # 使用 -Dmaven.test.skip=true 完全跳過測試編譯和執行（解決測試檔案類型錯誤）
-          nohup ./mvnw spring-boot:run -Dmaven.test.skip=true > backend.log 2>&1 &
+          echo "編譯主代碼（跳過測試）..."
+          ./mvnw clean compile -Dmaven.test.skip=true -DskipTests
+          echo "啟動 Spring Boot 應用..."
+          nohup ./mvnw spring-boot:run -Dmaven.test.skip=true -DskipTests > backend.log 2>&1 &
           echo $! > backend.pid
           echo "後端進程已啟動，PID: $(cat backend.pid)"
           echo "等待 10 秒讓後端開始初始化..."
