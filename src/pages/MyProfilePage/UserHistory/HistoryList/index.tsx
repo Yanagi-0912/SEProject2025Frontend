@@ -37,7 +37,11 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     axios: { validateStatus: (status) => status === 200 || status === 404 },
     query: { retry: false }
   });
-  const purchaseQuery = useGetPurchaseHistoriesByUserId(userId ?? '');
+  const purchaseQuery = useGetPurchaseHistoriesByUserId(userId ?? '', {
+    // Allow 404 to resolve so we can treat it as "no records" without noisy retries
+    axios: { validateStatus: (status) => status === 200 || status === 404 },
+    query: { retry: false }
+  });
   const bidQuery = useGetBidHistoriesByUserId(userId ?? '', {
     // Allow 404 to resolve so we can treat it as "no records" without noisy retries
     axios: { validateStatus: (status) => status === 200 || status === 404 },
@@ -47,7 +51,11 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     if (bidQuery?.data) console.info('bid histories response', bidQuery.data);
     if (bidQuery?.error) console.warn('bid histories error', bidQuery.error);
   }, [bidQuery?.data, bidQuery?.error]);
-  const browseQuery = useGetBrowseHistoriesByUserId(userId ?? '');
+  const browseQuery = useGetBrowseHistoriesByUserId(userId ?? '', {
+    // Allow 404 to resolve so we can treat it as "no records" without noisy retries
+    axios: { validateStatus: (status) => status === 200 || status === 404 },
+    query: { retry: false }
+  });
   useEffect(() => {
     if (browseQuery?.data) console.info('browse histories response', browseQuery.data);
     if (browseQuery?.error) console.warn('browse histories error', browseQuery.error);

@@ -359,7 +359,14 @@ export interface History {
   _id?: string;
   userID?: string;
   timeStamp?: string;
-  historyItem?: HistoryItem;
+}
+
+export interface ReviewHistory {
+  _id?: string;
+  userID?: string;
+  timeStamp?: string;
+  reviewID?: string;
+  actionType?: string;
 }
 
 export interface HistoryItem {
@@ -372,15 +379,6 @@ export interface HistoryItem {
   totalPrice?: number;
 }
 
-export interface ReviewHistory {
-  _id?: string;
-  userID?: string;
-  timeStamp?: string;
-  reviewID?: string;
-  actionType?: string;
-  historyItem?: HistoryItem;
-}
-
 export interface PurchaseHistory {
   _id?: string;
   userID?: string;
@@ -390,15 +388,15 @@ export interface PurchaseHistory {
   historyItems?: HistoryItem[];
   productQuantity?: number;
   productID?: string[];
-  historyItem?: HistoryItem;
 }
 
 export interface BrowseHistory {
   _id?: string;
   userID?: string;
   timeStamp?: string;
-  productID?: string;
+  ProductID?: string;
   historyItem?: HistoryItem;
+  productID?: string;
 }
 
 export interface BidHistory {
