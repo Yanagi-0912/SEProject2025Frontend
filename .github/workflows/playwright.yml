@@ -43,7 +43,12 @@ jobs:
         working-directory: ./backend
         run: |
           chmod +x mvnw
-          ./mvnw spring-boot:run -DskipTests &
+          echo "開始啟動後端服務..."
+          nohup ./mvnw spring-boot:run -DskipTests > backend.log 2>&1 &
+          echo $! > backend.pid
+          echo "後端進程已啟動，PID: $(cat backend.pid)"
+          echo "等待 10 秒讓後端開始初始化..."
+          sleep 10
         env:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           MONGODB_DATABASE: mongodb
@@ -54,12 +59,45 @@ jobs:
         continue-on-error: false
 
       - name: Wait for Backend to be ready
+        working-directory: ./backend
         run: |
-          echo "等待後端啟動..."
-          timeout 120 bash -c 'until curl -f http://localhost:8080/swagger-ui.html > /dev/null 2>&1; do echo "等待中..."; sleep 3; done'
-          echo "✅ 後端已啟動！"
-          # 驗證 API 是否正常
-          curl -f http://localhost:8080/api/products || echo "警告：API 端點無法訪問"
+          echo "等待後端啟動（最多 5 分鐘）..."
+          MAX_WAIT=300  # 5 分鐘
+          ELAPSED=0
+          INTERVAL=5
+          
+          while [ $ELAPSED -lt $MAX_WAIT ]; do
+            # 檢查後端進程是否還在運行
+            if [ -f backend.pid ]; then
+              PID=$(cat backend.pid)
+              if ! ps -p $PID > /dev/null 2>&1; then
+                echo "❌ 後端進程已停止！"
+                echo "後端日誌："
+                tail -50 backend.log || echo "無法讀取日誌"
+                exit 1
+              fi
+            fi
+            
+            # 嘗試連接健康檢查端點
+            if curl -f -s http://localhost:8080/swagger-ui.html > /dev/null 2>&1 || \
+               curl -f -s http://localhost:8080/api/products > /dev/null 2>&1; then
+              echo "✅ 後端已啟動！"
+              echo "驗證 API 端點..."
+              curl -f http://localhost:8080/api/products && echo "API 正常運作"
+              exit 0
+            fi
+            
+            echo "等待中... (已等待 ${ELAPSED} 秒)"
+            sleep $INTERVAL
+            ELAPSED=$((ELAPSED + INTERVAL))
+          done
+          
+          echo "❌ 後端啟動超時（超過 ${MAX_WAIT} 秒）"
+          echo "後端日誌（最後 100 行）："
+          tail -100 backend.log || echo "無法讀取日誌"
+          echo "檢查端口 8080："
+          netstat -tuln | grep 8080 || echo "端口 8080 未監聽"
+          exit 1
 
       - name: Create Test User (if needed)
         run: |
@@ -100,8 +138,18 @@ jobs:
 
       - name: Stop Backend
         if: always()
+        working-directory: ./backend
         run: |
+          echo "停止後端服務..."
+          if [ -f backend.pid ]; then
+            PID=$(cat backend.pid)
+            if ps -p $PID > /dev/null 2>&1; then
+              kill $PID || true
+              echo "已停止後端進程 (PID: $PID)"
+            fi
+          fi
           pkill -f "spring-boot:run" || true
+          pkill -f "mvnw" || true
           echo "後端已停止"
 
       - name: Upload Playwright Report
