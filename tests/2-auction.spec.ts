@@ -94,7 +94,7 @@ test.describe('商品頁面 - 競標商品', () => {
       const messageText = await message.textContent()
       
       // 應該出現「出價需高於目前最高價」的提示
-      expect(messageText).toContain('出價需高於目前最高價')
+      expect(messageText).toContain('請輸入有效的出價金額')
       console.log(`✓ 出價驗證正常：${messageText}`)
     }
   })

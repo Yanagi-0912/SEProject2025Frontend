@@ -10,7 +10,7 @@
         },
         {
           "name": "token",
-          "value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ0ZXN0dXNlciIsImlhdCI6MTc2NjMwNTY1OCwiZXhwIjoxNzY2MzkyMDU4fQ.n3PhwUdWTcDGk9BKsK3nlO4mDPnydXlUglBsZZi3fcvhWL_ZeDe6h9yrVwfa4Rgh"
+          "value": "mock-test-token-for-ci"
         }
       ]
     }
