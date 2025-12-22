@@ -72,13 +72,11 @@ interface ChatLocationState {
 interface ChatRoomPageProps {
   onBack?: () => void;
   currentUserId?: string;
-  userRole?: "BUYER" | "SELLER";
 }
 
 const ChatRoomPage: React.FC<ChatRoomPageProps> = ({
   onBack,
   currentUserId: propUserId,
-  userRole = "BUYER"
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -188,8 +186,6 @@ const ChatRoomPage: React.FC<ChatRoomPageProps> = ({
 
             if (Array.isArray(res.data)) {
                 rooms = res.data.map((dto: any) => {
-                    const isOtherUserSender = dto.senderId !== currentUserId;
-                    const otherId = isOtherUserSender ? dto.senderId : dto.recipientId;
                     return {
                         roomId: dto.roomId,
                         otherUser: {
@@ -357,7 +353,6 @@ const ChatRoomPage: React.FC<ChatRoomPageProps> = ({
           chatRooms={chatRooms}
           selectedRoomId={selectedRoom?.roomId}
           onSelectRoom={handleSelectRoom}
-          userRole={userRole}
         />
 
         <div className="chat-main">
