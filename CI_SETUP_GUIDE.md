@@ -1,6 +1,8 @@
 # CI 測試後端支援技術文檔
 
 > **用途：** 此文件為完整的技術文檔，供開發人員和測試人員參考，了解 CI 測試環境的完整配置和技術細節。
+> 
+> **狀態：** ✅ CI 配置已完成並啟用
 
 ## 📋 目錄
 
@@ -70,15 +72,23 @@
 
 ## CI 環境配置
 
+### ✅ 配置狀態
+
+**CI 配置已完成並啟用：**
+- ✅ GitHub Secrets 已設定（`MONGODB_URI`, `JWT_SECRET`）
+- ✅ 後端倉庫已配置（`Yanagi-0912/SEProject2025Backend`）
+- ✅ 所有工作流程步驟已啟用
+- ✅ CI 會在每次 push 或 PR 時自動執行
+
 ### 前置需求
 
-1. **GitHub Secrets 設定**
-   - 必須在前端倉庫的 Settings → Secrets and variables → Actions 中設定
+1. **GitHub Secrets 設定** ✅ 已完成
+   - 已在前端倉庫的 Settings → Secrets and variables → Actions 中設定
    - 詳見 [環境變數說明](#環境變數說明)
 
-2. **後端倉庫訪問權限**
+2. **後端倉庫訪問權限** ✅ 已配置
    - 後端為公開倉庫，不需要額外的 token
-   - 如果是私有倉庫，需要設定 `BACKEND_REPO_TOKEN`
+   - 後端倉庫路徑：`Yanagi-0912/SEProject2025Backend`
 
 ### GitHub Secrets 清單
 
@@ -421,6 +431,34 @@
 如有問題，請聯絡：
 - 後端團隊：確認環境變數和配置
 - 前端團隊：確認測試配置和 API 整合
+
+---
+
+---
+
+## 📊 CI 執行狀態
+
+### 如何查看 CI 執行結果
+
+1. **前往 GitHub 倉庫**
+   - 點擊 **Actions** 標籤
+   - 查看最新的 workflow 執行記錄
+
+2. **查看執行日誌**
+   - 點擊特定的 workflow run
+   - 展開各個步驟查看詳細日誌
+   - 下載 Playwright 測試報告（如果測試失敗）
+
+3. **檢查後端啟動狀態**
+   - 查看 "Wait for Backend to be ready" 步驟
+   - 確認後端是否成功啟動
+
+### 測試帳號資訊
+
+- **使用者名稱：** `testuser`
+- **密碼：** `Test123456`
+- **Email：** `testuser@example.com`
+- **自動創建：** CI 會在每次執行時嘗試創建（如果不存在）
 
 ---
 
