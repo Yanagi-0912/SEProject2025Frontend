@@ -1,19 +1,35 @@
-.user-profile-view-container {
+ .user-profile-view-container {
   margin: 0 auto;
-  padding: 2rem;
-  background-color: #fef7f7;
-  border-radius: 12px;
+  padding: 2.5rem 3rem;
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #ffd6e6;
+  box-shadow: 0 12px 35px rgba(255, 150, 180, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  max-width: 1100px;
+}
+
+/* 電腦版：左右分欄 */
+.user-profile-view-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.user-profile-view-right {
+  display: flex;
+  flex-direction: column;
 }
 
 .user-profile-view-header {
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
   border-bottom: 2px solid #f5c2c7;
 }
 
 .user-profile-view-header h1 {
   margin: 0 0 0.5rem 0;
-  font-size: 2rem;
+  font-size: 2.2rem;
   color: #d63384;
   font-weight: 600;
 }
@@ -26,11 +42,11 @@
 
 .user-profile-view-rating {
   display: flex;
-  gap: 2rem;
-  margin-bottom: 2rem;
-  padding: 1rem;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.1rem 1.5rem;
   background-color: #fff;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid #f5c2c7;
 }
 
@@ -38,6 +54,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  min-width: 120px;
+  text-align: center;
 }
 
 .user-profile-view-rating-label {
@@ -52,7 +70,8 @@
 }
 
 .user-profile-view-info {
-  margin-top: 2rem;
+  width: 100%;
+  max-width: 520px;
 }
 
 .user-profile-view-info h2 {
@@ -68,10 +87,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: 1rem 1.25rem;
   margin-bottom: 0.75rem;
   background-color: #fff;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid #f5c2c7;
 }
 
@@ -86,9 +105,29 @@
   color: #d63384;
 }
 
+/* 電腦版：左右分欄佈局 */
+@media (min-width: 769px) {
+  .user-profile-view-container {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 4rem;
+  }
+
+  .user-profile-view-left {
+    flex: 0 0 40%;
+    max-width: 400px;
+  }
+
+  .user-profile-view-right {
+    flex: 1;
+  }
+}
+
+/* 手機版：維持垂直排列 */
 @media (max-width: 768px) {
   .user-profile-view-container {
     padding: 1.5rem;
+    flex-direction: column;
   }
 
   .user-profile-view-header h1 {
