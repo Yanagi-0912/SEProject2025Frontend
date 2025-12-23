@@ -68,7 +68,7 @@ test('首頁翻頁功能', async ({ page }) => {
     const nextPageBtn = page.locator('.pagination-btn:has-text("→")');
     const nextPageExists = await nextPageBtn.count() > 0;
     
-    if (nextPageExists) {
+    if (nextPageExists && !(await nextPageBtn.isDisabled())) {
       // 記錄目前商品
       const productsBeforePage = await page.locator('.products-card').count();
       
@@ -96,7 +96,7 @@ test('首頁翻頁功能', async ({ page }) => {
         console.log(`✓ 返回上一頁成功`);
       }
     } else {
-      console.log('ⓘ 未找到下一頁按鈕（可能只有一頁商品）');
+      console.log('ⓘ 下一頁按鈕不存在或已禁用（商品不足或只有一頁）');
     }
   } else {
     console.log('ⓘ 未找到翻頁元件（可能未實現分頁）');
@@ -139,7 +139,7 @@ test('首頁篩選和翻頁組合測試', async ({ page }) => {
   
   // 步驟 2：翻到下一頁
   const nextPageBtn = page.locator('.pagination-btn:has-text("→")');
-  const pageExists = await nextPageBtn.count() > 0;
+  const pageExists = (await nextPageBtn.count() > 0) && !(await nextPageBtn.isDisabled());
   
   if (pageExists) {
     await nextPageBtn.click();

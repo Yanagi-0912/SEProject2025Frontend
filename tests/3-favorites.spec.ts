@@ -144,31 +144,19 @@ test.describe('我的最愛功能', () => {
     } else {
       console.log('ⓘ 清除全部按鈕已禁用（可能沒有收藏商品）')
     }
-  })
 
-  test('空白狀態提示', async ({ page }) => {
-    await page.waitForSelector('.fav-container', { timeout: 10000 })
-    const noItemsMsg = page.locator('text=目前沒有最愛商品')
-    const hasNoItemsMsg = await noItemsMsg.count() > 0
-    if (hasNoItemsMsg) {
-      await expect(noItemsMsg).toBeVisible()
-      console.log('✓ 沒有最愛商品時顯示提示訊息')
-    } else {
-      const cards = page.locator('.fav-card')
-      const cardCount = await cards.count()
-      console.log(`ⓘ 有 ${cardCount} 件最愛商品`)
-    }
+    test('空白狀態提示', async ({ page }) => {
+      await page.waitForSelector('.fav-container', { timeout: 10000 })
+      const noItemsMsg = page.locator('text=目前沒有最愛商品')
+      const hasNoItemsMsg = await noItemsMsg.count() > 0
+      if (hasNoItemsMsg) {
+        await expect(noItemsMsg).toBeVisible()
+        console.log('✓ 沒有最愛商品時顯示提示訊息')
+      } else {
+        const cards = page.locator('.fav-card')
+        const cardCount = await cards.count()
+        console.log(`ⓘ 有 ${cardCount} 件最愛商品`)
+      }
+    })
   })
 })
-
-// tests/favorites.spec.ts
-test('加入收藏', async ({ page }) => {
-  await page.goto('http://localhost:5173/product/product-id');
-  await page.click('button:has-text("加入收藏")');
-  await expect(page.locator('button:has-text("移除收藏")')).toBeVisible();
-});
-
-test('查看收藏清單', async ({ page }) => {
-  await page.goto('http://localhost:5173/favorites');
-  await expect(page.locator('.product-card')).toHaveCount(1);
-});

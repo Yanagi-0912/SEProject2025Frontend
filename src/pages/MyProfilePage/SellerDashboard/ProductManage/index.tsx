@@ -94,6 +94,9 @@ const ProductManage = ({ viewMode, searchQuery, productList, onModeChange }: Pro
       });
       
       onModeChange('list');
+      
+        // 刷新頁面以顯示新商品
+        window.location.reload();
     } catch (error: unknown) {
       console.error('創建商品失敗:', error);
       // 嘗試顯示後端回傳的錯誤內容（若為 axios 錯誤）

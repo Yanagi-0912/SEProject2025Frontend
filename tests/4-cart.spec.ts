@@ -115,14 +115,34 @@ test.describe('購物車功能', () => {
   })
 
   test('顯示總金額', async ({ page }) => {
-    const totalSection = page.locator('.cart-total, .total-section, .cart-footer')
-    const totalText = page.locator('text=/總計|總金額|合計/')
+    const items = page.locator('.cart-item')
+    const itemCount = await items.count()
     
-    if (await totalSection.count() > 0 || await totalText.count() > 0) {
-      await expect(totalSection.or(totalText)).toBeVisible()
-      console.log('✓ 總金額顯示正常')
+    if (itemCount > 0) {
+      // 檢查總金額顯示區域
+      const summary = page.locator('.cart-footer-summary')
+      await expect(summary).toBeVisible()
+      
+      const summaryText = await summary.textContent()
+      expect(summaryText).toContain('已選')
+      expect(summaryText).toContain('總計')
+      
+      // 驗證總金額數值
+      const priceElement = page.locator('.cart-footer-price')
+      if (await priceElement.count() > 0) {
+        const priceText = await priceElement.textContent()
+        expect(priceText).toBeTruthy()
+        console.log(`✓ 顯示總金額：${priceText}`)
+      }
+      
+      // 驗證選中商品數量顯示
+      const countElement = page.locator('.cart-footer-count')
+      if (await countElement.count() > 0) {
+        const countText = await countElement.textContent()
+        console.log(`✓ 已選商品數：${countText}`)
+      }
     } else {
-      console.log('ⓘ 未找到總金額顯示區域')
+      console.log('ⓘ 購物車為空')
     }
   })
 

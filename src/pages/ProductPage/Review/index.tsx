@@ -101,7 +101,7 @@ function Review({ productID, reviews = [] }: ReviewProps) {
                 
                 {reviews.length === 0 ? (
                     <div className="no-reviews">
-                        目前還沒有評論，成為第一個評論者吧！
+                        目前還沒有評論
                     </div>
                 ) : (
                     <div className="review-list">

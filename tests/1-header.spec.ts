@@ -20,7 +20,7 @@ test.describe('首頁 Header 功能', () => {
   })
 
   test('我的帳號按鈕', async ({ page }) => {
-    const accountBtn = page.locator('text=我的帳號')
+    const accountBtn = page.locator('.header-container .action-button:has-text("我的帳號")')
     if (await accountBtn.count()) {
       await accountBtn.click()
       await expect(page).toHaveURL(/\/user\/me/)
@@ -30,7 +30,7 @@ test.describe('首頁 Header 功能', () => {
   })
 
   test('我的最愛按鈕', async ({ page }) => {
-    const favoriteBtn = page.locator('text=我的最愛')
+    const favoriteBtn = page.locator('.header-container .action-button:has-text("我的最愛")')
     if (await favoriteBtn.count()) {
       await favoriteBtn.click()
       await expect(page).toHaveURL(/\/favorites\/me/)
@@ -40,7 +40,7 @@ test.describe('首頁 Header 功能', () => {
   })
 
   test('購物車按鈕', async ({ page }) => {
-    const cartBtn = page.locator('text=購物車')
+    const cartBtn = page.locator('.header-container .action-button:has-text("購物車")')
     if (await cartBtn.count()) {
       await cartBtn.click()
       await expect(page).toHaveURL(/\/cart/)
@@ -50,7 +50,7 @@ test.describe('首頁 Header 功能', () => {
   })
 
   test('訊息按鈕', async ({ page }) => {
-    const chatBtn = page.locator('text=訊息')
+    const chatBtn = page.locator('.header-container .action-button:has-text("訊息")')
     if (await chatBtn.count()) {
       await chatBtn.click()
       await expect(page).toHaveURL(/\/chat/)
@@ -60,7 +60,7 @@ test.describe('首頁 Header 功能', () => {
   })
 
   test('登出按鈕', async ({ page }) => {
-    const logoutBtn = page.locator('text=登出')
+    const logoutBtn = page.locator('.header-container .action-button:has-text("登出")')
     if (await logoutBtn.count()) {
       page.on('dialog', dialog => dialog.accept())
       await logoutBtn.click()

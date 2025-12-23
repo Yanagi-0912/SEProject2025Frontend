@@ -6,11 +6,11 @@
       "localStorage": [
         {
           "name": "username",
-          "value": "testuser"
+          "value": "playwright_test_user"
         },
         {
           "name": "token",
-          "value": "mock-test-token-for-ci"
+          "value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJwbGF5d3JpZ2h0X3Rlc3RfdXNlciIsImlhdCI6MTc2NjQ3ODcyNywiZXhwIjoxNzY2NTY1MTI3fQ.pLI2X_5WBEqzhAuxijqGHgZxfx_J3To8xe1QiDXUJewofb5pFF6AuFAs86DL07Cg"
         }
       ]
     }

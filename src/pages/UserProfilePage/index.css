@@ -1,11 +1,12 @@
 .user-profile-page-wrapper {
   min-height: 100vh;
   background-color: #fef7f7;
-  padding: 2rem 1rem;
+  padding: 0 0 2rem 0; /* 頂部貼齊 header，左右由內層控制 */
 }
 
 .user-profile-content {
-  margin: 0 auto;
+  margin: 2rem auto 0 auto; /* 與 header 保持距離 */
+  padding: 0 1rem; /* 內容左右留白 */
 }
 
 .profile-main-container {
@@ -23,8 +24,62 @@
   text-align: center;
 }
 
+/* 商品列表切換按鈕 */
+.product-list-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem auto;
+  max-width: 600px;
+}
+
+.toggle-button {
+  flex: 1;
+  padding: 12px 24px;
+  border: 2px solid #FFC5D0;
+  border-radius: 12px;
+  background-color: white;
+  color: #FF5E78;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-button:hover {
+  background-color: #FFF0F5;
+  border-color: #FF9EAA;
+  transform: translateY(-2px);
+}
+
+.toggle-button.active {
+  background: linear-gradient(135deg, #FF9EAA 0%, #FF5E78 100%);
+  color: white;
+  border-color: #FF5E78;
+  box-shadow: 0 4px 10px rgba(255, 94, 120, 0.3);
+}
+
+.toggle-button.active:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(255, 94, 120, 0.4);
+}
+
 @media (max-width: 768px) {
   .user-profile-page-wrapper {
-    padding: 1rem 0.5rem;
+    padding: 0 0 1rem 0; /* 手機版一樣由內容自己決定左右 padding */
+  }
+
+  .user-profile-content {
+    padding: 0 0.5rem; /* 手機版內容左右留白較小 */
+  }
+
+  .product-list-toggle {
+    margin: 1.5rem auto;
+    gap: 0.5rem;
+  }
+
+  .toggle-button {
+    padding: 10px 16px;
+    font-size: 0.9rem;
   }
 }

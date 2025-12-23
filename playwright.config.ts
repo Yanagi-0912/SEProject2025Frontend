@@ -35,7 +35,11 @@ export default defineConfig({
     { name: 'setup', testMatch: /.*\.setup\.ts/ },
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { 
+        ...devices['Desktop Chrome'],
+        // 讓測試自動載入由 setup 產生的登入狀態
+        storageState: 'tests/.auth/user.json',
+      },
       dependencies: ['setup'],//設定登入
     },
 /*
