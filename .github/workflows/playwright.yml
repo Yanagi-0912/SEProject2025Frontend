@@ -137,6 +137,15 @@ jobs:
         working-directory: ./frontend
         run: npx playwright install --with-deps
 
+      - name: Debug backend before Playwright
+        run: |
+          echo "Check /api/products"
+          curl -v http://localhost:8080/api/products || echo "products 連線失敗"
+          echo "Check /api/auth/login"
+          curl -v -X POST http://localhost:8080/api/auth/login \
+            -H "Content-Type: application/json" \
+            -d '{"username":"test","password":"test"}' || echo "login 連線失敗"
+
       - name: Run Playwright Tests
         working-directory: ./frontend
         env:
