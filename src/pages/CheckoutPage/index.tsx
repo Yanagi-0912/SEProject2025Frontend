@@ -42,6 +42,8 @@ interface ShippingAddress {
 interface CheckoutLocationState {
   orderItems?: SellerGroup[];
   shippingAddress?: ShippingAddress;
+  // 從歷史紀錄帶入的既有訂單 ID（已在後端建立，不要重建）
+  existingOrderId?: string;
 }
 
 interface CheckoutPageProps {
@@ -59,13 +61,15 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const state = location.state as CheckoutLocationState | null;
   const orderItems: SellerGroup[] = state?.orderItems || [];
   const savedShippingAddress = state?.shippingAddress;
+  const existingOrderId = state?.existingOrderId;
 
   useEffect(() => {
-    if (orderItems.length === 0) {
+    // 如果沒有任何商品，且不是從既有訂單進來，才導回購物車
+    if (orderItems.length === 0 && !existingOrderId) {
       alert("購物車是空的，請先選擇商品");
       navigate('/cart');
     }
-  }, [orderItems, navigate]);
+  }, [orderItems, existingOrderId, navigate]);
 
   // 取得當前使用者資料
   const { data: userData } = useGetCurrentUser();
@@ -220,7 +224,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
   const handleSubmitOrder = async () => {
     if (!validateForm()) return;
-    if (orderItems.length === 0) {
+    if (orderItems.length === 0 && !existingOrderId) {
       alert("購物車是空的");
       return;
     }
@@ -242,6 +246,53 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     }
 
     try {
+      // ------------------------------------------------------------
+      // 情境一：從歷史紀錄進來，使用既有訂單 ID -> 只做 payOrder，不重建訂單
+      // ------------------------------------------------------------
+      if (existingOrderId) {
+        try {
+          await payOrder(existingOrderId, selectedUserCoupon?.id);
+        } catch {
+          // 即使付款失敗，仍然顯示提示
+          alert("付款失敗，請稍後再試");
+          return;
+        }
+
+        // 使用目前在前端計算出的金額資訊帶到成功頁
+        navigate('/order-success', {
+          state: {
+            orderData: {
+              orderID: existingOrderId,
+              productTotal: productTotal,
+              shippingFee: actualShippingFee,
+              discountAmount: isFreeship ? SHIPPING_FEE : discountAmount,
+              totalAmount: finalAmount,
+              couponUsed: selectedUserCoupon ? true : false,
+              isFreeship: isFreeship,
+              buyOneGetOneItemId: buyOneGetOneItem?.id,
+              orderItems: orderItems.flatMap(seller =>
+                seller.items.map((item: CartItem) => ({
+                  productID: item.productId || item.id,
+                  productName: item.name,
+                  quantity: item.quantity,
+                  sellerID: seller.sellerId,
+                  price: item.price,
+                  totalPrice: item.price * item.quantity
+                }))
+              ),
+              orderTime: new Date().toISOString(),
+              orderStatus: 'COMPLETED'
+            }
+          }
+        });
+
+        if (onSuccess) onSuccess(existingOrderId);
+        return;
+      }
+
+      // ------------------------------------------------------------
+      // 情境二：一般從購物車進來，建立新訂單再呼叫 payOrder（原本流程）
+      // ------------------------------------------------------------
       const cartItems = orderItems.flatMap(seller =>
         seller.items.map((item: CartItem) => ({
           itemId: item.id,

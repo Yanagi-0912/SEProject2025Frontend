@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { HistoryTab } from '../ControlPanel';
 import type { AxiosError, AxiosResponse } from 'axios';
 import './index.css';
@@ -9,9 +10,6 @@ import {
   useGetBidHistoriesByUserId,
   useGetBrowseHistoriesByUserId,
   useGetProductById,
-  usePayOrder,
-  getGetOrderByBuyerIdQueryKey,
-  useCreatePurchaseHistory,
   type GetOrderByBuyerIdQueryResult,
   type GetProductByIdQueryResult,
   type GetPurchaseHistoriesByUserIdQueryResult,
@@ -21,7 +19,6 @@ import {
   type Coupon
 } from '../../../../api/generated';
 import type { Order, PurchaseHistory, BidHistory, ReviewHistory, BrowseHistory, Product } from '../../../../api/generated';
-import { useQueryClient } from '@tanstack/react-query';
 import { getUserCouponsByUserId, getAllCoupons, type UserCouponItem } from '../../../../api/coupon';
 
 interface Props {
@@ -30,6 +27,7 @@ interface Props {
 }
 
 const HistoryList: React.FC<Props> = ({ selected, userId }) => {
+  const navigate = useNavigate();
   // Call hooks unconditionally so their call order is stable; hooks should handle an undefined userId internally
   const orderQuery = useGetOrderByBuyerId({ buyerId: userId ?? '' });
   const reviewQuery = useGetReviewHistoriesByUserId(userId ?? '', {
@@ -109,51 +107,54 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     return status;
   };
 
-  const queryClient = useQueryClient();
-  const payOrderMutation = usePayOrder();
-  const createPurchaseHistoryMutation = useCreatePurchaseHistory();
-
   const handleConfirmOrder = (orderID: string, order?: Order) => {
-    if (!orderID) return;
-    payOrderMutation.mutate(
-      { orderID, params: {} },
-      {
-        onSuccess: async () => {
-          // Invalidate order query for current user so list refreshes
-          try {
-            const key = getGetOrderByBuyerIdQueryKey({ buyerId: userId ?? '' });
-            queryClient.invalidateQueries({ queryKey: key });
-          } catch {
-            queryClient.invalidateQueries();
-          }
+    if (!orderID || !order) return;
 
-          // 建立購買紀錄
-          if (userId && order?.orderID && order.orderItems) {
-            try {
-              // 收集所有商品 ID
-              const productIDs = order.orderItems
-                .map(item => item.productID)
-                .filter((id): id is string => !!id);
-              
-              // 計算總商品數量
-              const totalQuantity = order.orderItems
-                .reduce((sum, item) => sum + (item.quantity || 0), 0);
+    // 將訂單項目轉成 CheckoutPage 需要的 SellerGroup 結構
+    type TempSellerItem = {
+      id: string;
+      productId?: string;
+      name?: string;
+      price: number;
+      quantity: number;
+      stock?: number;
+    };
+    type TempSellerGroup = { sellerId: string; sellerName?: string; items: TempSellerItem[] };
 
-              if (productIDs.length > 0) {
-                await createPurchaseHistoryMutation.mutateAsync({
-                  data: {
-                    productID: productIDs,
-                    productQuantity: totalQuantity
-                  }
-                });
-              }
-            } catch (historyErr) {
-              console.error('建立購買紀錄失敗:', historyErr);
-            }
-          }
+    const sellerMap = new Map<string, TempSellerGroup>();
+
+    if (order.orderItems) {
+      order.orderItems.forEach(item => {
+        const sellerId = item.sellerID ?? 'unknown-seller';
+        if (!sellerMap.has(sellerId)) {
+          sellerMap.set(sellerId, {
+            sellerId,
+            sellerName: undefined,
+            items: []
+          });
         }
+        const group = sellerMap.get(sellerId)!;
+        group.items.push({
+          id: item.productID || `${sellerId}-${group.items.length}`,
+          productId: item.productID || undefined,
+          name: undefined,
+          price: item.price ?? 0,
+          quantity: item.quantity ?? 0,
+          stock: undefined
+        });
+      });
+    }
+
+    const sellerGroups = Array.from(sellerMap.values());
+
+    // 導向 CheckoutPage，並攜帶「既有訂單 ID」，讓結帳頁只呼叫 payOrder、不再建立新訂單
+    navigate('/checkout', {
+      state: {
+        orderItems: sellerGroups,
+        existingOrderId: orderID
+        // 如有需要可在這裡補充 shippingAddress 等資訊（目前讓使用者在結帳頁自行確認）
       }
-    );
+    });
   };
 
   // 根據訂單 ID 找出使用的優惠券
@@ -224,26 +225,19 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
             </ul>
           </div>
         )}
-          {/* 確認訂單按鈕：只在待處理 (PENDING) 顯示 */}
+          {/* 確認訂單按鈕：只在待處理 (PENDING) 顯示，導向結帳頁 */}
           {order.orderStatus === 'PENDING' && (
             <div className="user-history-confirm-section">
               <button
                 className="user-history-confirm-button"
                 onClick={() => {
                   if (!order.orderID) return;
-                  if (!window.confirm('確定要確認付款此訂單嗎？')) return;
+                  if (!window.confirm('要前往結帳頁面確認此訂單嗎？')) return;
                   handleConfirmOrder(order.orderID, order);
                 }}
-                disabled={payOrderMutation.isPending}
               >
-                {payOrderMutation.isPending ? '處理中...' : '確認訂單'}
+                前往結帳
               </button>
-              {payOrderMutation.isError && (
-                <div className="user-history-message error">付款失敗，請稍後重試</div>
-              )}
-              {payOrderMutation.isSuccess && (
-                <div className="user-history-message success">付款成功</div>
-              )}
             </div>
           )}
       </div>
