@@ -5,16 +5,16 @@ import type { AxiosError, AxiosResponse } from 'axios';
 import './index.css';
 import {
   useGetOrderByBuyerId,
-  useGetReviewHistoriesByUserId,
-  useGetPurchaseHistoriesByUserId,
-  useGetBidHistoriesByUserId,
+  // useGetReviewHistoriesByUserId,
+  // useGetPurchaseHistoriesByUserId,
+  // useGetBidHistoriesByUserId,
   useGetBrowseHistoriesByUserId,
   useGetProductById,
   type GetOrderByBuyerIdQueryResult,
   type GetProductByIdQueryResult,
-  type GetPurchaseHistoriesByUserIdQueryResult,
-  type GetBidHistoriesByUserIdQueryResult,
-  type GetReviewHistoriesByUserIdQueryResult,
+  // type GetPurchaseHistoriesByUserIdQueryResult,
+  // type GetBidHistoriesByUserIdQueryResult,
+  // type GetReviewHistoriesByUserIdQueryResult,
   type GetBrowseHistoriesByUserIdQueryResult,
   type Coupon
 } from '../../../../api/generated';
@@ -30,25 +30,23 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
   const navigate = useNavigate();
   // Call hooks unconditionally so their call order is stable; hooks should handle an undefined userId internally
   const orderQuery = useGetOrderByBuyerId({ buyerId: userId ?? '' });
-  const reviewQuery = useGetReviewHistoriesByUserId(userId ?? '', {
-    // Allow 404 to resolve so we can treat it as "no records" without noisy retries
-    axios: { validateStatus: (status) => status === 200 || status === 404 },
-    query: { retry: false }
-  });
-  const purchaseQuery = useGetPurchaseHistoriesByUserId(userId ?? '', {
-    // Allow 404 to resolve so we can treat it as "no records" without noisy retries
-    axios: { validateStatus: (status) => status === 200 || status === 404 },
-    query: { retry: false }
-  });
-  const bidQuery = useGetBidHistoriesByUserId(userId ?? '', {
-    // Allow 404 to resolve so we can treat it as "no records" without noisy retries
-    axios: { validateStatus: (status) => status === 200 || status === 404 },
-    query: { retry: false }
-  });
-  useEffect(() => {
-    if (bidQuery?.data) console.info('bid histories response', bidQuery.data);
-    if (bidQuery?.error) console.warn('bid histories error', bidQuery.error);
-  }, [bidQuery?.data, bidQuery?.error]);
+  // Disabled: Review/Purchase/Bid histories (commented out per request)
+  // const reviewQuery = useGetReviewHistoriesByUserId(userId ?? '', {
+  //   axios: { validateStatus: (status) => status === 200 || status === 404 },
+  //   query: { retry: false }
+  // });
+  // const purchaseQuery = useGetPurchaseHistoriesByUserId(userId ?? '', {
+  //   axios: { validateStatus: (status) => status === 200 || status === 404 },
+  //   query: { retry: false }
+  // });
+  // const bidQuery = useGetBidHistoriesByUserId(userId ?? '', {
+  //   axios: { validateStatus: (status) => status === 200 || status === 404 },
+  //   query: { retry: false }
+  // });
+  // useEffect(() => {
+  //   if (bidQuery?.data) console.info('bid histories response', bidQuery.data);
+  //   if (bidQuery?.error) console.warn('bid histories error', bidQuery.error);
+  // }, [bidQuery?.data, bidQuery?.error]);
   const browseQuery = useGetBrowseHistoriesByUserId(userId ?? '', {
     // Allow 404 to resolve so we can treat it as "no records" without noisy retries
     axios: { validateStatus: (status) => status === 200 || status === 404 },
@@ -363,139 +361,11 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     );
   };
 
-  const renderPurchases = () => {
-    if (!userId) return <div className="user-history-empty">找不到使用者 ID</div>;
-    const isLoading = purchaseQuery?.isLoading;
-    const isError = purchaseQuery?.isError;
-    const raw = purchaseQuery?.data as GetPurchaseHistoriesByUserIdQueryResult | undefined;
-    const data = raw?.data ?? raw;
-    if (isLoading) return renderLoading();
-    if (isError) return renderError(purchaseQuery?.error);
-    const purchaseItems: PurchaseHistory[] = Array.isArray(data) ? data.filter((item) => item && '_id' in item) : (data && '_id' in data) ? [data] : [];
-    if (!purchaseItems.length) return <div className="user-history-empty">沒有購買紀錄</div>;
-    // 依時間排序：最新的在前
-    const sortedPurchases = [...purchaseItems].sort((a, b) => {
-      const timeA = a.timeStamp ? new Date(a.timeStamp).getTime() : 0;
-      const timeB = b.timeStamp ? new Date(b.timeStamp).getTime() : 0;
-      return timeB - timeA; // 降序：新的在前
-    });
-    return (
-      <ul>
-        {sortedPurchases.map((p, idx) => {
-          const id = p._id ?? String(idx);
-          return (
-            <li key={id}>
-              <div className="user-history-list-item-header">
-                <div className="user-history-list-item-info">
-                  <div className="user-history-list-item-title">{p._id}</div>
-                  <div className="user-history-list-item-time">— {p.timeStamp}</div>
-                  <div className="user-history-list-item-meta">合計商品數：{p.productQuantity ?? '-'}</div>
-                </div>
-                <button 
-                  className="user-history-list-item-button"
-                  onClick={() => toggleExpand(id)}
-                >
-                  {expanded === id ? '收起' : '查看詳情'}
-                </button>
-              </div>
-              {expanded === id && renderHistoryDetail(p)}
-            </li>
-          );
-        })}
-      </ul>
-    );
-  };
+  // const renderPurchases = () => null; // disabled
 
-  const renderBids = () => {
-    if (!userId) return <div className="user-history-empty">找不到使用者 ID</div>;
-    const isLoading = bidQuery?.isLoading;
-    const isError = bidQuery?.isError;
-    const raw = bidQuery?.data as GetBidHistoriesByUserIdQueryResult | undefined;
-    const data = raw?.data ?? raw;
-    if (isLoading) return renderLoading();
-    if (isError) return renderError(bidQuery?.error);
-    const bidItems: BidHistory[] = Array.isArray(data) ? data.filter((item) => item && '_id' in item) : (data && '_id' in data) ? [data] : [];
-    if (!bidItems.length) return <div className="user-history-empty">沒有競標紀錄</div>;
-    // 依時間排序：最新的在前
-    const sortedBids = [...bidItems].sort((a, b) => {
-      const timeA = a.timeStamp ? new Date(a.timeStamp).getTime() : 0;
-      const timeB = b.timeStamp ? new Date(b.timeStamp).getTime() : 0;
-      return timeB - timeA; // 降序：新的在前
-    });
-    return (
-      <ul>
-        {sortedBids.map((b, idx) => {
-          const id = b._id ?? String(idx);
-          const pid = b.historyItem?.productID ?? b.productID;
-          const title = b.historyItem?.productName ?? b.historyItem?.productID ?? pid ?? '未取得商品資訊';
-          return (
-            <li key={id}>
-              <div className="user-history-list-item-header">
-                <div className="user-history-list-item-info">
-                  <div className="user-history-list-item-title">{title}</div>
-                  <div className="user-history-list-item-time">— {b.timeStamp}</div>
-                  <div className="user-history-list-item-meta">出價：{b.bidAmount ?? '-'}</div>
-                  <div className="user-history-list-item-meta">商品 ID：{pid ?? '-'}</div>
-                </div>
-                <button 
-                  className="user-history-list-item-button"
-                  onClick={() => toggleExpand(id)}
-                >
-                  {expanded === id ? '收起' : '查看詳情'}
-                </button>
-              </div>
-              {expanded === id && renderHistoryDetail(b)}
-            </li>
-          );
-        })}
-      </ul>
-    );
-  };
+  // const renderBids = () => null; // disabled
 
-  const renderReviews = () => {
-    if (!userId) return <div className="user-history-empty">找不到使用者 ID</div>;
-    const isLoading = reviewQuery?.isLoading;
-    const isError = reviewQuery?.isError;
-    const raw = reviewQuery?.data as GetReviewHistoriesByUserIdQueryResult | undefined;
-    const data = raw?.data ?? raw;
-    const status = (raw as AxiosResponse | undefined)?.status;
-    if (isLoading) return renderLoading();
-    if (status === 404) return <div className="user-history-empty">沒有評論紀錄</div>;
-    if (isError) return renderError(reviewQuery?.error);
-    const reviewItems: ReviewHistory[] = Array.isArray(data) ? data : (data && typeof data === 'object' && '_id' in data) ? [data as ReviewHistory] : [];
-    if (!reviewItems.length) return <div className="user-history-empty">沒有評論紀錄</div>;
-    // 依時間排序：最新的在前
-    const sortedReviews = [...reviewItems].sort((a, b) => {
-      const timeA = a.timeStamp ? new Date(a.timeStamp).getTime() : 0;
-      const timeB = b.timeStamp ? new Date(b.timeStamp).getTime() : 0;
-      return timeB - timeA; // 降序：新的在前
-    });
-    return (
-      <ul>
-        {sortedReviews.map((r, idx) => {
-          const id = r._id ?? r.reviewID ?? String(idx);
-          return (
-            <li key={id}>
-              <div className="user-history-list-item-header">
-                <div className="user-history-list-item-info">
-                  <div className="user-history-list-item-title">{r.reviewID ?? r._id}</div>
-                  <div className="user-history-list-item-time">— {r.timeStamp}</div>
-                  <div className="user-history-list-item-meta">動作：{r.actionType ?? '-'}</div>
-                </div>
-                <button 
-                  className="user-history-list-item-button"
-                  onClick={() => toggleExpand(id)}
-                >
-                  {expanded === id ? '收起' : '查看詳情'}
-                </button>
-              </div>
-              {expanded === id && renderHistoryDetail(r)}
-            </li>
-          );
-        })}
-      </ul>
-    );
-  };
+  // const renderReviews = () => null; // disabled
 
   const renderBrowses = () => {
     if (!userId) return <div className="user-history-empty">找不到使用者 ID</div>;
@@ -538,12 +408,12 @@ const HistoryList: React.FC<Props> = ({ selected, userId }) => {
     switch (selected) {
       case 'OrderHistory':
         return renderOrders();
-      case 'PurchaseHistory':
-        return renderPurchases();
-      case 'BidHistory':
-        return renderBids();
-      case 'ReviewHistory':
-        return renderReviews();
+      // case 'PurchaseHistory':
+      //   return renderPurchases();
+      // case 'BidHistory':
+      //   return renderBids();
+      // case 'ReviewHistory':
+      //   return renderReviews();
       case 'BrowseHistory':
         return renderBrowses();
       default:
