@@ -21,6 +21,32 @@
   transition: all 0.2s;
 }
 
+.message-input-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.soften-button {
+  padding: 6px 14px;
+  background-color: #fff;
+  color: #FF5E78;
+  border-radius: 10px;
+  border: 1px solid #FF9EAA;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.soften-button:hover:not(:disabled) {
+  background-color: #FFF0F5;
+}
+
+.soften-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .message-textarea:focus {
   outline: none;
   border-color: #FF5E78;
@@ -68,6 +94,10 @@
   .message-textarea {
     padding: 8px;
     font-size: 16px; /* 防止 iOS 自動縮放 */
+  }
+
+  .message-input-actions {
+    gap: 6px;
   }
 
   .send-button {

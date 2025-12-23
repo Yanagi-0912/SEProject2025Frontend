@@ -210,12 +210,16 @@ function AuctionProduct(props: AuctionProps) {
             terminatedRef.current = true;
             setTerminated(true);
             setMessage('出價等於直購價，您已直接得標，競標已結束！');
+            // 直接導向競標歷史紀錄頁（BidHistory 分頁）
+            navigator('/profile/history?tab=BidHistory');
           } catch (endErr) {
             console.error('terminateAuction (direct win) error', endErr);
             setMessage('出價成功並達到直購價，但結束競標時發生錯誤，請稍後確認訂單狀態');
           }
         } else {
           setMessage('出價成功');
+          // 一般出價成功後也導向競標歷史紀錄頁，讓使用者查看紀錄
+          navigator('/profile/history?tab=BidHistory');
         }
       } catch (err) {
         console.error('placeBid error', err);

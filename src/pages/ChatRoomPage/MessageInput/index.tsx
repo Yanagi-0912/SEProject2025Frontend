@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./index.css";
+import { rewriteMessage } from "../../../api/search";
 
 interface MessageInputProps {
   onSendMessage: (content: string) => void;
@@ -7,11 +8,29 @@ interface MessageInputProps {
 
 const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
   const [message, setMessage] = useState("");
+  const [isSoftening, setIsSoftening] = useState(false);
 
   const handleSend = () => {
     if (message.trim()) {
       onSendMessage(message);
       setMessage("");
+    }
+  };
+
+  const handleSoften = async () => {
+    const text = message.trim();
+    if (!text) return;
+
+    try {
+      setIsSoftening(true);
+      const result = await rewriteMessage(text);
+      // 只用後端回傳的 polished 內容覆蓋輸入框
+      setMessage(result.polished || text);
+    } catch (err) {
+      console.error("rewriteMessage error", err);
+      alert("目前無法潤飾訊息，請稍後再試。");
+    } finally {
+      setIsSoftening(false);
     }
   };
 
@@ -32,13 +51,24 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
         className="message-textarea"
         rows={3}
       />
-      <button
-        onClick={handleSend}
-        disabled={!message.trim()}
-        className="send-button"
-      >
-        發送
-      </button>
+      <div className="message-input-actions">
+        <button
+          type="button"
+          onClick={handleSoften}
+          disabled={!message.trim() || isSoftening}
+          className="soften-button"
+        >
+          {isSoftening ? "潤飾中..." : "禮貌修飾"}
+        </button>
+        <button
+          type="button"
+          onClick={handleSend}
+          disabled={!message.trim()}
+          className="send-button"
+        >
+          發送
+        </button>
+      </div>
     </div>
   );
 };
