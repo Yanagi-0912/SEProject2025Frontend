@@ -3,9 +3,9 @@ import './index.css';
 
 export type HistoryTab =
   | 'OrderHistory'
-  | 'PurchaseHistory'
-  | 'BidHistory'
-  | 'ReviewHistory'
+ // | 'PurchaseHistory'
+ // | 'BidHistory'
+ // | 'ReviewHistory'
   | 'BrowseHistory';
 
 interface Props {
@@ -15,9 +15,9 @@ interface Props {
 
 const tabLabels: Record<HistoryTab, string> = {
   OrderHistory: '訂單紀錄',
-  PurchaseHistory: '購買紀錄',
-  BidHistory: '競標紀錄',
-  ReviewHistory: '評論紀錄',
+//  PurchaseHistory: '購買紀錄',
+//  BidHistory: '競標紀錄',
+//  ReviewHistory: '評論紀錄',
   BrowseHistory: '瀏覽紀錄'
 };
 
