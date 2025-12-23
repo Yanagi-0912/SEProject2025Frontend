@@ -27,14 +27,12 @@ interface ChatSidebarProps {
   chatRooms: ChatRoom[];
   selectedRoomId?: string;
   onSelectRoom: (room: ChatRoom) => void;
-  userRole: "BUYER" | "SELLER";
 }
 
 const ChatSidebar: React.FC<ChatSidebarProps> = ({
   chatRooms,
   selectedRoomId,
   onSelectRoom,
-  userRole
 }) => {
   const formatTime = (timestamp: string) => {
     const date = new Date(timestamp);

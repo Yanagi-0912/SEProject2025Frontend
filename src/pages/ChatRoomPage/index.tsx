@@ -8,6 +8,7 @@ import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
 import "./index.css";
 import { useGetCurrentUser } from "../../api/generated";
+import {PRODUCT_API} from "../../config/api";
 
 // ============================================================================
 // Vercel 部署設定 (關鍵修改區域)
@@ -17,7 +18,7 @@ import { useGetCurrentUser } from "../../api/generated";
 // 開發時: localhost:8080
 // 部署時: 你的後端網址 (例如: my-backend.onrender.com)
 // 建議: 將 "localhost:8080" 替換成 process.env.REACT_APP_API_DOMAIN 或直接寫你的 Render 網址
-const BACKEND_DOMAIN = "localhost:8080";
+const BACKEND_DOMAIN = PRODUCT_API.replace(/^https?:\/\//, '');
 
 // 動態生成 WebSocket 網址
 // Vercel 使用 HTTPS，所以必須用 wss:// (Secure WebSocket)
@@ -29,8 +30,7 @@ const getWebSocketUrl = () => {
 
 // 動態生成 API 基礎網址
 const getApiBaseUrl = () => {
-    const protocol = window.location.protocol === "https:" ? "https://" : "http://";
-    return `${protocol}${BACKEND_DOMAIN}`;
+    return PRODUCT_API;
 };
 // ============================================================================
 
