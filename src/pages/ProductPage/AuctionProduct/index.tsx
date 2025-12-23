@@ -183,7 +183,6 @@ function AuctionProduct(props: AuctionProps) {
       setLoading(true);
       try {
         await placeBid(props.productID, { price, bidderId });
-        setMessage('出價成功');
         setCurrentBid(price);
         setBidAmount('');
         
@@ -202,6 +201,21 @@ function AuctionProduct(props: AuctionProps) {
         } catch (historyErr) {
           console.error('創建競標歷史失敗:', historyErr);
           // 不影響出價成功的提示
+        }
+
+        // 若出價等於直購價，視為直接得標並結束競標
+        if (top !== Infinity && price === top && props.productID) {
+          try {
+            await terminateAuction(props.productID);
+            terminatedRef.current = true;
+            setTerminated(true);
+            setMessage('出價等於直購價，您已直接得標，競標已結束！');
+          } catch (endErr) {
+            console.error('terminateAuction (direct win) error', endErr);
+            setMessage('出價成功並達到直購價，但結束競標時發生錯誤，請稍後確認訂單狀態');
+          }
+        } else {
+          setMessage('出價成功');
         }
       } catch (err) {
         console.error('placeBid error', err);
