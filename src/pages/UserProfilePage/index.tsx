@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import Header from '../Main/Header';
 import UserProfile from './UserProfile';
 import ProductList from './ProductList';
 import { useGetUserById } from '../../api/generated/index';
-import { useGetSellerProducts, useGetSellerActiveProducts } from '../../api/seller';
+import type { Product } from '../../api/generated/index';
 import { SAMPLE_USER, normalizeUserData, type UserProps } from '../../types/user';
 import './index.css';
 
@@ -17,25 +17,28 @@ const UserProfilePage: React.FC = () => {
 	const [error, setError] = useState<string | null>(null);
 	const [showActiveOnly, setShowActiveOnly] = useState<boolean>(false);
 
-	const { data: userQueryData, isLoading, isError, error: queryError } = useGetUserById(userId);
-
-	// 取得賣家的所有商品
-	const { 
-		data: allProducts, 
-		isLoading: isLoadingAllProducts, 
-		error: allProductsError 
-	} = useGetSellerProducts(userId, {
-		query: { enabled: !!userId && !showActiveOnly }
+	// 使用 GET /api/user/{userId} 一次取得賣家資訊和商品列表
+	const { data: userQueryData, isLoading, isError, error: queryError } = useGetUserById(userId, {
+		query: { enabled: !!userId }
 	});
 
-	// 取得賣家的上架商品
-	const { 
-		data: activeProducts, 
-		isLoading: isLoadingActiveProducts, 
-		error: activeProductsError 
-	} = useGetSellerActiveProducts(userId, {
-		query: { enabled: !!userId && showActiveOnly }
-	});
+	// 從 API 回傳資料中提取商品列表
+	const allProducts: Product[] = useMemo(() => {
+		if (userQueryData?.data?.sellingProducts) {
+			return userQueryData.data.sellingProducts;
+		}
+		return [];
+	}, [userQueryData]);
+
+	// 前端 filter 出上架中的商品
+	const activeProducts: Product[] = useMemo(() => {
+		return allProducts.filter(p => p.productStatus === 'ACTIVE');
+	}, [allProducts]);
+
+	// 決定要顯示的商品
+	const products: Product[] = useMemo(() => {
+		return showActiveOnly ? activeProducts : allProducts;
+	}, [showActiveOnly, activeProducts, allProducts]);
 
 	// 從 location.state 取得商品 ID
 	const productId = (location.state as { productId?: string })?.productId;
@@ -55,11 +58,6 @@ const UserProfilePage: React.FC = () => {
 			setUser(SAMPLE_USER);
 		}
 	}, [userQueryData, isError, queryError, isLoading, userId]);
-
-	// 決定要顯示的商品和載入狀態
-	const products = showActiveOnly ? activeProducts : allProducts;
-	const isLoadingProducts = showActiveOnly ? isLoadingActiveProducts : isLoadingAllProducts;
-	const productsError = showActiveOnly ? activeProductsError : allProductsError;
 
 	return (
 		<div className="user-profile-page-wrapper">
@@ -97,9 +95,9 @@ const UserProfilePage: React.FC = () => {
 
 				{/* 商品列表 */}
 				<ProductList 
-					products={products || []}
-					isLoading={isLoadingProducts}
-					error={productsError as Error | null}
+					products={products}
+					isLoading={isLoading}
+					error={isError ? (queryError as Error | null) : null}
 				/>
 			</div>
 		</div>
