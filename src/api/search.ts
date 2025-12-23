@@ -66,6 +66,20 @@ export const ragSearch = async (
 };
 
 /**
+ * 訊息潤飾 API
+ * POST {RAG_API}/api/rewrite
+ */
+export const rewriteMessage = async (
+    message: string
+): Promise<{ original: string; polished: string }> => {
+    const response = await axios.post<{ original: string; polished: string }>(
+        `${RAG_API}/api/rewrite`,
+        { message }
+    );
+    return response.data;
+};
+
+/**
  * 根據 ID 列表取得商品 Hook
  */
 export const useGetProductsByIds = (ids: string[]) => {
